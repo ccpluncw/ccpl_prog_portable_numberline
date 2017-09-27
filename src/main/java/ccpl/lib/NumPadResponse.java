@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -19,20 +20,7 @@ import javax.swing.JTextField;
 
 
 public class NumPadResponse {
-    private static final String APP_IMG_DIR = "/app_imgs/";
-    public static void main(String[] args) {
-        NumPadResponse resp = new NumPadResponse("2", null);
-        JFrame frame = new JFrame("Keyboard");
-        BorderLayout bLayout = new BorderLayout();
-        frame.setLayout(bLayout);
-        int width = 250;
-        int height = 300;
-        frame.setSize(width, height);
-        JPanel respPanel = resp.getPanel();
-        frame.add(respPanel,BorderLayout.CENTER);
-        frame.setVisible(true);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    }
+    private static final String APP_IMG_DIR = "images/";
 
     private VirtualKeyboard keyboard;
     private ResponseFields fields;
@@ -94,10 +82,16 @@ public class NumPadResponse {
                 buttons[i] = new JButton(Integer.toString(i));
                 buttons[i].setActionCommand(Integer.toString(i));
             }
-            buttons[10] = new JButton(new ImageIcon(VirtualKeyboard.class.getResource(APP_IMG_DIR + "left_arrow.gif")));
+
+            // TODO: Fix this
+            ClassLoader cl = this.getClass().getClassLoader();
+            URL leftArrow = cl.getResource(APP_IMG_DIR + "left_arrow.gif");
+            URL rightArrow = cl.getResource(APP_IMG_DIR + "images/right_arrow.gif");
+
+            buttons[10] = new JButton(new ImageIcon(leftArrow));
             buttons[10].setToolTipText("Previous Field");
             buttons[10].setActionCommand("P");
-            buttons[11] = new JButton(new ImageIcon(VirtualKeyboard.class.getResource(APP_IMG_DIR + "right_arrow.gif")));
+            buttons[11] = new JButton(new ImageIcon(rightArrow));
             buttons[11].setToolTipText("Next Field");
             buttons[11].setActionCommand("N");
 

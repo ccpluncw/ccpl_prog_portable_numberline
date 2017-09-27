@@ -43,7 +43,7 @@ public class CenteredFileDisplay extends JPanel implements ActionListener{
      * @param fileName
      *  the file with the text to be displayed
      * @param x
-     *  the experiment object (this is needed to read the URL and find the infiles directory
+     *  the experiment object (this is needed to read the URL and find the exp.infiles directory
      * @param j 
      *  this should be 'left', 'center' or 'right'
      *  controls the alignment of the text

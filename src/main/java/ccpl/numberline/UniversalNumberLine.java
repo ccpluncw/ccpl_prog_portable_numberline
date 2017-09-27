@@ -53,13 +53,7 @@ import javax.swing.WindowConstants;
  */
 public class UniversalNumberLine implements ActionListener {
 
-  private final boolean WEB_ENABLED = true;
-  private final String WEB_DIR = "newnumline";
   private final boolean debug = false;
-
-  //the numbers that represent a left or right click for the mouse the program is using
-  private static final int leftClick = 1;
-  private static final int rightClick = 3;
 
   private Experiment exp;
   private final String experiment;
@@ -72,6 +66,16 @@ public class UniversalNumberLine implements ActionListener {
   private static Mask lineMask = null;
   private Fixation fixation;
   private RTPressure rtPressure;
+
+  private boolean isEstimationTask;
+  private boolean isBounded;
+
+  private int leftBound;
+  private int rightBound;
+
+  private int targetLow;
+  private int targetHigh;
+
 
   /**
    * Implemented method from ActionListener.
@@ -88,32 +92,11 @@ public class UniversalNumberLine implements ActionListener {
     }
   }
 
-  private enum FEEDBACKTYPE {
-    ANIMATION, IMAGE, FRACTAL
-  }
-
   private static NumberLine numLine = null;
   private static RandomIntGenerator randGen = new RandomIntGenerator();
   private static BlankPanel imPanel;
   private static BlankPanel gridPanel;
   private static DrawExpFrame frame;
-
-  private enum MOUSE_BUTTON {
-    LEFT, RIGHT
-  }
-
-  /**
-   * Entry point into the experiment.
-   *
-   * @param args Command line argument
-   * @throws Exception Throws an exception when the program malfunctions.
-   *                   Don't try to handle it, program should crash to
-   *                   prevent experiment data from being contaminated.
-   */
-  public static void main(String[] args) throws Exception {
-    UniversalNumberLine numline = new UniversalNumberLine(args[1], args[2], args[3], args[4]);
-    numline.run(args[0]);
-  }
 
   /**
    * Creates and displays a reminder message about the correct key presses.
@@ -144,7 +127,9 @@ public class UniversalNumberLine implements ActionListener {
    * @param cond    Condition
    * @param sess    Session number
    */
-  public UniversalNumberLine(String expFile, String sub, String cond, String sess) {
+  public UniversalNumberLine(String expFile, String sub, String cond, String sess,
+                             boolean isBounded, boolean isEstimation, int targetLow,
+                             int targetHigh, int leftBound, int rightBound) {
     experiment = expFile;
     subject = sub;
     condition = cond;
@@ -152,34 +137,37 @@ public class UniversalNumberLine implements ActionListener {
     trialType = 0;
     trialNum = 0;
 
+    this.isEstimationTask = isEstimation;
+    this.isBounded = isBounded;
+
+    this.targetLow = targetLow;
+    this.targetHigh = targetHigh;
+
+    this.leftBound = leftBound;
+    this.rightBound = rightBound;
+
     // Initializes an experiment instance with all the necessary information
     exp = new Experiment(expFile, sub, cond, sess);
-    exp.setWebEnabled(WEB_ENABLED);
-    if (exp.isWebEnabled()) {
-      exp.setWebCodeBase(WEB_DIR);
-
-      if (debug) {
-        System.out.println("-------------------");
-      }
-    }
   }
 
   /**
    * Runs the UniversalNumberLine experiment with the specified database file.
-   *
-   * @param dbFilePath Path to database file
    */
-  public void run(String dbFilePath) {
+  public void run() {
     // Create a new response object
     Response resp = exp.getResponse();
 
     Specification[] dbfile1;
     Specification[] stims;
     Specification[] fonts;
+
     SpecificationArrayProcess data1 = new SpecificationArrayProcess();
 
+    ClassLoader cl = this.getClass().getClassLoader();
+    URL dbFilePath = cl.getResource(experiment + "/infiles/dbfile_ut_0_1.txt");
+
     // Read in the database file
-    dbfile1 = data1.readFromURL(exp.getDBFile(dbFilePath));
+    dbfile1 = data1.readFromURL(dbFilePath);
 
     // BEGIN PARSING OF DATABASE FILE
     Experiment.practiceTrialFile = dbfile1[0].getParsedStringSpec(1);
@@ -243,11 +231,8 @@ public class UniversalNumberLine implements ActionListener {
     if (Experiment.isParamOn(isFractalFeedback)) {
       provideFractalFeedback = true;
       String determined = dbfile1[9].getParsedStringSpec(2);
-      if (Experiment.paramMatches(determined, "determined")) {
-        isFractalDetermined = true;
-      } else {
-        isFractalDetermined = false;
-      }
+
+      isFractalDetermined = Experiment.paramMatches(determined, "determined");
 
       fractalFrequency = dbfile1[9].getParsedIntSpec(3);
       fractalPresentTime = dbfile1[9].getParsedIntSpec(4);
@@ -279,7 +264,7 @@ public class UniversalNumberLine implements ActionListener {
 
     String isAnimationFeedback = dbfile1[10].getParsedStringSpec(1);
     isAnimationFeedback = isAnimationFeedback.toLowerCase();
-    String aniOutputString = "";
+    String aniOutputString;
 
     if (Experiment.isParamOn(isAnimationFeedback)) {
       provideAniFeedback = true;
@@ -308,7 +293,7 @@ public class UniversalNumberLine implements ActionListener {
     int windowSize = -1;
     double quantileThreshold = -1;
     double errorRateThreshold = -1;
-    int initDeadline = -1;
+    int initDeadline;
     int rtFreq = -1;
     int rtDuration = -1;
 
@@ -386,8 +371,9 @@ public class UniversalNumberLine implements ActionListener {
     int questionPointer = 0;
     int practiceQuestionPointer = 0;
     if (questionEnabled) {
-      questions = data1.readFromURL(exp.getURL(exp.getInfilesPath()
-          + dbfile1[12].getParsedStringSpec(7)));
+      String path = exp.getInfilesPath() + dbfile1[12].getParsedStringSpec(7);
+      URL url = cl.getResource(path);
+      questions = data1.readFromURL(url);
 
       questions = data1.randomize(questions);
 
@@ -421,8 +407,8 @@ public class UniversalNumberLine implements ActionListener {
     frame.setContentPane(startPanel);
     frame.setVisible(true);
 
-    String userResp = "";
-    String userRespVal = "";
+    String userResp;
+    String userRespVal;
 
     //  get array of usable font names
     fonts = data1.readFromURL(exp.getFontFile());
@@ -479,6 +465,7 @@ public class UniversalNumberLine implements ActionListener {
     getButtonMap("Left click", "Right click", leftValue, rightValue, frame);
 
     boolean __flag = false;
+
     for (trialType = trialType; trialType < 2; ++trialType) {
       if (trialType == 0) {
         __flag = true;
@@ -554,10 +541,12 @@ public class UniversalNumberLine implements ActionListener {
         int widthInterval = stims[trialNum].getParsedIntSpec(6);
         int height = stims[trialNum].getParsedIntSpec(7);
         int thickness = stims[trialNum].getParsedIntSpec(8);
+
         Unit startUnit = new Unit(stims[trialNum].getParsedStringSpec(9));
         Unit endUnit = new Unit(stims[trialNum].getParsedStringSpec(10));
-        Unit targetUnitLow = new Unit(stims[trialNum].getParsedStringSpec(11));
-        Unit targetUnitHigh = new Unit(stims[trialNum].getParsedStringSpec(12));
+
+        Unit targetUnitLow = new Unit(String.valueOf(targetLow));//new Unit(stims[trialNum].getParsedStringSpec(11));
+        Unit targetUnitHigh = new Unit(String.valueOf(targetHigh));//new Unit(stims[trialNum].getParsedStringSpec(12));
         Unit targetUnitInterval = new Unit(stims[trialNum].getParsedStringSpec(13));
 
         String startUnitFormat = stims[trialNum].getParsedStringSpec(14);
@@ -568,7 +557,7 @@ public class UniversalNumberLine implements ActionListener {
         targetUnitFormat = targetUnitFormat.toUpperCase();
 
         String isEstimateTaskStr = stims[trialNum].getParsedStringSpec(17).trim();
-        boolean isEstimateTask = Boolean.parseBoolean((isEstimateTaskStr));
+        boolean isEstimateTask = isEstimationTask;
 
         int estimateTime = 0;
         if (isEstimateTask) {
@@ -591,12 +580,8 @@ public class UniversalNumberLine implements ActionListener {
         // location 0 in the array determines if the handle can move past the left bound
         // location 1 determines the right bound
         boolean[] keepWithinBounds = new boolean[2];
-        String left = stims[trialNum].getParsedStringSpec(25);
-        keepWithinBounds[0] = Boolean.parseBoolean(left);
-
-        String right = stims[trialNum].getParsedStringSpec(26);
-        keepWithinBounds[1] = Boolean.parseBoolean(right);
-
+        keepWithinBounds[0] = isBounded;
+        keepWithinBounds[1] = isBounded;
 
         //Update the leftMarginPanel in each trial
         int leftMargin = UniversalNumberLine.getRandomLeftMargin(leftMarginLow,
@@ -629,6 +614,7 @@ public class UniversalNumberLine implements ActionListener {
         double questionAffectValue = -1.0;
         BlankPanel questionPanel = new BlankPanel(imColor);
         String questionPosNeg = "";
+
         if (questionEnabled) {
           if (trialType == 1) {
             if (questionPointer >= questions.length) {
@@ -1148,15 +1134,6 @@ public class UniversalNumberLine implements ActionListener {
   private static int getRandomLeftMargin(int low, int high, int interval) {
     randGen.setIntervalRange(low, high, interval);
     return randGen.drawWithInterval();
-  }
-
-  private void getScreenEllispe() {
-    Toolkit tk = Toolkit.getDefaultToolkit();
-    Dimension d = tk.getScreenSize();
-    int height;
-    int width;
-    height = d.height;
-    width = d.width;
   }
 
   /**

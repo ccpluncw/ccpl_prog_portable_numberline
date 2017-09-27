@@ -1,0 +1,22 @@
+instructions:   instruct.txt
+
+prac_trial:     prac_bounded_prod.txt
+exp_trial:      exp_bounded_prod.txt
+rest_num:       86
+
+fonts:          fontNames.txt
+
+# RGB value of the number line normally
+base_red:       255
+base_green:     0
+base_blue:      0
+
+# RGB value of the number line when dragged
+drag_red:       255
+drag_blue:      0
+drag_green:     0
+
+# RGB values of the number line handle
+handle_red:     211
+handle_blue:    211
+handle_green:   211

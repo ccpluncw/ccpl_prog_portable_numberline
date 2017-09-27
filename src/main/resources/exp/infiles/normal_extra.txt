@@ -1,0 +1,8 @@
+<font size="6"><center>Important</center><br><br></font>
+<font size="5"><ul width="500px">
+<li>Remember, please hit the spacebar once you are done examining the timeline.</li><br>
+<br><br>
+<li>If you have any questions, please ask the experimenter now.</li><br>
+<li>Please put on your headphones.</li>
+</ul>
+</font>

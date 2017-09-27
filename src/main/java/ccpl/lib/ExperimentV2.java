@@ -79,7 +79,7 @@ public class ExperimentV2 implements ExpInterface {
     response.setFrame(frame);
     this.DATA_FILE_NAME = "/p" + this.subject + "s" + this.session + ".dat";
     this.REL_DATA_FILE = this.experiment + "/data/";
-    this.INFILES_PATH = this.experiment + "/infiles/";
+    this.INFILES_PATH = this.experiment + "/exp/infiles/";
     DB_FILE_PATH = "";
   }
 
