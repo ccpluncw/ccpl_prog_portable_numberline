@@ -12,5 +12,7 @@ class DatabaseFileReaderKtTest {
     val bundle = ccpl.numberline.readDbFile(url)
 
     assertEquals(14, bundle.size)
+    assertEquals(211, bundle.getAsInt("handle_red"))
+    assertEquals("prac_bounded_prod.txt", bundle.getAsString("prac_trial"))
   }
 }

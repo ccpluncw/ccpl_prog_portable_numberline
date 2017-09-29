@@ -17,6 +17,6 @@ drag_blue:      0
 drag_green:     0
 
 # RGB values of the number line handle
-handle_red:     211
+handle_red:     211 # This is a test of inline comments
 handle_blue:    211
 handle_green:   211

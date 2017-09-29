@@ -5,6 +5,7 @@ import java.net.URL
 import kotlin.streams.toList
 
 val delimiter = ":"
+val commentCharacter = '#'
 
 fun readDbFile(path: URL): Bundle {
   val dbfileValues = Bundle()
@@ -13,7 +14,8 @@ fun readDbFile(path: URL): Bundle {
 
   val linesToParse = bis.lines()
       .filter{ line -> line.isNotEmpty() }
-      .filter { line -> line[0] != '#' }
+      .filter { line -> line[0] != commentCharacter }
+      .map { line -> line.split(commentCharacter)[0] }
       .toList()
 
   linesToParse.forEach { line ->

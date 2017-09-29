@@ -20,6 +20,6 @@ class Bundle {
 
   fun getAsString(key: String) = get(key) as String
 
-  fun getAsInt(key: String) = get(key) as Int
+  fun getAsInt(key: String) = Integer.parseInt(getAsString(key))
 
 }
