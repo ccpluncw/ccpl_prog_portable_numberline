@@ -53,7 +53,7 @@ import javax.swing.WindowConstants;
  */
 public class UniversalNumberLine implements ActionListener {
 
-  private final boolean debug = false;
+  private final boolean DEBUG = false;
 
   private Experiment exp;
   private final String experiment;
@@ -185,17 +185,17 @@ public class UniversalNumberLine implements ActionListener {
     int restNumber = dbfile1[4].getParsedIntSpec(1);
     // int rightMargin = dbfile1[5].getParsedIntSpec(1);
 
-    int baseR = dbfile1[5].getParsedIntSpec(1);
-    int baseG = dbfile1[5].getParsedIntSpec(2);
-    int baseB = dbfile1[5].getParsedIntSpec(3);
+    final int baseR = dbfile1[5].getParsedIntSpec(1);
+    final int baseG = dbfile1[5].getParsedIntSpec(2);
+    final int baseB = dbfile1[5].getParsedIntSpec(3);
 
-    int dragR = dbfile1[6].getParsedIntSpec(1);
-    int dragG = dbfile1[6].getParsedIntSpec(2);
-    int dragB = dbfile1[6].getParsedIntSpec(3);
+    final int dragR = dbfile1[6].getParsedIntSpec(1);
+    final int dragG = dbfile1[6].getParsedIntSpec(2);
+    final int dragB = dbfile1[6].getParsedIntSpec(3);
 
-    int handleR = dbfile1[7].getParsedIntSpec(1);
-    int handleG = dbfile1[7].getParsedIntSpec(2);
-    int handleB = dbfile1[7].getParsedIntSpec(3);
+    final int handleR = dbfile1[7].getParsedIntSpec(1);
+    final int handleG = dbfile1[7].getParsedIntSpec(2);
+    final int handleB = dbfile1[7].getParsedIntSpec(3);
 
     String isImageFeedback = dbfile1[8].getParsedStringSpec(1);
 
@@ -214,8 +214,8 @@ public class UniversalNumberLine implements ActionListener {
     int fractalFrequency = 1;
     int fractalTransitionTime = 1000;
     int fractalPresentTime = 1000;
-    String fractalType = null;
-    String fractalTransitionType = null;
+    String fractalType;
+    String fractalTransitionType;
 
     int imageHoldTime = 0;
     isImageFeedback = isImageFeedback.toLowerCase();
@@ -227,7 +227,7 @@ public class UniversalNumberLine implements ActionListener {
 
     String isFractalFeedback = dbfile1[9].getParsedStringSpec(1);
     isFractalFeedback = isFractalFeedback.toLowerCase();
-    String fractalOutputString = "";
+    String fractalOutputString;
     if (Experiment.isParamOn(isFractalFeedback)) {
       provideFractalFeedback = true;
       String determined = dbfile1[9].getParsedStringSpec(2);
@@ -387,9 +387,9 @@ public class UniversalNumberLine implements ActionListener {
 
     //----prepare frame---------
     Color imColor = Color.BLACK;
-    BlankPanel startPanel = new BlankPanel(imColor);
+    final BlankPanel startPanel = new BlankPanel(imColor);
     imPanel = new BlankPanel(imColor);
-    BlankPanel leftMarginPanel = new BlankPanel(imColor);
+    final BlankPanel leftMarginPanel = new BlankPanel(imColor);
     // BlankPanel rightMarginPanel = new BlankPanel(imColor);
     gridPanel = new BlankPanel(imColor);
     BlankPanel fixationPanel = new BlankPanel(imColor);
@@ -464,11 +464,12 @@ public class UniversalNumberLine implements ActionListener {
 
     getButtonMap("Left click", "Right click", leftValue, rightValue, frame);
 
-    boolean __flag = false;
+    boolean flag = false;
 
-    for (trialType = trialType; trialType < 2; ++trialType) {
+    for (; trialType < 2; ++trialType) {
+
       if (trialType == 0) {
-        __flag = true;
+        flag = true;
         stims = data1.readFromURL(exp.getPracticeFile());
         stims = data1.randomize(stims);
         Experiment.prepareToStartPractice(frame);
@@ -505,17 +506,17 @@ public class UniversalNumberLine implements ActionListener {
           frame.validate();
         }
 
-        if (__flag) {
+        if (flag) {
           // Uncomment for old button map.
           //resp.getMouseMap(leftValue, rightValue, frame);
           // Display new button map
           getButtonMap("Left click", "Right click", leftValue, rightValue, frame);
-          __flag = false;
+          flag = false;
         }
         frame.hideCursor();
       }
 
-      int trialLength = stims.length;
+      final int trialLength = stims.length;
       totalTrials = stims.length;
       frame.requestFocus();
 
@@ -531,23 +532,24 @@ public class UniversalNumberLine implements ActionListener {
 
       for (trialNum = 0; trialNum < trialLength; trialNum++) {
         frame.showCursor();
-        long reactTime = 0;
+        long reactTime;
         long textRt = 0;
-        int leftMarginLow = stims[trialNum].getParsedIntSpec(1);
-        int leftMarginHigh = stims[trialNum].getParsedIntSpec(2);
-        int leftMarginInterval = stims[trialNum].getParsedIntSpec(3);
-        int widthLow = stims[trialNum].getParsedIntSpec(4);
-        int widthHigh = stims[trialNum].getParsedIntSpec(5);
-        int widthInterval = stims[trialNum].getParsedIntSpec(6);
-        int height = stims[trialNum].getParsedIntSpec(7);
-        int thickness = stims[trialNum].getParsedIntSpec(8);
 
-        Unit startUnit = new Unit(stims[trialNum].getParsedStringSpec(9));
-        Unit endUnit = new Unit(stims[trialNum].getParsedStringSpec(10));
+        final int leftMarginLow = stims[trialNum].getParsedIntSpec(1);
+        final int leftMarginHigh = stims[trialNum].getParsedIntSpec(2);
+        final int leftMarginInterval = stims[trialNum].getParsedIntSpec(3);
+        final int widthLow = stims[trialNum].getParsedIntSpec(4);
+        final int widthHigh = stims[trialNum].getParsedIntSpec(5);
+        final int widthInterval = stims[trialNum].getParsedIntSpec(6);
+        final int height = stims[trialNum].getParsedIntSpec(7);
+        final int thickness = stims[trialNum].getParsedIntSpec(8);
 
-        Unit targetUnitLow = new Unit(String.valueOf(targetLow));//new Unit(stims[trialNum].getParsedStringSpec(11));
-        Unit targetUnitHigh = new Unit(String.valueOf(targetHigh));//new Unit(stims[trialNum].getParsedStringSpec(12));
-        Unit targetUnitInterval = new Unit(stims[trialNum].getParsedStringSpec(13));
+        final Unit defaultStartUnit = new Unit(stims[trialNum].getParsedStringSpec(9));
+        final Unit defaultEndUnit = new Unit(stims[trialNum].getParsedStringSpec(10));
+
+        final Unit targetUnitLow = new Unit(String.valueOf(targetLow));
+        final Unit targetUnitHigh = new Unit(String.valueOf(targetHigh));
+        final Unit targetUnitInterval = new Unit(stims[trialNum].getParsedStringSpec(13));
 
         String startUnitFormat = stims[trialNum].getParsedStringSpec(14);
         startUnitFormat = startUnitFormat.toUpperCase();
@@ -556,7 +558,6 @@ public class UniversalNumberLine implements ActionListener {
         String targetUnitFormat = stims[trialNum].getParsedStringSpec(16);
         targetUnitFormat = targetUnitFormat.toUpperCase();
 
-        String isEstimateTaskStr = stims[trialNum].getParsedStringSpec(17).trim();
         boolean isEstimateTask = isEstimationTask;
 
         int estimateTime = 0;
@@ -566,10 +567,10 @@ public class UniversalNumberLine implements ActionListener {
 
         String estTargetFormat = stims[trialNum].getParsedStringSpec(19);
 
-        String start = stims[trialNum].getParsedStringSpec(20);
-        String end = stims[trialNum].getParsedStringSpec(21);
-        String target = stims[trialNum].getParsedStringSpec(22);
-        String handle = stims[trialNum].getParsedStringSpec(23);
+        final String start = stims[trialNum].getParsedStringSpec(20);
+        final String end = stims[trialNum].getParsedStringSpec(21);
+        final String target = stims[trialNum].getParsedStringSpec(22);
+        final String handle = stims[trialNum].getParsedStringSpec(23);
 
         boolean[]  showFullBaseScale = new boolean[4];
         showFullBaseScale[0] = Boolean.parseBoolean(start);
@@ -602,9 +603,11 @@ public class UniversalNumberLine implements ActionListener {
         Unit randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
 
 
-        startUnit = reduceUnit(startUnitFormat, startUnit);
-        endUnit = reduceUnit(endUnitFormat, endUnit);
+        Unit startUnit = reduceUnit(startUnitFormat, defaultStartUnit);
+        Unit endUnit = reduceUnit(endUnitFormat, defaultEndUnit);
+
         randTarget = reduceUnit(targetUnitFormat, randTarget);
+
         String handleLabel = "";
 
         String myFontName = Experiment.getRandomFontName(fontNames);
@@ -635,8 +638,8 @@ public class UniversalNumberLine implements ActionListener {
             practiceQuestionPointer++;
           }
 
-          int fsize = dbfile1[12].getParsedIntSpec(5);
-          int questionWidth = dbfile1[12].getParsedIntSpec(6);
+          final int fsize = dbfile1[12].getParsedIntSpec(5);
+          final int questionWidth = dbfile1[12].getParsedIntSpec(6);
 
           int fontColorR = dbfile1[12].getParsedIntSpec(2);
           int fontColorG = dbfile1[12].getParsedIntSpec(3);
@@ -679,7 +682,7 @@ public class UniversalNumberLine implements ActionListener {
             showFullBaseScale, handleLabel, unitLabel);
 
         //show question if enabled and gather appropriate response
-        int mouseResponse = -1;
+        int mouseResponse;
         long mouseRt = -1;
         String mouseResponseLabel = "";
         String mouseResponseCorrect = "";
@@ -717,7 +720,7 @@ public class UniversalNumberLine implements ActionListener {
           if (fixedOrWord.equalsIgnoreCase("word")) {
             StringTokenizer tk = new StringTokenizer(initQuestion, " ");
             while (tk.hasMoreTokens()) {
-              String tempToken = tk.nextToken();
+              tk.nextToken();
               wordCount++;
             }
 
@@ -752,7 +755,7 @@ public class UniversalNumberLine implements ActionListener {
         //end fixation
 
         //show numline and gather response
-        UniversalNumberLine.presentTrial();
+        presentTrial();
 
         if (!isEstimateTask) {
           frame.showCursor();
@@ -765,7 +768,8 @@ public class UniversalNumberLine implements ActionListener {
           frame.setContentPane(endPanel);
           userResp = df.format(numLine.getUnitLength());
           userRespVal = userResp;
-          if (debug) {
+
+          if (DEBUG) {
             System.out.println(userRespVal);
           }
 
@@ -825,7 +829,7 @@ public class UniversalNumberLine implements ActionListener {
         Feedback.loadFeedbackResource(getFeedbackResource());
 
 
-        double numLineUnitErr = 0.0;
+        double numLineUnitErr;
         if (!isEstimateTask) {
           numLineUnitErr = numLine.getUnitError(true);
         } else {
@@ -838,7 +842,7 @@ public class UniversalNumberLine implements ActionListener {
         if (rtPressure != null && trialType == 1) { //Experiment trials only
           rtPressure.add((int) reactTime, true);
           rtPressure.checkResponseTime(rtFreq, rtDuration);
-          rtBeep = new Boolean(rtPressure.isRTBeep()).toString();
+          rtBeep = Boolean.toString(rtPressure.isRTBeep());
           rtDeadline = rtPressure.getDeadline();
         }
 
@@ -1021,7 +1025,6 @@ public class UniversalNumberLine implements ActionListener {
 
     gb.setConstraints(okbutton, c);
 
-
     j.add(okbutton);
 
     return j;
@@ -1139,7 +1142,7 @@ public class UniversalNumberLine implements ActionListener {
   /**
    * Present the experiment trial.
    */
-  public static void presentTrial() {
+  private void presentTrial() {
     //gridPanel.removeAll(); //Clears out all JComponents in panel before adding any new ones
     //gridPanel.validate();
     //gridPanel.add(new JLabel()); //Top row of gridpanel is blank
@@ -1250,7 +1253,6 @@ public class UniversalNumberLine implements ActionListener {
 
     frame.hideCursor(0, 0);
   }
-
 
   private JLabel getLabel(String message, Font font) {
     JLabel newLabel = new JLabel(message);
