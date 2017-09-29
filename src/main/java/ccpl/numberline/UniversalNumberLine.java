@@ -364,7 +364,7 @@ public class UniversalNumberLine implements ActionListener {
     }
 
     data1.writeToURL(Experiment.getCGI(), dataFile,
-        UniversalNumberLine.createOutputHeader(questionEnabled, responseEnabled));
+        createOutputHeader(questionEnabled, responseEnabled));
 
     Specification[] questions = null;
     Specification[] practiceQuestions = null;
@@ -585,8 +585,7 @@ public class UniversalNumberLine implements ActionListener {
         keepWithinBounds[1] = isBounded;
 
         //Update the leftMarginPanel in each trial
-        int leftMargin = UniversalNumberLine.getRandomLeftMargin(leftMarginLow,
-            leftMarginHigh, leftMarginInterval);
+        int leftMargin = getRandomLeftMargin(leftMarginLow, leftMarginHigh, leftMarginInterval);
 
         paneld = imPanel.getSize();
         paneld.width = leftMargin;
@@ -1054,7 +1053,7 @@ public class UniversalNumberLine implements ActionListener {
    * @param questionResponse  Does the experiment has question responses
    * @return String of column headers
    */
-  private static String createOutputHeader(boolean isQuestionEnabled, boolean questionResponse) {
+  private String createOutputHeader(boolean isQuestionEnabled, boolean questionResponse) {
     StringBuilder sbuf = new StringBuilder();
     sbuf.append("exp\t");
     sbuf.append("sn\t");
@@ -1134,7 +1133,7 @@ public class UniversalNumberLine implements ActionListener {
    * @param interval Interval
    * @return Random value
    */
-  private static int getRandomLeftMargin(int low, int high, int interval) {
+  private int getRandomLeftMargin(int low, int high, int interval) {
     randGen.setIntervalRange(low, high, interval);
     return randGen.drawWithInterval();
   }
@@ -1161,7 +1160,7 @@ public class UniversalNumberLine implements ActionListener {
    * @param unit       Unit value
    * @return New unit object in the reduced form
    */
-  private static Unit reduceUnit(String unitFormat, Unit unit) {
+  private Unit reduceUnit(String unitFormat, Unit unit) {
     Unit reducedUnit = unit;
     if (unitFormat.matches("^.*[Ll][Cc][Dd]$")) {
       String[] fractStr = new String[2];
