@@ -8,7 +8,6 @@ import ccpl.lib.Fixation;
 import ccpl.lib.Fraction;
 import ccpl.lib.Mask;
 import ccpl.lib.NumberLine;
-import ccpl.lib.RTPressure;
 import ccpl.lib.RandomIntGenerator;
 import ccpl.lib.Response;
 import ccpl.lib.Specification;
@@ -65,7 +64,6 @@ public class UniversalNumberLine implements ActionListener {
   private int totalTrials;
   private static Mask lineMask = null;
   private Fixation fixation;
-  private RTPressure rtPressure;
 
   private boolean isEstimationTask;
   private boolean isBounded;
@@ -75,7 +73,6 @@ public class UniversalNumberLine implements ActionListener {
 
   private int targetLow;
   private int targetHigh;
-
 
   /**
    * Implemented method from ActionListener.
@@ -288,25 +285,6 @@ public class UniversalNumberLine implements ActionListener {
       maskTime = dbfile1[11].getParsedIntSpec(3);
       fixationTime = dbfile1[11].getParsedIntSpec(4);
     }
-
-    // RT Presurre Setup
-    int windowSize = -1;
-    double quantileThreshold = -1;
-    double errorRateThreshold = -1;
-    int initDeadline;
-    int rtFreq = -1;
-    int rtDuration = -1;
-
-    if (Experiment.isParamOn(dbfile1[14].getParsedStringSpec(1))) {
-      windowSize = dbfile1[14].getParsedIntSpec(2);
-      quantileThreshold = dbfile1[14].getParsedDoubleSpec(3);
-      errorRateThreshold = dbfile1[14].getParsedDoubleSpec(4);
-      initDeadline = dbfile1[14].getParsedIntSpec(5);
-      rtFreq = dbfile1[14].getParsedIntSpec(6);
-      rtDuration = dbfile1[14].getParsedIntSpec(7);
-      rtPressure = new RTPressure(windowSize, quantileThreshold, errorRateThreshold, initDeadline);
-    }
-
     /* END PARSING OF DATABASE FILE */
 
     Color baseColor = new Color(baseR, baseG, baseB);
@@ -519,16 +497,6 @@ public class UniversalNumberLine implements ActionListener {
       final int trialLength = stims.length;
       totalTrials = stims.length;
       frame.requestFocus();
-
-      if (trialType == 1 && rtPressure != null) {
-        //rtPressure.showHeadphoneDialog();
-
-        // Override the headphone flag.
-        // This is done because the showHeadphoneDialog() has  been removed from this
-        // iteration of the experiment, and the showHeadphoneDialog() is required before
-        // rt pressure will be enabled.
-        rtPressure.overrideHeadphoneFlag(true);
-      }
 
       for (trialNum = 0; trialNum < trialLength; trialNum++) {
         frame.showCursor();
@@ -835,16 +803,6 @@ public class UniversalNumberLine implements ActionListener {
           numLineUnitErr = numLine.getUnitError(true, userResp);
         }
 
-        // reactTime Pressure implementation
-        String rtBeep = "N/A";
-        int rtDeadline = 0;
-        if (rtPressure != null && trialType == 1) { //Experiment trials only
-          rtPressure.add((int) reactTime, true);
-          rtPressure.checkResponseTime(rtFreq, rtDuration);
-          rtBeep = Boolean.toString(rtPressure.isRTBeep());
-          rtDeadline = rtPressure.getDeadline();
-        }
-
         outString.append(experiment).append("\t");
         outString.append(subject).append("\t");
         outString.append(trialType).append("\t");
@@ -907,32 +865,6 @@ public class UniversalNumberLine implements ActionListener {
             outString.append(mouseResponseCorrect);
             outString.append("\t");
           }
-        }
-
-        if (rtPressure != null) {
-          outString.append("TRUE");
-          outString.append("\t");
-          outString.append(windowSize);
-          outString.append("\t");
-          outString.append(quantileThreshold);
-          outString.append("\t");
-          outString.append(errorRateThreshold);
-          outString.append("\t");
-          outString.append(rtBeep);
-          outString.append("\t");
-          outString.append(rtDeadline);
-        } else {
-          outString.append("FALSE");
-          outString.append("\t");
-          outString.append("NA");
-          outString.append("\t");
-          outString.append("NA");
-          outString.append("\t");
-          outString.append("NA");
-          outString.append("\t");
-          outString.append(rtBeep);
-          outString.append("\t");
-          outString.append("NA");
         }
 
         String outStringTmp = outString.toString().replaceAll("true", "TRUE");
@@ -1112,15 +1044,6 @@ public class UniversalNumberLine implements ActionListener {
         sbuf.append("questionCorrect\t");
       }
     }
-
-
-    sbuf.append("rtPressure\t");
-    sbuf.append("windowSize\t");
-    sbuf.append("quantileThres\t");
-    sbuf.append("errorRateThres\t");
-    sbuf.append("rtBeep\t");
-    sbuf.append("rtDeadline");
-
 
     return sbuf.toString();
   }
