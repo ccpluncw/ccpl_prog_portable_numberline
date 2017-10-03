@@ -194,19 +194,9 @@ public class UniversalNumberLine implements ActionListener {
     final int handleG = dbfile1[7].getParsedIntSpec(2);
     final int handleB = dbfile1[7].getParsedIntSpec(3);
 
-    String isImageFeedback = dbfile1[8].getParsedStringSpec(1);
-
     boolean provideAniFeedback = false;
     boolean provideImageFeedback = false;
     boolean provideFractalFeedback = false;
-
-    int imageHoldTime = 0;
-    isImageFeedback = isImageFeedback.toLowerCase();
-
-    if (Experiment.isParamOn(isImageFeedback)) {
-      imageHoldTime = dbfile1[8].getParsedIntSpec(2);
-      provideImageFeedback = true;
-    }
 
     boolean isMask = false;
 
@@ -245,8 +235,6 @@ public class UniversalNumberLine implements ActionListener {
 
     // TODO: Fix this to handle none of this feedback
     Feedback.setFeedback(provideImageFeedback, provideFractalFeedback, provideAniFeedback);
-    Feedback.initImageFeedback(UniversalNumberLine.class
-        .getResourceAsStream("/resources/images.list"), imageHoldTime);
 
     // Set up data data file
     URL dataFile = exp.getDataFile();
@@ -719,8 +707,6 @@ public class UniversalNumberLine implements ActionListener {
         }
 
         Feedback.setNextFeedback(trialType, trialNum, totalTrials);
-        Feedback.loadFeedbackResource(getFeedbackResource());
-
 
         double numLineUnitErr;
         if (!isEstimateTask) {
@@ -770,7 +756,6 @@ public class UniversalNumberLine implements ActionListener {
         outString.append(estimateTime).append("\t");
         outString.append(reactTime).append("\t");
         outString.append(textRt).append("\t");
-        outString.append(isImageFeedback).append("\t");
         outString.append(Feedback.getFeedbackType()).append("\t");
         if (questionEnabled) {
           outString.append(initQuestion);
@@ -886,23 +871,6 @@ public class UniversalNumberLine implements ActionListener {
   }
 
   /**
-   * Returns a URL object containing the Feedback Resource's path.
-   *
-   * @return URL object containing the feedback resource's path.
-   */
-  private static URL getFeedbackResource() {
-    URL resource = null;
-    String resourceName = Feedback.getCurrentResourceName();
-    String feedbackType = Feedback.getFeedbackType();
-
-    if (feedbackType.equals("IMAGE")) {
-      resource = UniversalNumberLine.class.getResource("/resources/images/" + resourceName);
-    }
-
-    return resource;
-  }
-
-  /**
    * Creates the OutputHeader for the data file.
    *
    * @param isQuestionEnabled Does the experiment ask questions
@@ -951,7 +919,6 @@ public class UniversalNumberLine implements ActionListener {
     sbuf.append("estStimTime\t");
     sbuf.append("numLineRT\t");
     sbuf.append("textRT\t");
-    sbuf.append("imgFeedback\t");
     sbuf.append("feedbackType\t");
 
     if (isQuestionEnabled) {
