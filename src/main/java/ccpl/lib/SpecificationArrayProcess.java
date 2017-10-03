@@ -2,7 +2,6 @@ package ccpl.lib;
 
 import java.io.*;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -43,7 +42,7 @@ public class SpecificationArrayProcess {
       stims.add(new Specification());
       isRead = stims.get(i).readData(in);
       ++i;
-      if (isRead != false) {
+      if (isRead) {
         if (stims.get(i - 1).isEmpty()) {
           --i;
           stims.remove(i);
@@ -62,7 +61,7 @@ public class SpecificationArrayProcess {
     return stimsCpy;
   }
 
-  public Specification[] readFromFile(String filename, int arraySize) {
+  public Specification[] readFromFile(String filename) {
     Specification[] specs = null;
     try {
       BufferedReader in = new BufferedReader(new
@@ -75,10 +74,6 @@ public class SpecificationArrayProcess {
       //System.exit(1);
     }
     return specs;
-  }
-
-  public Specification[] readFromFile(String filename) {
-    return readFromFile(filename, 0);
   }
 
   public Specification[] readFromURL(URL fileURL) {

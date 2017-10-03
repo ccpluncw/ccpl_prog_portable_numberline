@@ -64,12 +64,6 @@ public class Fraction {
         int denom = f1.denominator * f2.denominator;
         return new Fraction(num, denom);
     }
-    
-    public static Fraction multiply(Fraction f1, Fraction f2) {
-        int num = f1.numerator * f2.numerator;
-        int denom = f1.denominator * f2.denominator;
-        return new Fraction(num, denom);
-    }
 
     public static int getCommonDenom(Fraction f1, Fraction f2){
         int gcd1;
@@ -82,8 +76,8 @@ public class Fraction {
 
     public static int getCommonDenom(Fraction[] fractions){
         Fraction currFract = new Fraction();
-        for(int i=0;i < fractions.length;i++){
-            currFract = new Fraction (1, getCommonDenom(currFract, fractions[i]));
+        for (Fraction fraction : fractions) {
+            currFract = new Fraction(1, getCommonDenom(currFract, fraction));
         }
         return currFract.denominator;
     }
@@ -104,10 +98,6 @@ public class Fraction {
 
     public FractionPanel getFractionPanel(Font aFont, Color aColor){
         return new FractionPanel(aFont, aColor);
-    }
-
-    public FractionPanel getFractionPanel(){
-        return getFractionPanel(null, null);
     }
 
     public class FractionPanel extends JPanel {

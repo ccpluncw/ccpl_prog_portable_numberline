@@ -35,12 +35,7 @@ public class RandomIntGenerator
        dInterval = intv;
    }
 
-   public void setRange(int l, int h){
-        low = l;
-        high = h;
-   }
-
-   public void setIntervalRange(int l ,int h, int intv){
+  public void setIntervalRange(int l ,int h, int intv){
        low = l;
        high = h;
        interval = intv;
@@ -57,17 +52,15 @@ public class RandomIntGenerator
       @return a random integer
    */
    public int draw(){
-      int r = low + (int)((high - low + 1) * nextRandom());
-      return r;
+     return low + (int)((high - low + 1) * nextRandom());
    }
 
    public int drawWithInterval(){
-       int r1 = (int) ((high-low + interval)/interval);
+       int r1 = (high-low + interval)/interval;
        int r2 = (int) (r1 * nextRandom());
        int r3 = r2*interval;
-       int r4 = r3+low;
-       //System.out.println(r1 + " " + r2 + " " + r3 + " " + r4);
-       return (r4);
+     //System.out.println(r1 + " " + r2 + " " + r3 + " " + r4);
+       return (r3+low);
    }
 
    public double drawDoubleWithInterval(){

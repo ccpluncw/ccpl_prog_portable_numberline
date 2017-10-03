@@ -5,14 +5,12 @@ import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -59,12 +57,7 @@ public class NumPadResponse {
     public boolean validateResponse(String response){
         return fields.isValidResponse(response);
     }
-    
-    public void setActiveField(String text)
-    {
-        fields.setActiveFieldIdx(text);
-    }
-    
+
     private class VirtualKeyboard{
         private JPanel keyboardPanel;
         private JButton[] buttons;
@@ -86,7 +79,7 @@ public class NumPadResponse {
             // TODO: Fix this
             ClassLoader cl = this.getClass().getClassLoader();
             URL leftArrow = cl.getResource(APP_IMG_DIR + "left_arrow.gif");
-            URL rightArrow = cl.getResource(APP_IMG_DIR + "images/right_arrow.gif");
+            URL rightArrow = cl.getResource(APP_IMG_DIR + "right_arrow.gif");
 
             buttons[10] = new JButton(new ImageIcon(leftArrow));
             buttons[10].setToolTipText("Previous Field");
@@ -111,20 +104,22 @@ public class NumPadResponse {
         }
 
         private void setKeyboardHandler(){
-             keyBoardHandler = new ActionListener (){
-                public void actionPerformed (ActionEvent ae){
-                    String command = ae.getActionCommand();
-                    if (command.equals("N")) {
-                        fields.setNextFieldAsActive();
-                    } else if (command.equals("P")) {
-                        fields.setPrevFieldAsActive();
-                    } else {
-                        fields.setActiveFieldIdx(command);
-                        fields.setNextFieldAsActive();
-			keyboardPanel.requestFocus();
-                    }
-                }
-            };
+             keyBoardHandler = ae -> {
+                 String command = ae.getActionCommand();
+                 switch (command) {
+                     case "N":
+                         fields.setNextFieldAsActive();
+                         break;
+                     case "P":
+                         fields.setPrevFieldAsActive();
+                         break;
+                     default:
+                         fields.setActiveFieldIdx(command);
+                         fields.setNextFieldAsActive();
+                         keyboardPanel.requestFocus();
+                         break;
+                 }
+             };
         }
 
     }
@@ -141,7 +136,7 @@ public class NumPadResponse {
         public ResponseFields(String format){
             responsePanel = new JPanel();
             //responsePanel.setBackground(Color.BLACK);
-            responseFields = new ArrayList<JTextField>();
+            responseFields = new ArrayList<>();
             activeFieldIdx = 0;
             fieldFormat = new FieldFormat(format);
             createPanel();

@@ -20,10 +20,6 @@ public class Specification {
     return line;
   }
 
-  public void writeData(PrintWriter out) throws IOException {
-    out.println(allSpecs);
-  }
-
   public boolean readData(BufferedReader in) throws IOException {
     if ((allSpecs = in.readLine()) != null) {
       allSpecs = stripComments(allSpecs);
@@ -31,10 +27,6 @@ public class Specification {
     } else {
       return false;
     }
-  }
-
-  public void print() {
-    System.out.println(allSpecs);
   }
 
   public boolean isEmpty() {
@@ -68,7 +60,7 @@ public class Specification {
   public int getParsedIntSpec(int stringPosition) {
     int i;
     int out = 0;
-    String outString = new String();
+    String outString = "";
 
     StringTokenizer t = new StringTokenizer(allSpecs, "\t");
 
@@ -82,7 +74,7 @@ public class Specification {
   public double getParsedDoubleSpec(int stringPosition) {
     int i;
     double out = 0.0;
-    String outString = new String();
+    String outString = "";
 
     StringTokenizer t = new StringTokenizer(allSpecs, "\t");
 
@@ -95,15 +87,14 @@ public class Specification {
 
   public char getParsedCharSpec(int stringPosition) {
     int i;
-    String outString = new String();
+    String outString = "";
 
     StringTokenizer t = new StringTokenizer(allSpecs, "\t");
 
     for (i = 0; i < stringPosition; i++) {
       outString = t.nextToken();
     }
-    char outChar = outString.charAt(0);
-    return outChar;
+    return outString.charAt(0);
   }
 
   /***			This returns the entire string, unparsed.

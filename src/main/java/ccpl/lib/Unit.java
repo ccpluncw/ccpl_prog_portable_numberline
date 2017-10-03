@@ -65,28 +65,6 @@ public class Unit {
         return TYPE;
     }
 
-
-    public static String getRegex(Unit aUnit){
-        String regex = "";
-        switch(aUnit.getType()){
-            case INT:
-                regex = intRegex;
-                break;
-            case FRACT:
-                regex = fractRegex;
-                break;
-            case ODDS:
-                regex = oddRegex;
-                break;
-            case DECI:
-                regex = deciRegex;
-                break;
-            default:
-                System.err.println("Invalid unit type: " + aUnit.getValue());
-        }
-        return regex;
-    }
-    
     public static Unit getRandomUnit(Unit low, Unit high, Unit interval){
         RandomIntGenerator randGen = new RandomIntGenerator();
         String targetUnit = "";
@@ -120,7 +98,7 @@ public class Unit {
                         fract = parseUnits[i].getValue().split("in");
                         matched = true;
                     }
-                    if(matched == true){
+                    if(matched){
                         try{
                             targetFracts[i] = new Fraction(Integer.parseInt(fract[0].trim()), Integer.parseInt(fract[1].trim()));
                         }catch(NumberFormatException e){
@@ -138,8 +116,7 @@ public class Unit {
                     for(int i=0;i<3;i++){
                         if(targetFracts[i].getDenominator() != commonDenom){
                             int num = targetFracts[i].getNumerator() * commonDenom/targetFracts[i].getDenominator();
-                            int denom = commonDenom;
-                            targetFracts[i] = new Fraction(num, denom);
+                            targetFracts[i] = new Fraction(num, commonDenom);
                         }
                     }
                     if(targetFracts[2].toDouble() > (targetFracts[1].toDouble() - targetFracts[0].toDouble())){
@@ -181,12 +158,5 @@ public class Unit {
     public JLabel getLabel(Font labelFont){
         return getLabel(VALUE, labelFont, Color.LIGHT_GRAY);
     }
-    
-    public JLabel getLabel(Font labelFont, Color foreground){
-        return getLabel(VALUE, labelFont, foreground);
-    }
 
-    public JLabel getWordLabel(String word, Font labelFont, Color foreground){
-        return getLabel(word, labelFont, foreground);
-    }
 }

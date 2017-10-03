@@ -9,7 +9,6 @@ import java.awt.geom.Point2D;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
@@ -283,7 +282,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 */
 
     linepad = lineThickness;
-    widthOffset = (int) (basePaddingLeft - startX);
+    widthOffset = basePaddingLeft - startX;
 /*
         if(!isEstimateTask){
             isHandleDragged = false;
@@ -1053,7 +1052,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public double getUnitError(boolean inPercent) {
     double error = 0.0;
-    if (inPercent == true) {
+    if (inPercent) {
       error = getUnitLength() / getTargetUnit();
     } else {
       error = getUnitLength() - getTargetUnit();
@@ -1063,7 +1062,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public double getUnitError(boolean inPercent, String userRespUnitLength) {
     double error = 0.0;
-    if (inPercent == true) {
+    if (inPercent) {
       error = parseUnitString(userRespUnitLength) / getTargetUnit();
     } else {
       error = parseUnitString(userRespUnitLength) - getTargetUnit();
@@ -1465,10 +1464,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     if (keepWithinBounds[0]) {
-      outBound = new Float(startPoint.getX());
+      outBound = (float) startPoint.getX();
     }
     if (keepWithinBounds[1]) {
-      inBound = new Float(extendPoint2D.getX());
+      inBound = (float) extendPoint2D.getX();
     }
 
     if (!vertical) {
@@ -1504,7 +1503,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (!isEstimateTask) {
       if (atDragRegion) { //&& cursorInBoundingBigBox(e.getX(), e.getY())){
         if (!vertical) {
-          if (keepWithinBounds[0] == false && keepWithinBounds[1] == false) {
+          if (!keepWithinBounds[0] && !keepWithinBounds[1]) {
             if (flag) {
               currentDragPoint = new Point2D.Float(getCorrespondingX(e.getY()), e.getY());
             } else {
@@ -1513,7 +1512,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
           }//both are false allow handle to move freely
 
 
-          else if (keepWithinBounds[0] == true && keepWithinBounds[1] == true) {
+          else if (keepWithinBounds[0] && keepWithinBounds[1]) {
             if (regularX) {
               if ((!flag && e.getX() > extendPoint2D.getX()) || (regularY && flag && e.getY() < extendPoint2D.getY())
                   || (!regularY && flag && e.getY() > extendPoint2D.getY())) {
@@ -1546,7 +1545,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
           }//both are true handle is bound by both bounds
 
 
-          else if (keepWithinBounds[0] == true && keepWithinBounds[1] == false) {
+          else if (keepWithinBounds[0] && !keepWithinBounds[1]) {
             if (regularX) {
               if ((!flag && e.getX() < startPoint.getX()) || (regularY && flag && e.getY() > startPoint.getY())
                   || (!regularY && flag && e.getY() < startPoint.getY())) {
@@ -1634,10 +1633,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
 
   private void moveLineVertically(float x, float y, boolean regular) {
-    if (keepWithinBounds[0] == false && keepWithinBounds[1] == false) {
+    if (!keepWithinBounds[0] && !keepWithinBounds[1]) {
       currentDragPoint = new Point2D.Float(startPoint.x, y);
     }
-    if (keepWithinBounds[0] == true && keepWithinBounds[1] == true) {
+    if (keepWithinBounds[0] && keepWithinBounds[1]) {
       if (regular) {
         if (y <= startPoint.getY() && y >= extendPoint2D.getY()) {
           currentDragPoint = new Point2D.Float(startPoint.x, y);
@@ -1657,7 +1656,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       }
     }//bound by both sides
 
-    if (keepWithinBounds[0] == true && keepWithinBounds[1] == false) {
+    if (keepWithinBounds[0] && !keepWithinBounds[1]) {
       if (regular) {
         if (y <= startPoint.getY()) {
           currentDragPoint = new Point2D.Float(startPoint.x, y);
@@ -1673,7 +1672,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       }
     }//bound by left only
 
-    if (keepWithinBounds[0] == false && keepWithinBounds[1] == true) {
+    if (!keepWithinBounds[0] && keepWithinBounds[1]) {
       if (regular) {
         if (y >= extendPoint2D.getY()) {
           currentDragPoint = new Point2D.Float(startPoint.x, y);
@@ -2173,12 +2172,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     //method that draws the base for the numberline that is drawn along a ellispe
     private void drawBaseCircle(Graphics2D g) {
-      Graphics2D graphics = g;
-      graphics.setColor(baseColor);
+      g.setColor(baseColor);
 
-      graphics.draw(extendLine);
-      graphics.draw(endLine);
-      graphics.draw(startLine);
+      g.draw(extendLine);
+      g.draw(endLine);
+      g.draw(startLine);
 
     }
 
@@ -2405,15 +2403,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     Point2D.Float rotateStart = new Point2D.Float(), rotateEnd = new Point2D.Float(), rotateHandle = new Point2D.Float(), rotateTarget = new Point2D.Float();
 
     private void displayLabels(Graphics2D g) {
-      Graphics2D graphics = g;
-
       double degrees = Math.toDegrees(Math.atan(slope));
       double theta = Math.toRadians(degrees);
 
-      FontMetrics fm = graphics.getFontMetrics(dispfont);
+      FontMetrics fm = g.getFontMetrics(dispfont);
 
-      graphics.setFont(dispfont);
-      graphics.setColor(fontColor);
+      g.setFont(dispfont);
+      g.setColor(fontColor);
 
       String start, end, target;
       start = getStartLabel();
@@ -2450,24 +2446,24 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       }
 
       if (showHideLabels[0]) {
-        graphics.rotate(theta, startLoc.x, startLoc.y);
-        graphics.drawString(start, startLoc.x, startLoc.y);
-        graphics.rotate(-theta, startLoc.x, startLoc.y);
+        g.rotate(theta, startLoc.x, startLoc.y);
+        g.drawString(start, startLoc.x, startLoc.y);
+        g.rotate(-theta, startLoc.x, startLoc.y);
       }
       if (showHideLabels[1]) {
-        graphics.rotate(theta, endLoc.x, endLoc.y);
-        graphics.drawString(end, endLoc.x, endLoc.y);
-        graphics.rotate(-theta, endLoc.x, endLoc.y);
+        g.rotate(theta, endLoc.x, endLoc.y);
+        g.drawString(end, endLoc.x, endLoc.y);
+        g.rotate(-theta, endLoc.x, endLoc.y);
       }
       if (!isEstimateTask && showHideLabels[2]) {
-        graphics.rotate(theta, targetLoc.x, targetLoc.y);
-        graphics.drawString(target, targetLoc.x, targetLoc.y);
-        graphics.rotate(-theta, targetLoc.x, targetLoc.y);
+        g.rotate(theta, targetLoc.x, targetLoc.y);
+        g.drawString(target, targetLoc.x, targetLoc.y);
+        g.rotate(-theta, targetLoc.x, targetLoc.y);
       }
       if (showHideLabels[3]) {
-        graphics.rotate(theta, handleLoc.x, handleLoc.y);
-        graphics.drawString(handleLabel, handleLoc.x, handleLoc.y);
-        graphics.rotate(-theta, handleLoc.x, handleLoc.y);
+        g.rotate(theta, handleLoc.x, handleLoc.y);
+        g.drawString(handleLabel, handleLoc.x, handleLoc.y);
+        g.rotate(-theta, handleLoc.x, handleLoc.y);
       }
     }
 

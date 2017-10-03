@@ -1,7 +1,6 @@
 package ccpl.numberline;
 
 import ccpl.lib.BlankPanel;
-import ccpl.lib.CenteredFileDisplay;
 import ccpl.lib.DrawExpFrame;
 import ccpl.lib.Experiment;
 import ccpl.lib.Fixation;
@@ -32,8 +31,6 @@ import java.text.DecimalFormat;
 
 import java.util.Date;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -194,10 +191,6 @@ public class UniversalNumberLine implements ActionListener {
     final int handleG = dbfile1[7].getParsedIntSpec(2);
     final int handleB = dbfile1[7].getParsedIntSpec(3);
 
-    boolean provideAniFeedback = false;
-    boolean provideImageFeedback = false;
-    boolean provideFractalFeedback = false;
-
     boolean isMask = false;
 
     int stimMaskTime = 0;
@@ -234,7 +227,7 @@ public class UniversalNumberLine implements ActionListener {
     exp.setFullScreen();
 
     // TODO: Fix this to handle none of this feedback
-    Feedback.setFeedback(provideImageFeedback, provideFractalFeedback, provideAniFeedback);
+    //Feedback.setFeedback(provideImageFeedback, provideFractalFeedback, provideAniFeedback);
 
     // Set up data data file
     URL dataFile = exp.getDataFile();
@@ -315,7 +308,7 @@ public class UniversalNumberLine implements ActionListener {
     }
 
     frame.hideCursor();
-    resp.testTimer(startPanel, Color.black, Color.white, 1000);
+    resp.testTimer(startPanel, Color.white, 1000);
     frame.showCursor();
 
     JPanel instructionPanel = getInstructionPanel(exp.getInstructionFile());
@@ -326,7 +319,7 @@ public class UniversalNumberLine implements ActionListener {
         wait();
       }
     } catch (InterruptedException ex) {
-      Logger.getLogger(CenteredFileDisplay.class.getName()).log(Level.SEVERE, null, ex);
+      //Logger.getLogger(CenteredFileDisplay.class.getName()).log(Level.SEVERE, null, ex);
     }
     frame.remove(instructionPanel);
     frame.validate();
@@ -336,17 +329,6 @@ public class UniversalNumberLine implements ActionListener {
       leftValue = dbfile1[13].getParsedStringSpec(2);
       rightValue = dbfile1[13].getParsedStringSpec(3);
     }
-
-    /*
-    Experiment.showInstructions();
-    if(dbFilePath.toCharArray()[10] == '0') {
-      String msg = "Please use the space bar to submit the number line and move to the next trial";
-      resp.getButtonMap(msg , frame);
-    }
-    */
-
-    //if(responseEnabled)
-    //    resp.getMouseMap(leftValue, rightValue, frame);
 
     String instruct2;
 
@@ -706,7 +688,7 @@ public class UniversalNumberLine implements ActionListener {
           frame.hideCursor();
         }
 
-        Feedback.setNextFeedback(trialType, trialNum, totalTrials);
+        //Feedback.setNextFeedback(trialType, trialNum, totalTrials);
 
         double numLineUnitErr;
         if (!isEstimateTask) {
@@ -756,7 +738,6 @@ public class UniversalNumberLine implements ActionListener {
         outString.append(estimateTime).append("\t");
         outString.append(reactTime).append("\t");
         outString.append(textRt).append("\t");
-        outString.append(Feedback.getFeedbackType()).append("\t");
         if (questionEnabled) {
           outString.append(initQuestion);
           outString.append("\t");
@@ -783,7 +764,7 @@ public class UniversalNumberLine implements ActionListener {
         outString.setLength(0); //Deallocates string builder
 
         frame.remove(endPanel);
-        JPanel feedbackPanel = Feedback.getFeedbackPanel();
+        JPanel feedbackPanel = null; //Feedback.getFeedbackPanel();
         if (feedbackPanel != null) {
           //Set the player on the experiment frame
           frame.setContentPane(feedbackPanel);

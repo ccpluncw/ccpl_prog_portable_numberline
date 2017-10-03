@@ -16,22 +16,21 @@ import javax.swing.*;
 public class DrawExpFrame extends JFrame
 {
    private static int screenHeight, screenWidth;
-   private final boolean USE_LISTENER = true;
-   private Cursor curs;
-   private Cursor show;
-   
-   public DrawExpFrame(Response resp)
+  private Cursor curs;
+
+  public DrawExpFrame(Response resp)
    {
       setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-      
-      if(USE_LISTENER)
+
+     boolean USE_LISTENER = true;
+     if(USE_LISTENER)
           addKeyListener (resp);
       
       //assign bindings and issue an error message if it fails
       else{
           boolean flag;
           flag = assignKeyBindings(resp);
-          if(flag == false){
+          if(!flag){
               JOptionPane.showMessageDialog(null, "Error Assigning Key Bindings", null, JOptionPane.ERROR_MESSAGE);
               System.exit(0);
           }
@@ -46,23 +45,10 @@ public class DrawExpFrame extends JFrame
     screenWidth = d.width;
     setSize(screenWidth, screenHeight);
     
-    BufferedImage blankCursor = null;
-    BufferedImage showCursor = null;
     BufferedImage cursorImg = new BufferedImage(16,16, BufferedImage.TYPE_INT_ARGB);
     
-    //try {
-        
-        //blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0,0), "blank cursor");
-           //blankCursor = ImageIO.read(getClass().getResource("/app_imgs/blank1.gif"));
-           //showCursor = ImageIO.read(getClass().getResource("/app_imgs/transparent.png"));
-    //} catch (IOException ex) {
-    //       Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, null, ex);
-    //}
-    
-    //curs = tk.createCustomCursor(blankCursor, new Point(0,0), "blank");
     curs = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
-    //show = tk.createCustomCursor(showCursor, new Point(0,0), "show");
-    
+
     setBackground(Color.BLACK);
     getContentPane().setBackground(Color.BLACK);
     setResizable(false);
@@ -94,8 +80,6 @@ public class DrawExpFrame extends JFrame
         inputMap.put(quit, "quitAction");
         inputMap.put(mouse, "mouseAction");
         
-        //actionMap.put("sameAction", resp.returnAction());
-        //actionMap.put("diffAction", resp.returnAction());
         //control q quits
         actionMap.put("quitAction", new AbstractAction(){
             @Override
@@ -106,36 +90,8 @@ public class DrawExpFrame extends JFrame
         
         return true;
    }
-   
-    private void assignAllKeyActions(Response resp, InputMap inputMap, ActionMap actionMap){
-        int charCode = 0;
-        do{
-            KeyStroke currentStroke = KeyStroke.getKeyStroke(charCode, 0);
-            inputMap.put(currentStroke, "keyAction");
-            charCode ++;
-        }while(charCode < 128);
-        //assign the action
-        actionMap.put("keyAction", resp.returnAction());
-        
-        //handles macro keys such as shift ctrl and alt
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SHIFT, KeyEvent.SHIFT_DOWN_MASK), "keyAction");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_CONTROL, KeyEvent.CTRL_DOWN_MASK), "keyAction");
-        inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ALT, KeyEvent.ALT_DOWN_MASK), "keyAction");
-        inputMap.put(KeyStroke.getKeyStroke(157, Toolkit.getDefaultToolkit().getMenuShortcutKeyMask()), "keyAction");//handles command key
-   }
-   
-   public void setTwoButtonResponse(char s, char d){
-       KeyStroke same = KeyStroke.getKeyStroke(s);
-       KeyStroke diff = KeyStroke.getKeyStroke(d);
-       
-       int condition = JComponent.WHEN_IN_FOCUSED_WINDOW;
-       InputMap inputMap = getRootPane().getInputMap(condition);
-       
-       inputMap.put(same, "sameAction");
-       inputMap.put(diff, "diffAction");
-   }
-   
-   public void hideCursor () {
+
+  public void hideCursor () {
         //Cursor curs = tKit.createCustomCursor (tKit.createImage(""), new Point(), "blank");
        Toolkit tk = Toolkit.getDefaultToolkit();
        curs = tk.createCustomCursor(tk.createImage(""), new Point(), "blank");
@@ -158,7 +114,6 @@ public class DrawExpFrame extends JFrame
 	 
    public void showCursor () {
 	setCursor (Cursor.getDefaultCursor());
-//       setCursor(show);
    }
 
    public static int getScreenHeight(){

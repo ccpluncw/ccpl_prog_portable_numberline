@@ -187,7 +187,7 @@ public class Experiment implements ExpInterface {
 
   public void setWebEnabled(boolean webEnable) {
     WEB_ENABLED = webEnable;
-    if (webEnable == true) {
+    if (webEnable) {
       try {
         CGI = new URL(CGI_STR);
       } catch (MalformedURLException ex) {
@@ -268,9 +268,9 @@ public class Experiment implements ExpInterface {
   }
 
 
-  public static long delay(int milliseconds) {
+  public static void delay(int milliseconds) {
     if (milliseconds <= 0) {
-      return 0;
+      return;
     }
     long start = new Date().getTime();
     try {
@@ -278,7 +278,7 @@ public class Experiment implements ExpInterface {
     } catch (InterruptedException ex) {
       Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return ((new Date().getTime()) - start);
+    new Date().getTime();
   }
 
   public static void changeBackground(Color bg) {
