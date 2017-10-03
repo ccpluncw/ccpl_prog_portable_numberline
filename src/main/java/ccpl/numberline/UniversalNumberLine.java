@@ -200,77 +200,12 @@ public class UniversalNumberLine implements ActionListener {
     boolean provideImageFeedback = false;
     boolean provideFractalFeedback = false;
 
-    boolean isAniDetermined = false;
-    boolean isFractalDetermined = false;
-    boolean showJulia = false;
-    boolean showMandelbrot = false;
-    boolean useBlockTransition = false;
-    boolean useFadeTransition = false;
-
-    int playFrequency = 1;
-    int fractalFrequency = 1;
-    int fractalTransitionTime = 1000;
-    int fractalPresentTime = 1000;
-    String fractalType;
-    String fractalTransitionType;
-
     int imageHoldTime = 0;
     isImageFeedback = isImageFeedback.toLowerCase();
 
     if (Experiment.isParamOn(isImageFeedback)) {
       imageHoldTime = dbfile1[8].getParsedIntSpec(2);
       provideImageFeedback = true;
-    }
-
-    String isFractalFeedback = dbfile1[9].getParsedStringSpec(1);
-    isFractalFeedback = isFractalFeedback.toLowerCase();
-    String fractalOutputString;
-    if (Experiment.isParamOn(isFractalFeedback)) {
-      provideFractalFeedback = true;
-      String determined = dbfile1[9].getParsedStringSpec(2);
-
-      isFractalDetermined = Experiment.paramMatches(determined, "determined");
-
-      fractalFrequency = dbfile1[9].getParsedIntSpec(3);
-      fractalPresentTime = dbfile1[9].getParsedIntSpec(4);
-      fractalOutputString = determined + "_" + fractalFrequency;
-
-      fractalType = dbfile1[9].getParsedStringSpec(5);
-      fractalTransitionTime = dbfile1[9].getParsedIntSpec(6);
-      fractalTransitionType = dbfile1[9].getParsedStringSpec(7);
-      if (Experiment.paramMatches(fractalType, "mandelbrot")) {
-        showMandelbrot = true;
-      } else if (Experiment.paramMatches(fractalType, "julia")) {
-        showJulia = true;
-      } else {
-        showMandelbrot = true;
-        showJulia = true;
-      }
-      if (Experiment.paramMatches(fractalTransitionType, "block")) {
-        useBlockTransition = true;
-      } else if (Experiment.paramMatches(fractalTransitionType, "fade")) {
-        useFadeTransition = true;
-      } else {
-        useBlockTransition = true;
-        useFadeTransition = true;
-      }
-    } else {
-      fractalOutputString = isFractalFeedback;
-    }
-
-
-    String isAnimationFeedback = dbfile1[10].getParsedStringSpec(1);
-    isAnimationFeedback = isAnimationFeedback.toLowerCase();
-    String aniOutputString;
-
-    if (Experiment.isParamOn(isAnimationFeedback)) {
-      provideAniFeedback = true;
-      String determined = dbfile1[10].getParsedStringSpec(2);
-      isAniDetermined = Experiment.paramMatches(determined, "determined");
-      playFrequency = dbfile1[10].getParsedIntSpec(3);
-      aniOutputString = determined + "_" + playFrequency;
-    } else {
-      aniOutputString = isAnimationFeedback;
     }
 
     boolean isMask = false;
@@ -308,15 +243,10 @@ public class UniversalNumberLine implements ActionListener {
     frame = exp.getFrame();
     exp.setFullScreen();
 
+    // TODO: Fix this to handle none of this feedback
     Feedback.setFeedback(provideImageFeedback, provideFractalFeedback, provideAniFeedback);
     Feedback.initImageFeedback(UniversalNumberLine.class
         .getResourceAsStream("/resources/images.list"), imageHoldTime);
-
-    Feedback.initVideoFeedback(UniversalNumberLine.class
-        .getResourceAsStream("/resources/animations.list"), isAniDetermined, playFrequency);
-
-    Feedback.initFractalFeedback(fractalTransitionTime, fractalPresentTime, isFractalDetermined,
-        fractalFrequency, useBlockTransition, useFadeTransition, showJulia, showMandelbrot);
 
     // Set up data data file
     URL dataFile = exp.getDataFile();
@@ -714,9 +644,6 @@ public class UniversalNumberLine implements ActionListener {
           frame.setContentPane(imPanel);
           frame.validate();
           Experiment.delay(fixationTime);
-          //frame.setContentPane(startPanel);
-          //frame.validate();
-          //NumberLineExp.delay(stimMaskTime);
           imPanel.remove(fixationPanel);
         }
         //end fixation
@@ -730,7 +657,6 @@ public class UniversalNumberLine implements ActionListener {
           //Idle here until user has hit the space bar
           reactTime = resp.getTimedNumberLineResponse(numLine, useMouse);
 
-          //remove the imPanel if necessary and add the feedback panel if animation is to be played
           frame.remove(imPanel);
           frame.setContentPane(endPanel);
           userResp = df.format(numLine.getUnitLength());
@@ -845,8 +771,6 @@ public class UniversalNumberLine implements ActionListener {
         outString.append(reactTime).append("\t");
         outString.append(textRt).append("\t");
         outString.append(isImageFeedback).append("\t");
-        outString.append(aniOutputString).append("\t");
-        outString.append(fractalOutputString).append("\t");
         outString.append(Feedback.getFeedbackType()).append("\t");
         if (questionEnabled) {
           outString.append(initQuestion);
@@ -970,11 +894,11 @@ public class UniversalNumberLine implements ActionListener {
     URL resource = null;
     String resourceName = Feedback.getCurrentResourceName();
     String feedbackType = Feedback.getFeedbackType();
-    if (feedbackType.equals("ANIMATION")) {
-      resource = UniversalNumberLine.class.getResource("/resources/animations/" + resourceName);
-    } else if (feedbackType.equals("IMAGE")) {
+
+    if (feedbackType.equals("IMAGE")) {
       resource = UniversalNumberLine.class.getResource("/resources/images/" + resourceName);
     }
+
     return resource;
   }
 
@@ -1028,8 +952,6 @@ public class UniversalNumberLine implements ActionListener {
     sbuf.append("numLineRT\t");
     sbuf.append("textRT\t");
     sbuf.append("imgFeedback\t");
-    sbuf.append("aniFeedback\t");
-    sbuf.append("fractFeedback\t");
     sbuf.append("feedbackType\t");
 
     if (isQuestionEnabled) {
