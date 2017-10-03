@@ -1,12 +1,5 @@
 package ccpl.lib;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /**
  *
@@ -20,10 +13,6 @@ public class Fraction {
     public Fraction() {
         numerator = 0;
         denominator = 1;
-    }
-
-    public Fraction(int whole) {
-        this(whole, 1);
     }
 
     public Fraction(int num, int denom){
@@ -58,12 +47,6 @@ public class Fraction {
     public double toDouble(){
         return (double)numerator/denominator;
     }
-    
-    public static Fraction subtract(Fraction f1, Fraction f2){
-        int num = (f1.numerator * f2.denominator) - (f2.numerator * f1.denominator);
-        int denom = f1.denominator * f2.denominator;
-        return new Fraction(num, denom);
-    }
 
     public static int getCommonDenom(Fraction f1, Fraction f2){
         int gcd1;
@@ -94,99 +77,6 @@ public class Fraction {
         int num = f.numerator/gcd;
         int denom =  f.denominator/gcd;
         return new Fraction(num, denom);
-    }
-
-    public FractionPanel getFractionPanel(Font aFont, Color aColor){
-        return new FractionPanel(aFont, aColor);
-    }
-
-    public class FractionPanel extends JPanel {
-        private final int padding = 4;
-        private final int num, denom;
-        private final JLabel numLabel, denomLabel;
-        private final Color color;
-        private BasicStroke stroke = new BasicStroke(1);
-
-        public FractionPanel(Font font, Color fractionColor){
-            setLayout(null);
-            num = numerator;
-            denom = denominator;
-            numLabel = new JLabel(Integer.toString(num));
-            denomLabel = new JLabel(Integer.toString(denom));
-
-            
-            if(font != null){
-                numLabel.setFont(font);
-                denomLabel.setFont(font);
-            }
-
-            this.color = fractionColor;
-
-            numLabel.setForeground(fractionColor);
-            denomLabel.setForeground(fractionColor);
-
-            numLabel.setSize(numLabel.getPreferredSize());
-            denomLabel.setSize(denomLabel.getPreferredSize());
-            
-            int numLabelW = numLabel.getWidth();
-            int denomLabelW = denomLabel.getWidth();
-            int panelWidth = (numLabelW > denomLabelW) ? numLabelW : denomLabelW;
-            int numXLoc = (numLabelW >= denomLabelW) ? 0 : (panelWidth/2)-(numLabelW/2);
-            int denomXLoc = (numLabelW <= denomLabelW) ? 0 : (panelWidth/2)-(denomLabelW/2);
-
-            numLabel.setLocation(numXLoc,0);
-            denomLabel.setLocation(denomXLoc,numLabel.getHeight()+padding);
-
-            setSize(panelWidth, numLabel.getHeight()+denomLabel.getHeight()+padding);
-            setBackground(Color.BLACK);
-            
-            add(numLabel);
-            add(denomLabel);
-                    
-            this.repaint();
-        }
-
-        @Override
-        public void paintComponent(Graphics g){
-            super.paintComponent(g);
-            Graphics2D g2 = (Graphics2D)g;
-            g2.setColor(color);
-            g2.setStroke(stroke);
-            g2.drawLine(0, numLabel.getHeight()+(padding/2), getWidth(), numLabel.getHeight()+(padding/2));
-        }
-
-    }
-
-    public static void main(String[] argv) {
-
-        /* Test all three contructors and toString. */
-        Fraction f0 = new Fraction();
-        Fraction f1 = new Fraction(3);
-        Fraction f2 = new Fraction(12, 20);
-        Fraction f3 = new Fraction(6, 63);
-        Fraction f4 = new Fraction(3, 5);
-        Fraction f5 = new Fraction(5, 12);
-        Fraction[] fractArr = new Fraction[3];
-        fractArr[0] = f1;
-        fractArr[1] = f2;
-        fractArr[2] = f3;
-
-        System.out.println("\nTesting constructors (and toString):");
-        System.out.println("The fraction f0 is " + f0.toString());
-        System.out.println("The fraction f1 is " + f1); // toString is implicit
-        System.out.println("The fraction f2 is " + f2);
-        System.out.println("The fraction f3 is " + f3);
-
-        System.out.println("\nTesting gcd:");
-        System.out.println("The gcd of 2 and 10 is: " + gcd(2, 10));
-        System.out.println("The gcd of 15 and 5 is: " + gcd(15, 5));
-        System.out.println("The gcd of 24 and 18 is: " + gcd(24, 18));
-        System.out.println("The gcd of 10 and 10 is: " + gcd(10, 10));
-        System.out.println("The gcd of 21 and 400 is: " + gcd(21, 400));
-
-        System.out.println("Subtraction: " + Fraction.subtract(f4, f5));
-        
-        System.out.println(""+getCommonDenom(fractArr));
     }
 
 }

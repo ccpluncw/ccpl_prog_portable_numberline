@@ -12,7 +12,6 @@ import ccpl.lib.Response;
 import ccpl.lib.Specification;
 import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
-import ccpl.lib.feedback.Feedback;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -764,17 +763,6 @@ public class UniversalNumberLine implements ActionListener {
         outString.setLength(0); //Deallocates string builder
 
         frame.remove(endPanel);
-        JPanel feedbackPanel = null; //Feedback.getFeedbackPanel();
-        if (feedbackPanel != null) {
-          //Set the player on the experiment frame
-          frame.setContentPane(feedbackPanel);
-          frame.validate();
-
-          //Blocking call to ensure feedback is played through before continuing
-          Feedback.playFeedback();
-          frame.remove(feedbackPanel);
-          Feedback.freeFeedback();  //Frees memory used in feedback
-        }
         frame.validate();
         frame.setContentPane(endPanel);
         if ((trialNum + 1) % restNumber == 0) {

@@ -96,9 +96,11 @@ public class SpecificationArrayProcess {
   private void createLocalWriteDir(String filename) {
     String path = filename.substring(0, filename.lastIndexOf("/"));
     File filePath = new File(path);
+
     if (!filePath.isDirectory()) {
       filePath.mkdir();
     }
+
     isLocalWriteDir = true;
   }
 
@@ -169,9 +171,9 @@ public class SpecificationArrayProcess {
 
 
   public Specification[] randomize(Specification[] specs) {
-    int tmp1 = 0;
-    int tmp2 = 0;
-    Specification tmpSpec1 = new Specification();
+    int tmp1;
+    int tmp2;
+    Specification tmpSpec1;
 
     RandomIntGenerator random1 = new RandomIntGenerator(0, specs.length - 1);
 

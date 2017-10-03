@@ -17,8 +17,8 @@ import javax.swing.*;
 public class FileInTextBox implements ActionListener {
 
   protected JFrame frame;
-  protected String filename;
-  protected URL urlFileName;
+  protected final String filename;
+  protected final URL urlFileName;
   protected JButton textOkButton;
 
   public FileInTextBox(URL u) {

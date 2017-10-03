@@ -84,7 +84,7 @@ public class RandomIntGenerator
    }
    
    private static final int BUFFER_SIZE = 101;
-   private static double[] buffer  = new double[BUFFER_SIZE];
+   private static final double[] buffer  = new double[BUFFER_SIZE];
    static{
       int i;
       for (i = 0; i < BUFFER_SIZE; i++)
@@ -108,5 +108,5 @@ public class RandomIntGenerator
    private double dLow;
    private double dHigh;
    private double dInterval;
-   private static java.util.Random randomObj = new java.util.Random(System.currentTimeMillis());
+   private static final java.util.Random randomObj = new java.util.Random(System.currentTimeMillis());
 }

@@ -13,7 +13,7 @@ public class Specification {
   }
 
   public static String stripComments(String line) {
-    int idx = 0;
+    int idx;
     if ((idx = line.indexOf("//")) >= 0) {
       line = line.substring(0, idx).trim();
     }
@@ -30,11 +30,7 @@ public class Specification {
   }
 
   public boolean isEmpty() {
-    if (allSpecs.equals("")) {
-      return true;
-    } else {
-      return false;
-    }
+    return allSpecs.isEmpty();
   }
 
 

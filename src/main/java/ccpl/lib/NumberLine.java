@@ -20,9 +20,7 @@ import javax.swing.JPanel;
 
 public class NumberLine implements MouseMotionListener, MouseListener {
 
-  private static final boolean isDebugOn = false;
-
-  NumberLinePanel linePanel;
+  final NumberLinePanel linePanel;
   //---Pixel members-------
   private final int baseHeight; //Default overall baseHeight
   private final int lineThickness;
@@ -33,43 +31,52 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final int guideLinePadding; //Pixel amount used to extend the handle guideline beyond the handle
 
   //---Color members-----
-  private Color baseColor;
-  private Color dragColor;
-  private Color bkgColor = Color.BLACK;
-  private Color handleActiveColor;
-  private Color guideColor = Color.RED;
+  private final Color baseColor;
+  private final Color dragColor;
+  private final Color bkgColor = Color.BLACK;
+  private final Color handleActiveColor;
+  private final Color guideColor = Color.RED;
 
-  //---Unit members------
-  private Fraction startUnitFract, endUnitFract, targetUnitFract;
-
-  private Unit startUnit, endUnit, targetUnit;
-  private int sUnitLabelW, sUnitLabelH, eUnitLabelW, eUnitLabelH;
+  private final Unit startUnit;
+  private final Unit endUnit;
+  private final Unit targetUnit;
+  private final int sUnitLabelW;
+  private final int sUnitLabelH;
+  private final int eUnitLabelW;
+  private final int eUnitLabelH;
 
   //----Control members-----
   private boolean atDragRegion; //Flag to note if mouse is moved to drag region and needs to respond to a drag
-  private boolean shrinkBase = false; //Flag to support future feature of shrinking the base when the line is extended passed the panel boundary
   private boolean isHandleDragged; //Flag to determine if handle was dragged
-  private boolean showFullBaseScale;
-  private boolean showScale;
 
 
   //-----New Data Added By Oliver
   private boolean keepWithinBounds[] = new boolean[2]; //flag which determines if the handle can be dragged outside the bounds of the numberline
   private boolean showHideLabels[] = new boolean[4];
-  private char locationChar; //this character 'l', 'r', or 'x' determines the location of the numberline on the screen
-  private Point2D.Float startPoint, extendPoint2D, centerScreen, currentDragPoint, leftBoundHigh, rightBoundHigh, handleHigh, handleStartPoint,
-      leftBoundLow, rightBoundLow, handleLow, guideLeftLow, guideLeftHigh, guideRightLow, guideRightHigh, guideHandleHigh, guideHandleLow;
-  private int degreeOfLine, marginSize;
-  private Line2D leftGuide, rightGuide, handleGuide;
-  private float slope, perpSlope;
-  private Dimension screen;
+  private final Point2D.Float startPoint;
+  private Point2D.Float extendPoint2D;
+  private final Point2D.Float centerScreen;
+  private Point2D.Float currentDragPoint;
+  private final Point2D.Float leftBoundHigh;
+  private final Point2D.Float rightBoundHigh;
+  private Point2D.Float handleHigh;
+  private Point2D.Float handleStartPoint;
+  private Point2D.Float handleLow;
+  private final Point2D.Float guideLeftLow;
+  private final Point2D.Float guideRightLow;
+  private Point2D.Float guideHandleHigh;
+  private Point2D.Float guideHandleLow;
+  private final int degreeOfLine;
+  private final Line2D leftGuide;
+  private final Line2D rightGuide;
+  private Line2D handleGuide;
+  private final float slope;
+  private final Dimension screen;
   private Point2D.Float startLoc, targetLoc, handleLoc, endLoc;
-  private double actualBaseWidth; //this is the width of the line drawn from left bound to right bound
   private Color currentHandleColor;
-  private Color fontColor = Color.LIGHT_GRAY;
-  private Font dispfont;
-  private int textBuff = 20;//distance text from the numline
-  private String handleLabel;
+  private final Color fontColor = Color.LIGHT_GRAY;
+  private final Font dispfont;
+  private final String handleLabel;
   private boolean adjustChange = true;
   private boolean centerHandle = true;
 
@@ -83,23 +90,28 @@ public class NumberLine implements MouseMotionListener, MouseListener {
    * handleGuideLine is a the guideline on the handle
    * startLine is the line that is the left bound on the base
    *************************************************/
-  private Line2D handleLine, dragLine, extendLine, endLine, handleGuideLine, startLine;
+  private Line2D handleLine;
+  private Line2D dragLine;
+  private Line2D extendLine;
+  private Line2D endLine;
+  private Line2D handleGuideLine;
+  private final Line2D startLine;
   private final int startX;  //startX is x coord where numberline is visually drawn
   private final int widthOffset;
   private int currentDragX; // Holds x coord of the drag handle
-  private Point extendPoint;  //Holds x and y coord of point on base where the drag line appears
-  private Stroke stroke; //holds the stroke to show line thickness
-  private String fontName; //holds the name of the Font to use
+  private final Point extendPoint;  //Holds x and y coord of point on base where the drag line appears
+  private final Stroke stroke; //holds the stroke to show line thickness
+  private final String fontName; //holds the name of the Font to use
   private final int linepad; //used in drawing base
-  private String unitLabel;
-  private Point2D.Float rightBoundPoint;
-//    private boolean boundToExterior;
-
+  private final String unitLabel;
+  private final Point2D.Float rightBoundPoint;
 
   private final boolean isEstimateTask;
-  private float widthPercentage; //holds percentage of base width to display
+  private final float widthPercentage; //holds percentage of base width to display
 
-  private Line2D fixationLine;
+  private final Line2D fixationLine;
+
+  private Point2D.Float lastMouse;
 
   public NumberLine(int width, int height, int thickness, Unit startU, Unit endU, Unit targetU,
                     Color bColor, Color dColor, Color hColor, String font, boolean estimateTask, int d,
@@ -107,10 +119,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     //----- added by Oliver
     degreeOfLine = d;
-    marginSize = m;
     keepWithinBounds = kwb;
     showHideLabels = shLabels;
-    locationChar = _c;
     baseWidth = width;
     widthPercentage = 1;
     baseHeight = height;
@@ -121,8 +131,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     Toolkit tk = Toolkit.getDefaultToolkit();
     screen = tk.getScreenSize();
     centerScreen = new Point2D.Float(screen.width / 2, screen.height / 2);
-    screen.height -= (marginSize * 2); //take margins out of either side
-    screen.width -= (marginSize * 2); //take margins out of either side
+    screen.height -= (m * 2); //take margins out of either side
+    screen.width -= (m * 2); //take margins out of either side
 
     startPoint = getStartPoint();
     rightBoundPoint = getRightBound();
@@ -133,15 +143,15 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     leftBoundHigh = getHighPoint(baseHeight, startPoint);
     rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
-    leftBoundLow = getLowPoint(10, startPoint);
-    rightBoundLow = getLowPoint(10, extendPoint2D);
+    Point2D.Float leftBoundLow = getLowPoint(10, startPoint);
+    Point2D.Float rightBoundLow = getLowPoint(10, extendPoint2D);
 
 
     guideLeftLow = getLowPoint(baseHeight / 2, startPoint);
-    guideLeftHigh = getHighPoint(baseHeight + lineThickness, startPoint);
+    Point2D.Float guideLeftHigh = getHighPoint(baseHeight + lineThickness, startPoint);
 
     guideRightLow = getLowPoint(baseHeight / 2, extendPoint2D);
-    guideRightHigh = getHighPoint(baseHeight + lineThickness, extendPoint2D);
+    Point2D.Float guideRightHigh = getHighPoint(baseHeight + lineThickness, extendPoint2D);
 
     leftGuide = new Line2D.Float(guideLeftLow, guideLeftHigh);
     rightGuide = new Line2D.Float(guideRightLow, guideRightHigh);
@@ -153,24 +163,19 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     fixationLine = new Line2D.Float(leftBoundHigh, startPoint);
 
     //the handle is on the left side of the numberline or underneath the startPoint located on the ellispe
-    if (locationChar == 'L') {
+    if (_c == 'L') {
       handleStartPoint = startPoint;
-    }
-
-    else if (locationChar == 'R') {
+    } else if (_c == 'R') {
       handleStartPoint = extendPoint2D;
-    }
-
-    //randomly choose a side for the handle to start on
-    else if (locationChar == 'X') {
+    } else if (_c == 'X') {
+      //randomly choose a side for the handle to start on
       Random gen = new Random();
       int temp = gen.nextInt(10);
       //the random number was less than five the handle starts under the startPoint
       if (temp <= 5) {
         handleStartPoint = startPoint;
-      }
-      //random number greater than five handle starts under extendPoint
-      else {
+      } else {
+        //random number greater than five handle starts under extendPoint
         handleStartPoint = extendPoint2D;
       }
     }
@@ -195,19 +200,15 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     endLoc.y = (float) guideRightLow.getY();
 
     startLoc = new Point2D.Float(); //holds the position for the label under startPoint
-    //startLoc.x = (int) leftBoundLow.getX();
-    //startLoc.y = (int) leftBoundLow.getY() + 15;
     startLoc.x = (float) guideLeftLow.getX();
     startLoc.y = (float) guideLeftLow.getY();
 
     targetLoc = new Point2D.Float(); //holds the position for the label of the target
-    //targetLoc.x = startLoc.x;
-    //targetLoc.y = startLoc.y + 25;
     targetLoc.x = startLoc.x;
     targetLoc.y = startLoc.y;
 
 
-    String fract_temp[] = new String[2];
+    String fract_temp[];
     sUnitLabelW = 0;
     sUnitLabelH = 0;
     eUnitLabelW = 0;
@@ -229,7 +230,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     switch (startUnit.getType()) {
       case FRACT:
         fract_temp = startU.getValue().split("/");
-        startUnitFract = new Fraction(Integer.parseInt(fract_temp[0].trim()), Integer.parseInt(fract_temp[1].trim()));
+        Fraction startUnitFract = new Fraction(Integer.parseInt(fract_temp[0].trim()), Integer.parseInt(fract_temp[1].trim()));
         break;
       case ODDS:
         fract_temp = startU.getValue().split("in");
@@ -239,7 +240,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     switch (endUnit.getType()) {
       case FRACT:
         //fract_temp = endU.getValue().split("/");
-        endUnitFract = new Fraction(endU.getValue());
+        Fraction endUnitFract = new Fraction(endU.getValue());
         break;
       case ODDS:
         fract_temp = endU.getValue().split("in");
@@ -249,7 +250,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     switch (targetUnit.getType()) {
       case FRACT:
         fract_temp = targetU.getValue().split("/");
-        targetUnitFract = new Fraction(Integer.parseInt(fract_temp[0].trim()), Integer.parseInt(fract_temp[1].trim()));
+        Fraction targetUnitFract = new Fraction(Integer.parseInt(fract_temp[0].trim()), Integer.parseInt(fract_temp[1].trim()));
         break;
       case ODDS:
         fract_temp = targetU.getValue().split("in");
@@ -266,33 +267,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     fontName = font;
     dispfont = new Font(fontName, Font.BOLD, 12);
 
-
-    //showFullBaseScale = fullBaseScale;
-
-    //extendPoint.x = basePaddingLeft;
-
-    //extendPoint.y = basePaddingTop+baseHeight;
-
     startX = basePaddingLeft;
-
-        /*
-        handleLine = new Line2D.Float(extendPoint.x, basePaddingTop+baseHeight, extendPoint.x, basePaddingTop);
-        dragLine =  new Line2D.Float(extendPoint.x, extendPoint.y, extendPoint.x, extendPoint.y);
-        handleGuideLine = new Line2D.Float(extendPoint.x, extendPoint.y-baseHeight-guideLinePadding, extendPoint.x, extendPoint.y+guideLinePadding);
-*/
 
     linepad = lineThickness;
     widthOffset = basePaddingLeft - startX;
-/*
-        if(!isEstimateTask){
-            isHandleDragged = false;
-            currentDragX = extendPoint.x;
-        }else{
-            isHandleDragged = true; //handle is not to be dragged with an estimate task
-            currentDragX = getTargetPixelLength();
-        }
-        *
-        */
 
     if (isEstimateTask) {
       isHandleDragged = true; //handle not used in estimation
@@ -315,32 +293,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     linePanel = new NumberLinePanel();
     linePanel.addMouseMotionListener(this);
     linePanel.addMouseListener(this);
-
-    //if(dispScale)
-    //displayUnitScale(fontName);
-    //showScale = dispScale;
-
-    // = new Line2D.Float(startX, basePaddingTop, startX, basePaddingTop+baseHeight-lineThickness);
-
-    if (isDebugOn) {
-      System.out.println("start unit: " + startUnit.toDouble());
-      System.out.println("end unit: " + endUnit.toDouble());
-      System.out.println("target unit: " + targetUnit.toDouble());
-      System.out.println("degree: " + degreeOfLine);
-      for (int i = 0; i < showHideLabels.length; i++) {
-        if (!showHideLabels[i]) {
-          System.out.println("label hidden number: " + i);
-        }
-      }
-      for (int i = 0; i < keepWithinBounds.length; i++) {
-        if (keepWithinBounds[i]) {
-          System.out.println("bound by number: " + i);
-        }
-      }
-      System.out.println("getX calc: " + getCorrespondingX(getCorrespondingY(50)));
-      System.out.println("actualX: " + 50);
-      System.out.println("-------------------");
-    }
   }
 
   private void setExtendPoint() {
@@ -468,7 +420,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
     return p;
-  }//method 1
+  }
 
   private Point2D.Float getTargetPoint2() {
     Point2D.Float p = new Point2D.Float();
@@ -534,7 +486,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
     return p;
-  }//method 2
+  }
 
   private Point2D.Float getTargetPoint3() {
     Point2D.Float p = new Point2D.Float();
@@ -600,7 +552,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
     return p;
-  }//method 3
+  }
 
   private Point2D.Float getTargetPoint4() {
     Point2D.Float p = new Point2D.Float();
@@ -670,13 +622,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
     return p;
-  }//method 4
+  }
 
   private Point2D.Float getTargetSpecial() {
     boolean outsideBounds = false;
     double startToTarget;
-    double _x, _y;
-    Point2D.Float p = new Point2D.Float();
+    Point2D.Float p;
     if (startUnit.toDouble() > endUnit.toDouble()) {
       if (targetUnit.toDouble() < endUnit.toDouble() || targetUnit.toDouble() > startUnit.toDouble()) {
         outsideBounds = true;
@@ -775,40 +726,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return baseWidth;
   }
 
-  private int getBoundaryX() {
-    int rightBoundaryX;
-    rightBoundaryX = linePanel.getWidth() - lineThickness;
-    return rightBoundaryX;
-  }
-
-  private int getTargetPixelLength() {
-    int length;
-    double sUnit = getStartUnit(), target = getTargetUnit();
-    length = (int) ((getPixelsPerUnit() * (target - sUnit)) + startX + widthOffset);
-    return length;
-  }
-
-  private int getPixelLength() {
-    int length;
-    if (currentDragX - startX - widthOffset <= 0) {
-      length = 0;
-    } else {
-      length = currentDragX - startX - widthOffset;
-    }
-    return length;
-  }
-
-  private double getPixelsPerUnit() {
-    double pixelsPerUnit;
-    double sUnit = 0.0, eUnit = 0.0;
-
-    sUnit = startUnit.toDouble();
-    eUnit = endUnit.toDouble();
-    pixelsPerUnit = baseWidth / (eUnit - sUnit);
-
-    return pixelsPerUnit;
-  }
-
   private double getDistance(Point2D.Float x, Point2D.Float y) {
     if (degreeOfLine > 0 && degreeOfLine < 90) {
       return getDistance1(x, y);
@@ -824,7 +741,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getDistance1(Point2D.Float x, Point2D.Float y) {
-    double distance = -1.0;
+    double distance;
     double alpha = degreeOfLine;
     alpha = Math.toRadians(alpha);
     double _x = Math.abs(y.getX() - x.getX());
@@ -834,7 +751,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getDistance2(Point2D.Float x, Point2D.Float y) {
-    double distance = -1.0;
+    double distance;
     double alpha = 180 - degreeOfLine;
     alpha = Math.toRadians(alpha);
     double _x = Math.abs(y.getX() - x.getX()); //abs to ensure positive length
@@ -844,7 +761,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getDistance3(Point2D.Float x, Point2D.Float y) {
-    double distance = -1.0;
+    double distance;
     double alpha = degreeOfLine - 180;
     alpha = Math.toRadians(alpha);
     double _x = Math.abs(y.getX() - x.getX());
@@ -854,7 +771,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getDistance4(Point2D.Float x, Point2D.Float y) {
-    double distance = -1.0;
+    double distance;
     double alpha, theta = degreeOfLine - 180;
     alpha = 180 - theta;
     alpha = Math.toRadians(alpha);
@@ -865,7 +782,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getLengthPerUnit() {
-    double lpUnit = 0.0;
+    double lpUnit;
     double s = startUnit.toDouble();
     double e = endUnit.toDouble();
     double diff = Math.abs(s - e); //because either left or right can be the high end of the numberline abs insures a positive length
@@ -929,7 +846,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getUnitLength1() {
-    double length = 0.0;
+    double length;
 
     if (startUnit.toDouble() < endUnit.toDouble()) {
       length = getDistance(startPoint, currentDragPoint);
@@ -953,7 +870,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getUnitLength2() {
-    double length = 0.0;
+    double length;
 
     if (startUnit.toDouble() < endUnit.toDouble()) {
       length = getDistance(startPoint, currentDragPoint);
@@ -979,7 +896,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double getUnitLength3() {
-    double length = 0.0;
+    double length;
 
     if (startUnit.toDouble() < endUnit.toDouble()) {
       length = getDistance(startPoint, currentDragPoint);
@@ -1005,7 +922,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }//method 3
 
   private double getUnitLength4() {
-    double length = 0.0;
+    double length;
 
     if (startUnit.toDouble() < endUnit.toDouble()) {
       length = getDistance(startPoint, currentDragPoint);
@@ -1029,29 +946,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       return -1.0;
     }
   }
-    /*
-    public double getUnitLength(){
-        double sUnit = startUnit.toDouble(), units = 0.0;
-        if(!isEstimateTask){
-            try{
-                units = (getPixelLength()/getPixelsPerUnit()) + sUnit;
-            }catch(ArithmeticException arithmeticException){
-                System.out.println("Cannot divide by zero");
-                units = 0.0;
-            }
-        }else
-            units = getTargetUnit();
-        return units;
-    }
-    * used in old version
-    */
 
   public double getUnitLength(String userResp) {
     return parseUnitString(userResp);
   }
 
   public double getUnitError(boolean inPercent) {
-    double error = 0.0;
+    double error;
     if (inPercent) {
       error = getUnitLength() / getTargetUnit();
     } else {
@@ -1061,7 +962,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   public double getUnitError(boolean inPercent, String userRespUnitLength) {
-    double error = 0.0;
+    double error;
     if (inPercent) {
       error = parseUnitString(userRespUnitLength) / getTargetUnit();
     } else {
@@ -1075,7 +976,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private double parseUnitString(String unitLength) {
-    double unitLen = 0.0;
+    double unitLen;
     String[] temp;
     if (startUnit.getType() == Unit.UNITTYPE.FRACT) {
       temp = unitLength.split("/");
@@ -1093,7 +994,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return unitLen;
   }
 
-
   public boolean isHandleDragged() {
     return isHandleDragged;
   }
@@ -1105,46 +1005,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       baseWidth = newWidth;
     }
   }
-
-
-  /*****************************
-   * First two are supporting methods used with shrink base
-   * Currently not used
-   ****************************
-   private int getVirtualX(){
-   int virtualX = this.getParent().getWidth() - (this.getX()+1);
-   return virtualX;
-   }
-
-   private float getPercentageWidth(int currX){
-   int boundaryX = getBoundaryX();
-   if(boundaryX < currX){
-   float shrinkFactor = (float)(currX - boundaryX)/baseWidth;
-   //System.out.println("CurrX: "+ currX + "BX : "+ boundaryX +" Shrink Factor: " + shrinkFactor);
-   return 1 - shrinkFactor;
-   }else{
-   return 1;
-   }
-   }
-   ********************************
-   *---Incomplete Method---
-   * Purpose to shrink the base according to the line's
-   * expansion past the boundary of the panel
-   ******************************************
-   private void shrinkBase(Graphics2D g2, int cursorX){
-   int virtualX = getVirtualX();
-   if(virtualX > cursorX){
-   widthPercentage = getPercentageWidth(cursorX);
-   //System.out.println("WP: " +widthPercentage);
-   drawBase(g2, widthPercentage);
-   currentDragX = cursorX;
-   }else{ //Farthest point user can drag
-   //System.out.println("VWidth: " +virtualX);
-   currentDragX = cursorX;
-   }
-   }
-   ****************************************************/
-
 
   private void drawBase(Graphics2D g2, float widthPercentage) {
     int newWidth = (int) (baseWidth * widthPercentage);
@@ -1206,174 +1066,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       */
     java.awt.geom.Rectangle2D box = handleLine.getBounds2D();
     box.setRect((int) (box.getMinX() - (handleBounds / 2)), (int) (box.getMinY() - (handleBounds / 2)), (int) (box.getWidth() + handleBounds), (int) (box.getHeight() + handleBounds));
-    if (box.contains(cursorX, cursorY)) {
-      return true;
-    }
-    return false;
+    return box.contains(cursorX, cursorY);
   }
 
   private boolean cursorInBoundingBigBox(int cursorX, int cursorY) {
     java.awt.geom.Rectangle2D box = handleLine.getBounds2D();
     box.setRect((int) (box.getMinX() - (handleBounds)), (int) (box.getMinY() - (handleBounds)), (int) (box.getWidth() + handleBounds * 2), (int) (box.getHeight() + handleBounds * 2));
-    if (box.contains(cursorX, cursorY)) {
-      return true;
-    }
-    return false;
+    return box.contains(cursorX, cursorY);
   }
-
-  private void displayUnitScale(String fontName) {
-
-    Color foregroundColor = Color.LIGHT_GRAY;
-    RotateLabel baseUnitLabel, startUnitLabel, endUnitLabel, targetUnitLabel;
-
-    Font font = new Font(fontName, Font.BOLD, 12);
-
-    int yPad = lineThickness + 20;
-
-    boolean regular;//regular if numline is on left side of screen + and - are changed accordingly
-    if (degreeOfLine > 90 && degreeOfLine < 270) {
-      regular = true;
-    } else {
-      regular = false;
-    }
-        /*
-            //if(!showFullBaseScale){
-                baseUnitLabel = endUnit.getLabel(font);
-                eUnitLabelW = baseUnitLabel.getWidth();
-                eUnitLabelH = baseUnitLabel.getHeight();
-                //--------End Unit Number---------------
-                if(endUnit.getType() == Unit.UNITTYPE.DECI){
-                    baseUnitLabel.setLocation(extendPoint);
-    //this is the old location                //baseUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(baseUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-                    linePanel.add(baseUnitLabel);
-                }else if(endUnit.getType() == Unit.UNITTYPE.FRACT){
-                    JPanel fractPanel = endUnitFract.getFractionPanel(font, foregroundColor);
-                    fractPanel.setLocation(extendPoint);
-         //this is the old location           //fractPanel.setLocation((extendPoint.x+(baseWidth/2)-(fractPanel.getWidth()/2)), (extendPoint.y+yPad-3));
-                    linePanel.add(fractPanel);
-                }else if(endUnit.getType() == Unit.UNITTYPE.ODDS){
-                    baseUnitLabel.setLocation(extendPoint);
-     //this is the old location               //baseUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(baseUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-                    linePanel.add(baseUnitLabel);
-                }else{
-                    baseUnitLabel.setLocation(extendPoint);
-      //this is the old location              //baseUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(baseUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-                    linePanel.add(baseUnitLabel);
-                }
-          //  }else{
-          *
-          */
-    //startUnitLabel = startUnit.getLabel(font);
-    //endUnitLabel = endUnit.getLabel(font);
-    startUnitLabel = new RotateLabel(startUnit.toString(), degreeOfLine, font);
-    endUnitLabel = new RotateLabel(endUnit.toString(), degreeOfLine, font);
-
-    sUnitLabelW = startUnitLabel.getWidth();
-    sUnitLabelH = startUnitLabel.getHeight();
-    eUnitLabelW = endUnitLabel.getWidth();
-    eUnitLabelH = endUnitLabel.getHeight();
-    //--------Full Base Unit (includes start unit and base unit)---------------
-    int endUnitX = extendPoint.x + baseWidth;
-
-    //Case Unit is a decimal
-    if (endUnit.getType() == Unit.UNITTYPE.DECI) {
-      if (showHideLabels[0]) {
-        //startUnitLabel.setLocation(startLoc.x - startUnitLabel.getWidth(), startLoc.y);
-        //startUnitLabel.setLocation((startX-startUnitLabel.getWidth()), extendPoint.y+yPad); old location
-        linePanel.add(startUnitLabel);
-      } //the start label is displayed
-      if (showHideLabels[1]) {
-        endUnitLabel.setLocation(extendPoint.x + endUnitLabel.getWidth(), extendPoint.y);
-        //endUnitLabel.setLocation(endUnitX, extendPoint.y+yPad); old location
-        linePanel.add(endUnitLabel);
-      }//teh end label is displayed
-
-      //Case Unit is a fraction
-    } else if (endUnit.getType() == Unit.UNITTYPE.FRACT) {
-      if (showHideLabels[0]) {
-        JPanel startFractPanel = startUnitFract.getFractionPanel(font, foregroundColor);
-        //startFractPanel.setLocation(startLoc.x - startFractPanel.getWidth(), startLoc.y);
-        //startFractPanel.setLocation(startX-(startFractPanel.getWidth()), (extendPoint.y+yPad-3)); old location
-        linePanel.add(startFractPanel);
-      }//the start label is displayed
-      if (showHideLabels[1]) {
-        JPanel endFractPanel = endUnitFract.getFractionPanel(font, foregroundColor);
-        endFractPanel.setLocation(extendPoint.x + endUnitLabel.getWidth(), extendPoint.y);
-        //endFractPanel.setLocation(endUnitX, (extendPoint.y+yPad-3)); old location
-        linePanel.add(endFractPanel);
-      }// the end unit is displayed
-    }
-
-    //Case Unit is ODDS
-    else if (endUnit.getType() == Unit.UNITTYPE.ODDS) {
-      if (showHideLabels[0]) {
-        //startUnitLabel.setLocation(startLoc.x - startUnitLabel.getWidth(), startLoc.y);
-        //startUnitLabel.setLocation((startX-startUnitLabel.getWidth()), extendPoint.y+yPad); old location
-        linePanel.add(startUnitLabel);
-      } //the start label is displayed
-      if (showHideLabels[1]) {
-        endUnitLabel.setLocation(extendPoint.x + endUnitLabel.getWidth(), extendPoint.y);
-        //endUnitLabel.setLocation(endUnitX, extendPoint.y+yPad); old location
-        linePanel.add(endUnitLabel);
-      }//the end label is displayed
-
-      //Case Default
-    } else {
-      if (showHideLabels[0]) {
-        //if(regular)
-        //startUnitLabel.setLocation(startLoc);//startLoc.x - startUnitLabel.getWidth(), startLoc.y);
-        //else
-        //startUnitLabel.setLocation(startLoc);//startLoc.x + startUnitLabel.getWidth(), startLoc.y);
-        //startUnitLabel.setLocation((startX-startUnitLabel.getWidth()), extendPoint.y+yPad); old location
-        linePanel.add(startUnitLabel);
-      }//start unit is displayed
-      if (showHideLabels[1]) {
-        if (regular) {
-          endUnitLabel.setLocation(extendPoint);//extendPoint.x + endUnitLabel.getWidth(), extendPoint.y);
-        } else {
-          endUnitLabel.setLocation(extendPoint);//extendPoint.x - endUnitLabel.getWidth(), extendPoint.y);
-        }
-        //endUnitLabel.setLocation(endUnitX, extendPoint.y+yPad); old location
-        linePanel.add(endUnitLabel);
-      }//the end unit is displayed
-    }
-    // }
-
-    //Display target only if the task is not estimate
-    if (!isEstimateTask) {
-      yPad = lineThickness + 70;
-      //targetUnitLabel = targetUnit.getLabel(font);
-      targetUnitLabel = new RotateLabel(targetUnit.toString(), degreeOfLine, font);
-
-      //---------Target Unit Number-------------
-      if (showHideLabels[2]) {
-        if (targetUnit.getType() == Unit.UNITTYPE.DECI) {
-          //targetUnitLabel.setLocation(targetLoc.x - targetUnitLabel.getWidth(), targetLoc.y);
-          //targetUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(targetUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-          linePanel.add(targetUnitLabel);
-        } else if (targetUnit.getType() == Unit.UNITTYPE.FRACT) {
-          JPanel targetFractPanel = targetUnitFract.getFractionPanel(font, foregroundColor);
-          //targetFractPanel.setLocation(targetLoc.x - targetFractPanel.getWidth(), targetLoc.y);
-          //targetFractPanel.setLocation((extendPoint.x+(baseWidth/2)-(targetFractPanel.getWidth()/2)), (extendPoint.y+yPad));
-          linePanel.add(targetFractPanel);
-        } else if (targetUnit.getType() == Unit.UNITTYPE.ODDS) {
-          //targetUnitLabel.setLocation(targetLoc.x - targetUnitLabel.getWidth(), targetLoc.y);
-          //targetUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(targetUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-          linePanel.add(targetUnitLabel);
-        } else {
-          if (regular)
-            //targetUnitLabel.setLocation(targetLoc);//targetLoc.x - targetUnitLabel.getWidth(), targetLoc.y);
-            //else
-            //targetUnitLabel.setLocation(targetLoc);//targetLoc.x + targetUnitLabel.getWidth(), targetLoc.y);
-            //targetUnitLabel.setLocation((extendPoint.x+(baseWidth/2)-(targetUnitLabel.getWidth()/2)), (extendPoint.y+yPad));
-          {
-            linePanel.add(targetUnitLabel);
-          }
-        }
-      }//the target unit is displayed
-    }
-    linePanel.addMouseMotionListener(this);
-  }//display unit scale
 
   public void mouseClicked(MouseEvent e) {
     //lfet blank
@@ -1402,7 +1102,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     //left blank
   }
 
-  private Point2D.Float lastMouse;
 
   public void mouseDragged2(MouseEvent e) {
     if (!isEstimateTask && atDragRegion && cursorInBoundingBigBox(e.getX(), e.getY())) {//should only be implemented in non - estimate tasks
@@ -1447,37 +1146,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
   }
 
-  public void thisWillBeMouseDraggedWhenIAmFinished(MouseEvent e) {
-    Float outBound = null, inBound = null;
-    boolean vertical, regularX;
-
-    if (degreeOfLine == 90 || degreeOfLine == 270) {
-      vertical = true;
-    } else {
-      vertical = false;
-    }
-
-    if (degreeOfLine >= 90 && degreeOfLine < 270) {
-      regularX = true;
-    } else {
-      regularX = false;
-    }
-
-    if (keepWithinBounds[0]) {
-      outBound = (float) startPoint.getX();
-    }
-    if (keepWithinBounds[1]) {
-      inBound = (float) extendPoint2D.getX();
-    }
-
-    if (!vertical) {
-
-
-    } else if (vertical) {
-      moveLineVertically(e.getX(), e.getY(), regularX);
-    }
-  }
-
   public void mouseDragged(MouseEvent e) {
     boolean regularX, regularY = false;
     boolean vertical;
@@ -1490,16 +1158,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (degreeOfLine > 0 && degreeOfLine < 180) {
       regularY = true;
     }
-    if (degreeOfLine >= 90 && degreeOfLine < 270) {
-      regularX = true;
-    } else {
-      regularX = false;
-    }
-    if (degreeOfLine == 90 || degreeOfLine == 270) {
-      vertical = true;
-    } else {
-      vertical = false;
-    }
+
+    regularX = degreeOfLine >= 90 && degreeOfLine < 270;
+    vertical = degreeOfLine == 90 || degreeOfLine == 270;
+
     if (!isEstimateTask) {
       if (atDragRegion) { //&& cursorInBoundingBigBox(e.getX(), e.getY())){
         if (!vertical) {
@@ -1703,29 +1365,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       int cX, cY;
       cX = e.getX();
       cY = e.getY();
-       /*
-       //Determine if mouse cursor is within the handle's region
-       if(cursorInBoundingBox(cX, cY) == true){
-          if((currentDragX <= extendPoint.x || currentDragX <= startX)  && extendLine != null){
-                linePanel.setLineColor(extendLine, handleActiveColor);
-          }else if(currentDragX == endLine.getX1()){
-                linePanel.setLineColor(endLine, handleActiveColor);
-          }else{
-              if(atDragRegion == false)
-                linePanel.drawHandle(handleActiveColor);
-                //drawHandle(currG,currentDragX,handleActiveColor);
-          }
-          atDragRegion = true;
-       }else{
-          if(atDragRegion == true){
-                linePanel.drawHandle(dragColor);
-                //drawHandle(currG,currentDragX,dragColor);
-          }
-          atDragRegion = false;
-       }
-       }
-       *
-       */
+
       if (cursorInBoundingBox(cX, cY)) {
         linePanel.setLineColor(handleLine, handleActiveColor);
         currentHandleColor = handleActiveColor;
@@ -1823,11 +1463,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return new Point2D.Float((float) (p.getX() - _x), (float) (p.getY() - _y));
   }
 
-
-  /*
-     * Calculates the point when given a distance from the numberline such that a line can be drawn perpindicular to the numberline
-     *
-     */
   private Point2D.Float getHighPointTwo(int d, Point2D.Float p) {
     double x, y;
     double alpha;
@@ -1962,23 +1597,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   }
 
-  /*
-     * returns slope of lines perpindicular to the numberline
-     */
-  private float getPerpindicularSlope(float f) {
-    return (float) (-Math.pow(f, -1));
-  }
-
-  /*
-     * returns the slope of the numberline
-     */
   private float getNumLineSlope() {
     return ((startPoint.y - centerScreen.y) / (startPoint.x - centerScreen.x));
   }//get slope
 
-  /*This method when provided an x coordinate calculates the y value such that the point
-     * (x,y) is on the numberline
-     */
   private float getCorrespondingY(float x) {
     return ((slope * (x - startPoint.x)) + startPoint.y);
   }//correspondingX
@@ -1986,10 +1608,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   //this method does not work correctly
   private float getCorrespondingX(float y) {
     return ((y - startPoint.y) / slope) + startPoint.x;
-  }
-
-  private float parallelPoint(float x, Point2D.Float p) {
-    return ((slope * (x - p.x)) + p.y);
   }
 
   private Point2D.Float getStartPoint() {
@@ -2013,87 +1631,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return new Point2D.Float(x, y);
   }
 
-  public class RotateLabel extends JLabel {
-    private double rotateDegrees;
-    private double correctedDegrees;
-    private double alpha;
-
-    public RotateLabel(int d) {
-      super();
-      rotateDegrees = d;
-      rotateDegrees = Math.toRadians(rotateDegrees);
-      setForeground(Color.LIGHT_GRAY);
-    }
-
-    public RotateLabel(String s, int d, Font f) {
-      super(s);
-      rotateDegrees = d;
-      alpha = getRotation();
-      setForeground(Color.LIGHT_GRAY);
-      setFont(f);
-      FontMetrics metrics = this.getFontMetrics(f);
-      int w = metrics.stringWidth(s);
-      int h = metrics.getHeight();
-      setSize(w + 50, h + 50);
-    }
-
-    private double getRotation() {
-      double a;
-      if (rotateDegrees > 0 && rotateDegrees < 90) {
-        correctedDegrees = rotateDegrees - 13;
-        a = correctedDegrees;
-        a = Math.toRadians(a);
-      } else if (rotateDegrees > 90 && rotateDegrees < 180) {
-        correctedDegrees = rotateDegrees + 15;
-        a = 180 - correctedDegrees;
-        a = -a;
-        a = Math.toRadians(a);
-      } else if (rotateDegrees > 180 && rotateDegrees < 270) {
-        correctedDegrees = rotateDegrees - 15;
-        a = correctedDegrees - 180;
-        a = Math.toRadians(a);
-      } else if (rotateDegrees > 270 && rotateDegrees < 360) {
-        correctedDegrees = rotateDegrees + 15;
-        a = 360 - correctedDegrees;
-        a = -a;
-        a = Math.toRadians(a);
-      } else {
-        a = -1.0;
-        System.out.println("not supported yet");
-      }
-
-      return a;
-    }
-
-    @Override
-    public void paintComponent(Graphics g) {
-      Graphics2D g2 = (Graphics2D) g;
-      g2.rotate(alpha, 25, 25);
-      super.paintComponent(g2);
-
-    }
-  }
-
   public class NumberLinePanel extends JPanel {
-
-    private boolean drawDragLine;
-    private int dragLinePos;
-    private Color currHandleColor;
     private Line2D currentLine;
     private Color currentLineColor;
 
     public NumberLinePanel() {
       super(null);
       setBackground(Color.BLACK);
-      drawDragLine = false;
-      dragLinePos = 0;
-      currHandleColor = handleActiveColor;
-    }
-
-    public void setDragLine(int xPos) {
-      drawDragLine = true;
-      dragLinePos = xPos;
-      this.repaint();
     }
 
     public void setLineColor(Line2D line, Color c) {
@@ -2102,72 +1646,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       this.repaint();
     }
 
-    public void drawHandle(Color currCol) {
-      currHandleColor = currCol;
-      this.repaint();
-    }
-
-    private void drawHandle(Graphics2D g2, int endX, Color newColor) {
-      //Erase the previous handleLine and handleGuideLine
-      g2.setStroke(stroke);
-      g2.setColor(bkgColor);
-      g2.draw(handleLine);
-      g2.draw(handleGuideLine);
-
-      //Redraw drag Line
-      //g2.setStroke(stroke);
-      g2.setColor(dragColor);
-      g2.draw(dragLine);
-
-      g2.setColor(newColor);
-      handleLine.setLine(endX, extendPoint.y - baseHeight, endX, extendPoint.y - lineThickness);
-      g2.draw(handleLine);
-
-      if (lineThickness > 2) {
-        handleGuideLine.setLine(endX, extendPoint.y - baseHeight - guideLinePadding, endX, extendPoint.y + guideLinePadding);
-        g2.setColor(guideColor);
-        //Determine thickness of guideline based on overall lineThickness specified
-        if (lineThickness % 2 == 1) { //ODDS Thickness
-          g2.setStroke(new BasicStroke(1));
-          g2.draw(handleGuideLine);
-        } else { //EVEN Thickness
-          g2.setStroke(new BasicStroke(2));
-          g2.draw(handleGuideLine);
-        }
-      }
-      drawBase(g2, widthPercentage);
-    }
-
-    private void updateDragLine() {
+    public void updateDragLine() {
       dragLine = new Line2D.Float(extendPoint2D, currentDragPoint);
       handleGuide.setLine(guideHandleLow, guideHandleHigh);
       handleLine.setLine(handleHigh, handleLow);
       this.repaint();
-    }
-
-    private void drawTargetDragLine(Graphics2D g) {
-      g.setColor(dragColor);
-      dragLine.setLine(extendPoint.x + lineThickness, extendPoint.y, currentDragX, extendPoint.y);
-      g.draw(dragLine);
-    }
-
-    private void drawDragLine(Graphics2D g, int endX) {
-      g.setStroke(stroke);
-      if (endX < currentDragX) {  //Handle is retracting
-        //-----------Erase previous drag line-----------
-        g.setColor(bkgColor);
-        g.draw(dragLine);
-      }
-      g.setColor(dragColor);
-      if (endX > (extendPoint.x + lineThickness)) {
-        dragLine.setLine(extendPoint.x + lineThickness, extendPoint.y, endX, extendPoint.y);
-        g.draw(dragLine);
-      } else {
-        dragLine.setLine(extendPoint.x, extendPoint.y, endX, extendPoint.y);
-        g.draw(dragLine);
-      }
-      drawHandle(g, endX, handleActiveColor);
-      currentDragX = endX;
     }
 
     //method that draws the base for the numberline that is drawn along a ellispe
@@ -2193,8 +1676,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       if (degreeOfLine > 0 && degreeOfLine < 90) {
         theta = Math.atan(slope);
-//                deltaX = Math.cos(theta) * (lengthEU/2);
-//                deltaY = Math.sin(theta) * (lengthEU/2);
         deltaX = Math.cos(theta) * (lengthEU);
         deltaY = Math.sin(theta) * (lengthEU);
 
@@ -2204,72 +1685,40 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
         endLoc.x = (float) (endLoc.x - deltaX);
         endLoc.y = (float) (endLoc.y - deltaY);
-
-//                deltaX = Math.cos(theta) * (lengthSU/2);
-//                deltaY = Math.sin(theta) * (lengthSU/2);
-
-//                startLoc.x = (float)(startLoc.x - deltaX);
-//                startLoc.y = (float)(startLoc.y - deltaY);
-
-//                deltaX = Math.cos(theta) * (lengthTU/2);
-//                deltaY = Math.sin(theta) * (lengthTU/2);
-
-//                targetLoc.x = (float)(targetLoc.x - deltaX);
-//                targetLoc.y = (float)(targetLoc.y - deltaY);
       } else if (degreeOfLine > 90 && degreeOfLine < 180) {
         endLoc = getLowPoint(fontHeight, guideRightLow);
         startLoc = getLowPoint(fontHeight, guideLeftLow);
         targetLoc = getLowPoint((fontHeight * 2), guideLeftLow);
 
         theta = Math.atan(slope);
-//                deltaX = Math.cos(theta) * (lengthSU/2);
-//                deltaY = Math.sin(theta) * (lengthSU/2);
         deltaX = Math.cos(theta) * (lengthSU);
         deltaY = Math.sin(theta) * (lengthSU);
 
         startLoc.x = (float) (startLoc.x - deltaX);
         startLoc.y = (float) (startLoc.y - deltaY);
 
-//                deltaX = Math.cos(theta) * (lengthTU/2);
-//                deltaY = Math.sin(theta) * (lengthTU/2);
         deltaX = Math.cos(theta) * (lengthTU);
         deltaY = Math.sin(theta) * (lengthTU);
 
         targetLoc.x = (float) (targetLoc.x - deltaX);
         targetLoc.y = (float) (targetLoc.y - deltaY);
-
-//                deltaX = Math.cos(theta) * (lengthEU/2);
-//                deltaY = Math.sin(theta) * (lengthEU/2);
-//
-//                endLoc.x = (float)(endLoc.x - deltaX);
-//                endLoc.y = (float)(endLoc.y - deltaY);
       } else if (degreeOfLine > 180 && degreeOfLine < 270) {
         endLoc = getLowPoint(fontHeight, guideRightLow);
         startLoc = getLowPoint(fontHeight, guideLeftLow);
         targetLoc = getLowPoint((fontHeight * 2), guideLeftLow);
 
         theta = Math.atan(slope);
-//                deltaX = Math.cos(theta) * (lengthSU/2);
-//                deltaY = Math.sin(theta) * (lengthSU/2);
         deltaX = Math.cos(theta) * (lengthSU);
         deltaY = Math.sin(theta) * (lengthSU);
 
         startLoc.x = (float) (startLoc.x - deltaX);
         startLoc.y = (float) (startLoc.y - deltaY);
 
-//                deltaX = Math.cos(theta) * (lengthTU/2);
-//                deltaY = Math.sin(theta) * (lengthTU/2);
         deltaX = Math.cos(theta) * (lengthTU);
         deltaY = Math.sin(theta) * (lengthTU);
 
         targetLoc.x = (float) (targetLoc.x - deltaX);
         targetLoc.y = (float) (targetLoc.y - deltaY);
-
-//                deltaX = Math.cos(theta) * (lengthEU/2);
-//                deltaY = Math.sin(theta) * (lengthEU/2);
-//
-//                endLoc.x = (float)(endLoc.x - deltaX);
-//                endLoc.y = (float)(endLoc.y - deltaY);
       } else if (degreeOfLine > 270 && degreeOfLine < 360) {
         endLoc = getLowPoint(fontHeight, guideRightLow);
         startLoc = getLowPoint(fontHeight, guideLeftLow);
@@ -2280,39 +1729,18 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         theta = 180 - theta;
         theta -= 90;
         theta = Math.toRadians(theta);
-
-//                deltaX = Math.sin(theta) * (lengthEU/2);
-//                deltaY = Math.cos(theta) * (lengthEU/2);
         deltaX = Math.sin(theta) * (lengthEU);
         deltaY = Math.cos(theta) * (lengthEU);
         temp = endLoc;
         endLoc.x = (float) (temp.x - deltaX);
         endLoc.y = (float) (temp.y - deltaY);
 
-//                deltaX = Math.sin(theta) * (lengthSU/2);
-//                deltaY = Math.cos(theta) * (lengthSU/2);
-//
-//                startLoc.x = (float)(startLoc.x - deltaX);
-//                startLoc.y = (float)(startLoc.y - deltaY);
-
-//                deltaX = Math.sin(theta) * (lengthTU/2);
-//                deltaY = Math.cos(theta) * (lengthTU/2);
-//
-//                targetLoc.x = (float)(targetLoc.x - deltaX);
-//                targetLoc.y = (float)(targetLoc.y - deltaY);
-
       } else if (degreeOfLine == 0 || degreeOfLine == 360) {
-//                endLoc.x = endLoc.x - (lengthEU/2);
-//                startLoc.x = startLoc.x - (lengthSU/2);
-//                targetLoc.x = targetLoc.x - (lengthTU/2);
         endLoc.x = endLoc.x - (lengthEU);
         endLoc.y = endLoc.y + fontHeight;
         startLoc.y = startLoc.y + fontHeight;
         targetLoc.y = targetLoc.y + (fontHeight * 2);
       } else if (degreeOfLine == 180) {
-//                startLoc.x = startLoc.x - (lengthSU/2);
-//                targetLoc.x = targetLoc.x - (lengthTU/2);
-//                endLoc.x = endLoc.x - (lengthEU/2);
         startLoc.x = startLoc.x - (lengthSU);
         targetLoc.x = targetLoc.x - (lengthTU);
         startLoc.y = startLoc.y + fontHeight;
@@ -2400,8 +1828,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       }
     }
 
-    Point2D.Float rotateStart = new Point2D.Float(), rotateEnd = new Point2D.Float(), rotateHandle = new Point2D.Float(), rotateTarget = new Point2D.Float();
-
     private void displayLabels(Graphics2D g) {
       double degrees = Math.toDegrees(Math.atan(slope));
       double theta = Math.toRadians(degrees);
@@ -2468,13 +1894,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     private String getStartLabel() {
-      String start = "";
-      String[] fract_temp = new String[2];
+      String start;
+      String[] fract_temp;
 
       StringBuilder sb = new StringBuilder();
-      String html1 = "<html><body><sup>";
-      String html2 = "</sup><font size=+1>/<font size=-1><sub>";
-      String html3 = "</sub></body></html>";
       switch (startUnit.getType()) {
         case FRACT:
           fract_temp = startUnit.getValue().split("/");
@@ -2506,9 +1929,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     private String getEndLabel() {
-      String end = "";
+      String end;
 
-      String[] fract_temp = new String[2];
+      String[] fract_temp;
       StringBuilder sb = new StringBuilder();
 //            String html1 = "<html><body><sup>";
 //            String html2 = "</sup><font size=+1>/<font size=-1><sub>";
@@ -2545,9 +1968,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     private String getTargetLabel() {
-      String target = "";
+      String target;
 
-      String[] fract_temp = new String[2];
+      String[] fract_temp;
       StringBuilder sb = new StringBuilder();
 //            String html1 = "<html><body><sup>";
 //            String html2 = "</sup><font size=+1>/<font size=-1><sub>";
@@ -2604,8 +2027,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       drawBaseCircle(graphics);
 
-//            if(isHandleDragged)
-//                currentHandleColor = dragColor;
       graphics.setColor(currentHandleColor);
       graphics.draw(handleLine);
 
@@ -2624,28 +2045,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       graphics.draw(handleGuide);
 
       displayLabels(graphics);
-
-      if (isDebugOn) {
-        graphics.setColor(Color.CYAN);
-        graphics.setStroke(new BasicStroke(1));
-
-      }
-            /*
-            if(drawDragLine){
-                drawDragLine(graphics, dragLinePos);
-                drawDragLine = false;
-            }
-            if(isEstimateTask)
-                drawTargetDragLine(graphics);
-            drawHandle(graphics, currentDragX, currHandleColor);
-            if(currentLine != null){
-                graphics.setStroke(stroke);
-                graphics.setColor(currentLineColor);
-                graphics.draw(currentLine);
-                currentLine = null;
-            }
-            *
-            */
     }
   }
-}  
+}

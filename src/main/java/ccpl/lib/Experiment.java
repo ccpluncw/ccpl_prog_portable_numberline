@@ -1,18 +1,12 @@
 package ccpl.lib;
 
 import java.awt.AWTException;
-import java.awt.Color;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 
 public class Experiment implements ExpInterface {
@@ -21,27 +15,22 @@ public class Experiment implements ExpInterface {
   private static String WEB_DIR = "";
   //protected final static String WEB_APP_CODEBASE = "http://localhost/apps/";
 
-  private final static String CGI_STR = WEB_APP_CODEBASE + "jws_lib/app_write.php";
   private final static String CGI_TRIAL_READER = WEB_APP_CODEBASE + "jws_lib/trial_file.php";
   protected static URL CGI = null;
 
   protected final String experiment, subject, condition, session;
   protected int totalTrials, trialNum, trialType;
-  protected static Response response = new Response();
+  protected static final Response response = new Response();
   protected static DrawExpFrame frame;
 
   public static String practiceTrialFile, expTrialFile, instructFile, fontFile;
   protected static int restNumber;
 
   protected static Specification[] dbfile, stims, fonts;
-  protected static SpecificationArrayProcess dataAP = new SpecificationArrayProcess();
+  protected static final SpecificationArrayProcess dataAP = new SpecificationArrayProcess();
   protected static final String WORKING_DIR = System.getProperty("user.dir");
 
   protected String codeBase = new File(WORKING_DIR).toURI().toString();
-
-  protected static enum FRACTAL_TYPE {MANDELBROT, JULIA}
-
-  protected static enum TRANSITION_TYPE {FADE, BLOCK, ALL}
 
   protected final String REL_DATA_FILE;
   protected final String DATA_FILE_NAME;
@@ -49,8 +38,7 @@ public class Experiment implements ExpInterface {
 
   protected static FileInTextBox instruct;
 
-  private static BlankPanel blankPanel = new BlankPanel();
-  public static DecimalFormat deciFormat = new DecimalFormat("#.####");
+  private static final BlankPanel blankPanel = new BlankPanel();
 
 
   public Experiment() {
@@ -62,7 +50,7 @@ public class Experiment implements ExpInterface {
     condition = cond;
     session = sess;
     experiment = exp;
-    this.frame = frame;
+    Experiment.frame = frame;
     response.setFrame(frame);
     DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
     REL_DATA_FILE = experiment + "/data/";
@@ -80,22 +68,6 @@ public class Experiment implements ExpInterface {
     DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
     REL_DATA_FILE = experiment + "/data/";
     INFILES_PATH = "exp/infiles/";
-  }
-
-  public void hide() {
-    frame.setVisible(false);
-  }
-
-  public void readDBFile(String dbfilePath) {
-    dbfile = dataAP.readFromURL(getURL(INFILES_PATH + dbfilePath));
-  }
-
-  public void readLocalDBFile(String dbfilePath) {
-    dbfile = dataAP.readFromFile(INFILES_PATH + dbfilePath);
-  }
-
-  public URL getDBFile(String dbfilePath) {
-    return getURL(INFILES_PATH + dbfilePath);
   }
 
   public String getInfilesPath() {
@@ -144,38 +116,10 @@ public class Experiment implements ExpInterface {
     }
   }
 
-  public void setWebCodeBase(String cBase) {
-    if (!cBase.isEmpty()) {
-      codeBase = WEB_APP_CODEBASE + cBase + "/";
-      WEB_DIR = cBase;
-    }
-  }
-
   public static URL getCGI() {
     return CGI;
   }
 
-
-  //
-  //This method will refresh the remaining trials of the experiment and
-  //shuffle them around.
-  //trial number is decremented to include trial which the refresh
-  //was called.
-  //
-  public void refreshTrials() {
-    Specification[] tempSpecs = new Specification[stims.length - trialNum];
-    //copy specs to temp array
-    System.arraycopy(stims, trialNum, tempSpecs, 0, tempSpecs.length);
-
-    //shuffle around
-    tempSpecs = dataAP.randomize(tempSpecs);
-
-    //copy back over
-    System.arraycopy(tempSpecs, 0, stims, trialNum, tempSpecs.length);
-
-    //decrement trial
-    trialNum--;
-  }
 
   public void setFullScreen() {
     if (System.getProperty("os.name").startsWith("Mac")) {
@@ -184,19 +128,6 @@ public class Experiment implements ExpInterface {
     }//make mac go full screen
   }
 
-
-  public void setWebEnabled(boolean webEnable) {
-    WEB_ENABLED = webEnable;
-    if (webEnable) {
-      try {
-        CGI = new URL(CGI_STR);
-      } catch (MalformedURLException ex) {
-        Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
-      }
-    } else {
-      CGI = null;
-    }
-  }
 
   public static void resetMouseToCenterScreen() {
     try {
@@ -207,93 +138,17 @@ public class Experiment implements ExpInterface {
     }
   }
 
-  public boolean isWebEnabled() {
-    return WEB_ENABLED;
-  }
-
-  /*** Use the following method to specify the trial structure of the experiment.
-   **** Pass it the JFRAME that you want to use and the Stimuli and Response objects.
-   ***/
-  public void presentStimulus(JFrame frame, Specification stim, Response resp) {
-    BlankPanel endPanel = new BlankPanel(Color.black);
-    BlankPanel startPanel = new BlankPanel(Color.black);
-    DrawTrial trial = new DrawTrial(stim);
-    GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-    GraphicsDevice gs = ge.getDefaultScreenDevice();
-    if (gs.isFullScreenSupported()) {
-      System.out.println("Full-screen mode is supported");
-      gs.setFullScreenWindow(frame);
-    } else {
-      System.out.println("Full-screen mode will be simulated");
-    }
-    frame.setContentPane(startPanel);
-
-/***	    one must set the frame to visible BEFORE one draws in the frame with 
- ****      a class that does not use PaintComponent.  If one does not set the
- ****      frame to visible first, then a null pointer exception will result for
- ****      the Graphics object.
- ***/
-    frame.setVisible(true);
-
-/***      one must have the following delay (minimum of 100 ms) to       ***
- ****      allow the screen to be drawn and then the first trial to       ***
- ****			show.  If one does not have this delay, then the first trial   ***
- ****			will not be shown.                                             ***
- ***/
-    delay(500);
-    trial.draw(startPanel);
-
-    resp.getTimedKeyResponse();
-
-/***			next to clear the screen, set a new content pane and make it visible.
- ***/
-
-
-    frame.setContentPane(endPanel);
-    frame.setVisible(true);
-
-/***			if you want a button response, set a DELAY before you clear the screen for 
- **** 			how long you want the SOA and then insert the following below:
- ****
- ****			Object [] buttonLabels = { "Same", "Different" };
- ****			resp.getTimedTwoButtonResponse (buttonLabels);
- ***/
-
-/***			Below we just check the accuracy and give feedback
- ***/
-
-    resp.checkResponseAccuracy(1);
-    resp.giveFeedback(endPanel);
-
-  }
-
 
   public static void delay(int milliseconds) {
     if (milliseconds <= 0) {
       return;
     }
-    long start = new Date().getTime();
+
     try {
       Thread.sleep(milliseconds);
     } catch (InterruptedException ex) {
       Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
     }
-    new Date().getTime();
-  }
-
-  public static void changeBackground(Color bg) {
-    frame.getContentPane().setBackground(bg);
-  }
-
-  public static void pauseColor(int milliseconds, Color firstColor, Color secondColor) {
-    frame.getContentPane().setBackground(firstColor);
-    delay(milliseconds);
-    frame.getContentPane().setBackground(secondColor);
-  }
-
-  public static void pauseBeep(int milliseconds) {
-    delay(milliseconds);
-    java.awt.Toolkit.getDefaultToolkit().beep();
   }
 
   public static void rest() {
@@ -307,28 +162,9 @@ public class Experiment implements ExpInterface {
   }
 
 
-  public void prepareToStart() {
-    prepareToStartExperiment();
-  }
-
-
-  public void prepareToStartExperiment() {
-    delay(200);
-    response.displayNotificationFrame(frame, "Please Click OK to start the experiment");
-
-//            JOptionPane.showMessageDialog(null, "Please Click OK to start the experiment", "information", JOptionPane.INFORMATION_MESSAGE);
-  }
-
   public static void prepareToStartExperiment(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the experiment");
-  }
-
-  public void prepareToStartPractice() {
-    delay(200);
-    response.displayNotificationFrame(frame, "Please Click OK to start the practice trials");
-    //JOptionPane.showMessageDialog(null, "Please Click OK to start the practice trials", "information", JOptionPane.INFORMATION_MESSAGE);
-
   }
 
   public static void prepareToStartPractice(JFrame parent) {
@@ -366,47 +202,6 @@ public class Experiment implements ExpInterface {
     return fileURL;
   }
 
-  public void runExp() {
-    setupExp();
-    for (trialType = 0; trialType < 2; ++trialType) {
-      if (trialType == 0 && practiceTrialFile.trim().toLowerCase().equals("none")) {
-        trialType++;
-      }
-      if (trialType == 0) {
-        //stims = dataAP.readFromURL(getURL(INFILES_PATH + practiceTrialFile));
-        stims = dataAP.readFromURL(getPracticeFile());
-        stims = dataAP.randomize(stims);
-        frame.showCursor();
-        prepareToStartPractice();
-        frame.hideCursor();
-      } else {
-        //stims = dataAP.readFromURL(getURL(INFILES_PATH + expTrialFile));
-        stims = dataAP.readFromURL(getExperimentFile());
-        stims = dataAP.randomize(stims);
-        frame.showCursor();
-        prepareToStartExperiment();
-        frame.hideCursor();
-      }
-      totalTrials = stims.length;
-      frame.requestFocus();
-      for (trialNum = 0; trialNum < totalTrials; ++trialNum) {
-        readTrial();
-        runTrial();
-        System.out.println(trialNum);
-        if (((trialNum + 1) % restNumber == 0) && trialNum != -1) {
-          Experiment.rest();
-        }
-      }
-    }
-    frame.showCursor();
-  }
-
-  public static void clearPanel(JPanel panel) {
-    if (panel.getComponentCount() > 0) {
-      panel.removeAll();
-    }
-  }
-
 
   public String createOutputHeader() {
     throw new UnsupportedOperationException("Not supported yet.");
@@ -430,58 +225,13 @@ public class Experiment implements ExpInterface {
   }
 
 
-  public static void showInstructions() {
-    instruct.presentFile();
-  }
-
-  protected static void setButtonResponse(char sameChoiceKey, char diffChoiceKey) {
-    response.setSameChoice(Character.toLowerCase(sameChoiceKey));
-    response.setDiffChoice(Character.toLowerCase(diffChoiceKey));
-  }
-
-  public class OutputBuilder {
-    private StringBuilder sBuf;
-    private String delim = "\t";
-
-    public OutputBuilder() {
-      sBuf = new StringBuilder();
-    }
-
-    public <U> void append(U u) {
-      sBuf.append(u).append(delim);
-    }
-
-    /**
-     * Appends the final piece of information.
-     * Difference between append and appendFinal is appendFinal does not
-     * put append the delimiter. The delimiter causes issues sometimes when
-     * importing trial data into Excel by including an empty column.
-     * Added to rectify aforementioned issue in StdDistWordMod.
-     *
-     * @param <U> Generic type
-     * @param u   Generic object that will be appended to the final.
-     */
-    public <U> void appendFinal(U u) {
-      sBuf.append(u);
-    }
-
-    public void clear() {
-      sBuf.setLength(0);
-    }
-
-    @Override
-    public String toString() {
-      return sBuf.toString();
-    }
-  }
-
   public static void presentBlankScreen(int blankDelay) {
-    setExpFrame(blankPanel);
+    setExpFrame();
     delay(blankDelay);
   }
 
-  protected static void setExpFrame(JPanel stimPanel) {
-    frame.setContentPane(stimPanel);
+  protected static void setExpFrame() {
+    frame.setContentPane(Experiment.blankPanel);
     frame.validate();
   }
 

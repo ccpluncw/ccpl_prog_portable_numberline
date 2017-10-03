@@ -10,7 +10,7 @@ import static java.awt.Color.RGBtoHSB;
  *****/
 public class DrawTrial {
 
-  private int numDots;
+  private final int numDots;
 
   public DrawTrial(Specification stim) {
     numDots = stim.getParsedIntSpec(1);
@@ -35,21 +35,21 @@ public class DrawTrial {
       Color c1 = new Color(c3.getRed(), c3.getGreen(), c3.getBlue());
       int x = new RandomIntGenerator(0, windowWidth - 3).draw();
       int y = new RandomIntGenerator(0, windowHeight - 3).draw();
-      c2 = brighten(c1, 0.01f);
+      c2 = brighten(c1);
       g.setColor(c2);
       g.fillOval(x, y, width1, height1);
     }
     g.dispose();
   }
 
-  private Color brighten(Color color, float brightenIncrement) {
+  private Color brighten(Color color) {
     int r = color.getRed();
     int g = color.getGreen();
     int b = color.getBlue();
 
     float[] hsbVals = new float[3];
     RGBtoHSB(r, g, b, hsbVals);
-    hsbVals[2] += brightenIncrement;
+    hsbVals[2] += 0.01f;
 
     if (hsbVals[2] >= 1.0) {
       hsbVals[2] = (float) 1.0;

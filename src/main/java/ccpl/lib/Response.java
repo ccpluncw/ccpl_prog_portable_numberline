@@ -4,7 +4,6 @@ package ccpl.lib;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -20,39 +19,27 @@ import javax.swing.event.ChangeListener;
  ****** Before any timing routine is run, testTimer () must be run once
  *****/
 public class Response implements KeyListener, ActionListener, ChangeListener {
-  private boolean hapticFeedback = false;
-  private int tone, ms;
-  private static boolean logSwitch = false;
-  private static PrintWriter pw;
 
   private int mouseClickButton = -1;
   protected boolean isSliderMoved = false;
   protected String textValue;
   protected long textRT;
   private long RT = 99999;
-  private char sameChoice = '+';
-  private char diffChoice = '-';
   private volatile char userChoice = '~';
-  private boolean correct = false;
   protected JDialog respFrame;
   private JButton sliderOkButton;
   protected JButton textOkButton;
   private JButton rbOkButton;
   private JButton dotOkButton;
   private JButton radioOkButton;
-  private JSlider slider;
-  private ButtonGroup buttonGroup;
   protected JTextField textInput;
   protected long startTime;
   protected long endTime;
   protected volatile boolean inputDone;
   protected boolean closedProperly = true;
-  private boolean isMultipleButton = false;//flag used in key listener if true listens for multiple responses
   private long loopsPerMS = 0;
   private NumPadResponse numPadResponse;
-  private boolean legacy = true;
   private JCheckBox[] buttons;
-  private ArrayList<Integer> boxId;
   private List<Character> responseList;
 
   public AbstractAction returnMouseAction() {
@@ -80,6 +67,9 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     mouseFrame = f;
   }
 
+  @Override
+  public void keyTyped(KeyEvent keyEvent) { }
+
   /**
    * When a button is hit this is triggered
    * saves the button that was hit
@@ -88,53 +78,30 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
    * @param evt
    */
   public void keyPressed(KeyEvent evt) {
-    if (logSwitch) {
-      pw.print("KEY PRESSED -> ");
-      pw.println(evt.getKeyChar());
-      pw.print("KEY CODE -> ");
-      pw.println(evt.getKeyCode());
-      pw.print("KEY MODIFIER -> ");
-      pw.println(evt.getModifiersEx());
-      pw.flush();
-    }
-
     try {
+      boolean isMultipleButton = false;
       if (evt.isControlDown() && (evt.getKeyChar() + "").toLowerCase().charAt(0) == 'q') {
         System.exit(0);
       } else if (isMultipleButton) {
         userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
         responseList.add(userChoice);
-        if (hapticFeedback) {
-          try {
-            AudioClip.beep(tone, ms);
-          } catch (Exception ex) {
-            Logger.getLogger(Response.class.getName()).log(Level.SEVERE, null, ex);
-          }
-        }
         resetUserChoice();
       } else {
         userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
       }
-      keyboardInputDone = true;
-    } catch (Exception e) {
-      if (logSwitch) {
-        pw.print("ERROR IN KEY LISTENER ##10001 -> ");
-        pw.println(e.toString());
-        pw.flush();
-      }
-    }
-
+    } catch (Exception ignored) { }
   }
 
-  public void keyReleased(KeyEvent evt) { }
+  @Override
+  public void keyReleased(KeyEvent keyEvent) {
 
-  public void keyTyped(KeyEvent evt) { }
+  }
 
   /**
    * YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK
    * Calibrates timing to ensure accuracy
-   *
-   * @param inputPanel panel this method will draw in (its just going to indicate the timer is being calibrated)
+   * @param inputPanel panel this method will draw in (its just going to indicate the timer is being
+   *                   calibrated.
    * @param textColor  text color for the panel
    * @param reps       how many reps the timing calibrator will iterate through (normally 1000)
    * @return
@@ -157,7 +124,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     timerLabel.setForeground(textColor);
     timerLabel.setFont(myFont);
     timerLabel.setSize(timerLabel.getPreferredSize());
-    timerLabel.setLocation(dotAreaWidth / 2 - (timerLabel.getWidth() / 2), dotAreaHeight / 2 - (timerLabel.getHeight() / 2));
+    timerLabel.setLocation(dotAreaWidth / 2 - (timerLabel.getWidth() / 2),
+        dotAreaHeight / 2 - (timerLabel.getHeight() / 2));
     inputPanel.add(timerLabel);
     inputPanel.revalidate();
     inputPanel.repaint();
@@ -188,35 +156,6 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     inputPanel.validate();
 
     return loopsPerMS;
-  }
-
-  private volatile boolean keyboardInputDone;
-
-  private long pollForKeyResponse() {
-    long rt;
-    long timeA, timeB, tmpTime;
-    long overRun;
-
-
-    overRun = 0;
-    timeA = new Date().getTime();
-    timeB = new Date().getTime();
-    tmpTime = timeA;
-
-    while (!keyboardInputDone) {
-      timeB = new Date().getTime();
-      if (tmpTime != timeB) {
-        overRun = 0;
-        tmpTime = timeB;
-      } else {
-        overRun++;
-      }
-    }
-
-    rt = (timeB - timeA) + (overRun / loopsPerMS);
-
-
-    return rt;
   }
 
   private long pollForKeyResponse(char c) {
@@ -268,16 +207,20 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
 
       @Override
-      public void mousePressed(MouseEvent e) { }
+      public void mousePressed(MouseEvent e) {
+      }
 
       @Override
-      public void mouseReleased(MouseEvent e) { }
+      public void mouseReleased(MouseEvent e) {
+      }
 
       @Override
-      public void mouseEntered(MouseEvent e) { }
+      public void mouseEntered(MouseEvent e) {
+      }
 
       @Override
-      public void mouseExited(MouseEvent e) { }
+      public void mouseExited(MouseEvent e) {
+      }
     };
 
     numLine.linePanel.addMouseListener(tempListener);
@@ -329,19 +272,6 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     rt = (timeB - timeA) + (overRun / loopsPerMS);
     return rt;
   }
-
-  public synchronized void getTimedKeyResponse() {
-    if (loopsPerMS == 0) {
-      JOptionPane.showMessageDialog(null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
-      System.exit(1);
-    }
-    /** reset the user choice so that the polling call below will work.
-     **/
-    resetUserChoice();
-
-    RT = pollForKeyResponse();
-  }
-
 
   public synchronized void displayNotificationFrame(JFrame parent, String info) {
     inputDone = false;
@@ -408,7 +338,6 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
 
       if (button.equals(sliderOkButton)) {
-
         if (isSliderMoved) {
           endTime = new Date().getTime();
           respFrame.setVisible(false);
@@ -427,6 +356,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
         } else if (numPadResponse != null) {
           textValue = numPadResponse.getResponse();
           if (numPadResponse.validateResponse(textValue)) {
+            boolean legacy = true;
             if (legacy) {
               respFrame.setVisible(false);
               respFrame.dispose();
@@ -446,7 +376,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
       if (button.equals(rbOkButton)) {
         endTime = new Date().getTime();
-        boxId = new ArrayList<>();
+        ArrayList<Integer> boxId = new ArrayList<>();
 
         int temp = boxId.size();
 
@@ -632,73 +562,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
   }
 
-  public void checkResponseAccuracy(int probeType) {
-    if (probeType == 0) {
-      correct = userChoice == sameChoice;
-    } else {
-      correct = userChoice == diffChoice;
-    }
-  }
-
-  public synchronized void giveFeedback(BlankPanel endPanel) {
-    Graphics g = endPanel.getGraphics();
-    Dimension d = endPanel.getSize();
-    char key = getUserChoice();
-    JLabel feedbackLabel = new JLabel();
-    FontMetrics fm;
-    int wOffset, hOffset;
-
-    g.setColor(Color.white);
-    Font f = new Font("Serif", Font.BOLD, 24);
-    g.setFont(f);
-
-    delay(200);
-
-    if (correct) {
-      feedbackLabel.setText("Correct");
-      fm = feedbackLabel.getFontMetrics(f);
-      wOffset = fm.stringWidth(feedbackLabel.getText()) / 2;
-      hOffset = fm.getHeight() / 2;
-      g.drawString("Correct", d.width / 2 - wOffset, d.height / 2 + hOffset);
-    } else if (userChoice != sameChoice && userChoice != diffChoice && userChoice != '~') {
-      g.drawString("Your fingers are misplaced.", d.width / 2 - 130, d.height / 2 + 40);
-      g.drawString("Please reposition your fingers", d.width / 2 - 139, d.height / 2 + 80);
-      g.drawString("and press enter to continue.", d.width / 2 - 137, d.height / 2 + 120);
-      while (getUserChoice() == key) { }
-      setUserChoice(key);
-    } else {
-      feedbackLabel.setText("Incorrect");
-      fm = feedbackLabel.getFontMetrics(f);
-      wOffset = fm.stringWidth(feedbackLabel.getText()) / 2;
-      hOffset = fm.getHeight() / 2;
-      g.drawString("Incorrect", d.width / 2 - wOffset, d.height / 2 + hOffset);
-    }
-
-
-    endPanel.setVisible(true);
-    delay(500);
-    g.dispose();
-  }
-
-  public synchronized void delay(int milliseconds) {
-    long timeA, timeB, timeC;
-    timeA = new Date().getTime();
-    do {
-      timeB = new Date().getTime();
-      timeC = timeB - timeA;
-    } while (timeC < milliseconds);
-  }
-
   public char getUserChoice() {
     return userChoice;
-  }
-
-  public void setSameChoice(char a) {
-    sameChoice = a;
-  }
-
-  public void setDiffChoice(char a) {
-    diffChoice = a;
   }
 
   public void setUserChoice(char a) {
@@ -707,7 +572,6 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
   public void resetUserChoice() {
     userChoice = '~';
-    keyboardInputDone = false;
   }
 
   public long getRT() {
@@ -734,7 +598,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     return textValue;
   }
 
-  private DualMouseClickListener dmcl = new DualMouseClickListener();
+  private final DualMouseClickListener dmcl = new DualMouseClickListener();
 
   public synchronized long getTimedMouseClickResponse(Component parent) {
     long timeA, timeB, tmpTime;
@@ -774,7 +638,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
   private class DualMouseClickListener implements MouseListener {
 
-    public void mouseClicked(MouseEvent e) { }
+    public void mouseClicked(MouseEvent e) {
+    }
 
     public void mousePressed(MouseEvent e) {
       int temp = e.getButton();
@@ -793,14 +658,17 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
     }
 
-    public void mouseReleased(MouseEvent e) { }
+    public void mouseReleased(MouseEvent e) {
+    }
 
-    public void mouseEntered(MouseEvent e) { }
+    public void mouseEntered(MouseEvent e) {
+    }
 
-    public void mouseExited(MouseEvent e) { }
+    public void mouseExited(MouseEvent e) {
+    }
   }
 
-  private disableMouseListener dml = new disableMouseListener();
+  private final disableMouseListener dml = new disableMouseListener();
   private boolean mouseEnabled = true;
   private JFrame mouseFrame;
 
@@ -816,12 +684,10 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   private class disableMouseListener implements MouseMotionListener {
-
     public void mouseDragged(MouseEvent e) { }
 
     public void mouseMoved(MouseEvent e) {
       Experiment.resetMouseToCenterScreen();
     }
-
   }
 }
