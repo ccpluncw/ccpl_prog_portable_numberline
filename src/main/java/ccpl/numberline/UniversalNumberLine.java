@@ -760,7 +760,7 @@ public class UniversalNumberLine implements ActionListener {
         outStringTmp = outStringTmp.replaceAll("false", "FALSE");
 
         data1.writeToURL(Experiment.getCGI(), dataFile, outStringTmp);
-        outString.setLength(0); //Deallocates string builder
+        outString.setLength(0);
 
         frame.remove(endPanel);
         frame.validate();

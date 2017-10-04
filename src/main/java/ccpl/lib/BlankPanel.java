@@ -17,7 +17,7 @@ public class BlankPanel extends JPanel
 		setBackground (backColor);
 	}
 
-        @Override
+	@Override
 	public void paintComponent (Graphics g) {
 		super.paintComponent (g);
 	}

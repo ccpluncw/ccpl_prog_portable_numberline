@@ -10,12 +10,6 @@ import javax.swing.JFrame;
 
 
 public class Experiment implements ExpInterface {
-  protected static boolean WEB_ENABLED = false;
-  public final static String WEB_APP_CODEBASE = "http://arcserv20.das.uncw.edu/apps/";
-  private static String WEB_DIR = "";
-  //protected final static String WEB_APP_CODEBASE = "http://localhost/apps/";
-
-  private final static String CGI_TRIAL_READER = WEB_APP_CODEBASE + "jws_lib/trial_file.php";
   protected static URL CGI = null;
 
   protected final String experiment, subject, condition, session;
@@ -75,16 +69,11 @@ public class Experiment implements ExpInterface {
   }
 
   public URL getInstructionFile() {
-    ClassLoader cl = this.getClass().getClassLoader();
-    return cl.getResource(INFILES_PATH + instructFile);
+    return this.getClass().getClassLoader().getResource(INFILES_PATH + instructFile);
   }
 
   public URL getDataFile() {
-    // TODO: CHANGE THIS
-    //return getURL(REL_DATA_FILE + DATA_FILE_NAME);
-
-    //return getURL("/home/aray/temp/cohen/" + DATA_FILE_NAME);
-
+    // TODO: Change this to allow a user to select where to save the file.
     try {
       return new URL("file:/home/aray/temp/cohen" + DATA_FILE_NAME);
     } catch (MalformedURLException e) {
@@ -95,25 +84,15 @@ public class Experiment implements ExpInterface {
   }
 
   public URL getFontFile() {
-    ClassLoader cl = getClass().getClassLoader();
-    return cl.getResource(INFILES_PATH + fontFile);
-    //return getURL(INFILES_PATH + fontFile);
+    return getClass().getClassLoader().getResource(INFILES_PATH + fontFile);
   }
 
   public URL getPracticeFile() {
-    ClassLoader cl = this.getClass().getClassLoader();
-    return cl.getResource(INFILES_PATH + practiceTrialFile);
+    return this.getClass().getClassLoader().getResource(INFILES_PATH + practiceTrialFile);
   }
 
   public URL getExperimentFile() {
-    if (WEB_ENABLED) {
-      return getURL(CGI_TRIAL_READER,
-          ("?app=" + WEB_DIR + "&"
-              + "exp=" + experiment + "&"
-              + "tf=" + expTrialFile));
-    } else {
-      return this.getClass().getClassLoader().getResource(INFILES_PATH + expTrialFile);
-    }
+    return this.getClass().getClassLoader().getResource(INFILES_PATH + expTrialFile);
   }
 
   public static URL getCGI() {
@@ -138,7 +117,6 @@ public class Experiment implements ExpInterface {
     }
   }
 
-
   public static void delay(int milliseconds) {
     if (milliseconds <= 0) {
       return;
@@ -153,12 +131,10 @@ public class Experiment implements ExpInterface {
 
   public static void rest() {
     response.displayNotificationFrame(frame, "Please take a break.  Click the OK button to resume the experiment");
-//            JOptionPane.showMessageDialog(null, "Please take a break.  Click the OK button to resume the experiment", "information", JOptionPane.INFORMATION_MESSAGE);
   }
 
   public static void thankYou() {
     response.displayNotificationFrame(frame, "THANK YOU for participating!  Click the OK button to end the experiment");
-//            JOptionPane.showMessageDialog(null, "THANK YOU for participating!  Click the OK button to end the experiment", "information", JOptionPane.INFORMATION_MESSAGE);
   }
 
 
@@ -192,16 +168,16 @@ public class Experiment implements ExpInterface {
     return getURL(codeBase, localFile);
   }
 
-  public static URL getURL(String aCodeBase, String localFile) {
+  public static URL getURL(String codeBase, String localFile) {
     URL fileURL = null;
+
     try {
-      fileURL = new URL(aCodeBase + localFile);
+      fileURL = new URL(codeBase + localFile);
     } catch (MalformedURLException ex) {
       Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
     }
     return fileURL;
   }
-
 
   public String createOutputHeader() {
     throw new UnsupportedOperationException("Not supported yet.");
