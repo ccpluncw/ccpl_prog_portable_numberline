@@ -1,17 +1,33 @@
 package ccpl.lib;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Robot;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
 
-/*****	The DRAWEXPFRAME sets up a frame the size of the screen to run the experiment
- ******	in.
- *****/
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.KeyStroke;
+import javax.swing.WindowConstants;
+
+import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
+
+/**
+ * The DRAWEXPFRAME sets up a frame the size of the screen to run the experiment in.
+ */
 public class DrawExpFrame extends JFrame {
 
   private static int screenHeight;
@@ -43,10 +59,9 @@ public class DrawExpFrame extends JFrame {
 
     //ENABLES FULL SCREEN FUNCTION ONLY FOR MAC OS
     //OTHER OS SIMPLY SETTING THE WINDOW TO UNDECORATED ACCOMPLISHES THE SAME GOAL
-    if (System.getProperty("os.name").startsWith("Mac")) {//  equalsIgnoreCase("mac os x"))
+    if (System.getProperty("os.name").startsWith("Mac")) {
       // TODO: Figure out how to fix this on non-Mac machines
       // com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
-//        com.apple.eawt.Application.getApplication().requestToggleFullScreen(this);
     } else {
       setUndecorated(true); //Hides minimize and maximize buttons on jframe title bar
     }
@@ -76,14 +91,23 @@ public class DrawExpFrame extends JFrame {
     actionMap.put("mouseAction", resp.returnMouseAction());
   }
 
+  /**
+   * Hide the cursor.
+   */
   public void hideCursor() {
-    //Cursor curs = tKit.createCustomCursor (tKit.createImage(""), new Point(), "blank");
     Toolkit tk = Toolkit.getDefaultToolkit();
     curs = tk.createCustomCursor(tk.createImage(""), new Point(), "blank");
     setCursor(curs);
-    Experiment.resetMouseToCenterScreen();
+
+    resetMouseToCenter(this);
   }
 
+  /**
+   * Hide the cursor and move it to a specific spot.
+   * This method is to work around an issue in MacOS where the OS will take control of the mouse.
+   * @param x   X coordinate.
+   * @param y   Y coordinate.
+   */
   public void hideCursor(int x, int y) {
     Robot bot;
     try {
@@ -100,14 +124,4 @@ public class DrawExpFrame extends JFrame {
   public void showCursor() {
     setCursor(Cursor.getDefaultCursor());
   }
-
-  public static int getScreenHeight() {
-    return screenHeight;
-  }
-
-  public static int getScreenWidth() {
-    return screenWidth;
-  }
-
-
 }

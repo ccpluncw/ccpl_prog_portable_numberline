@@ -11,10 +11,10 @@ class Bundle {
   }
 
   fun get(key: String): Any? {
-    if (!values.containsKey(key)) {
+    return if (!values.containsKey(key)) {
       throw Exception("Bundle does not contain key: " + key)
     } else {
-      return values[key]
+      values[key]
     }
   }
 

@@ -10,58 +10,60 @@ import javax.swing.JFrame;
 
 
 public class Experiment implements ExpInterface {
-  protected static URL CGI = null;
+  private final URL CGI = null;
 
-  protected final String experiment, subject, condition, session;
-  protected int totalTrials, trialNum, trialType;
-  protected static final Response response = new Response();
-  protected static DrawExpFrame frame;
+  protected final String experiment;
+  protected final String subject;
+  protected final String condition;
+  protected final String session;
 
-  public static String practiceTrialFile, expTrialFile, instructFile, fontFile;
-  protected static int restNumber;
+  protected int totalTrials;
+  protected int trialNum;
+  protected int trialType;
 
-  protected static Specification[] dbfile, stims, fonts;
-  protected static final SpecificationArrayProcess dataAP = new SpecificationArrayProcess();
-  protected static final String WORKING_DIR = System.getProperty("user.dir");
+  protected final Response response;
+  private DrawExpFrame frame;
 
-  protected String codeBase = new File(WORKING_DIR).toURI().toString();
+  public String practiceTrialFile;
+  public String expTrialFile;
+  public String instructFile;
+  public String fontFile;
 
-  protected final String REL_DATA_FILE;
-  protected final String DATA_FILE_NAME;
-  protected final String INFILES_PATH;
+  protected int restNumber;
 
-  protected static FileInTextBox instruct;
+  protected Specification[] dbfile;
+  protected Specification[] stims;
+  protected Specification[] fonts;
 
-  private static final BlankPanel blankPanel = new BlankPanel();
+  protected final SpecificationArrayProcess dataAP = new SpecificationArrayProcess();
+  private final String WORKING_DIR = System.getProperty("user.dir");
 
+  private final String codeBase = new File(WORKING_DIR).toURI().toString();
 
-  public Experiment() {
-    this("", "", "", "");
-  }
+  private final String REL_DATA_FILE;
+  private final String DATA_FILE_NAME;
+  private final String INFILES_PATH;
 
-  public Experiment(String exp, String sub, String cond, String sess, DrawExpFrame frame) {
-    subject = sub;
-    condition = cond;
-    session = sess;
-    experiment = exp;
-    Experiment.frame = frame;
-    response.setFrame(frame);
-    DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
-    REL_DATA_FILE = experiment + "/data/";
-    INFILES_PATH = "exp/infiles/";
-  }
+  private FileInTextBox instruct;
+
+  private final BlankPanel blankPanel = new BlankPanel();
 
   public Experiment(String exp, String sub, String cond, String sess) {
-    subject = sub;
-    condition = cond;
-    session = sess;
-    trialNum = 0;
-    experiment = exp;
-    frame = new DrawExpFrame(response);
-    response.setFrame(frame);
-    DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
-    REL_DATA_FILE = experiment + "/data/";
-    INFILES_PATH = "exp/infiles/";
+    this.subject = sub;
+    this.condition = cond;
+    this.session = sess;
+    this.trialNum = 0;
+    this.experiment = exp;
+
+    this.response = new Response();
+
+    this.frame = new DrawExpFrame(response);
+
+    this.response.setFrame(frame);
+
+    this.DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
+    this.REL_DATA_FILE = experiment + "/data/";
+    this.INFILES_PATH = "exp/infiles/";
   }
 
   public String getInfilesPath() {
@@ -95,7 +97,7 @@ public class Experiment implements ExpInterface {
     return this.getClass().getClassLoader().getResource(INFILES_PATH + expTrialFile);
   }
 
-  public static URL getCGI() {
+  public URL getCGI() {
     return CGI;
   }
 
@@ -107,17 +109,7 @@ public class Experiment implements ExpInterface {
     }//make mac go full screen
   }
 
-
-  public static void resetMouseToCenterScreen() {
-    try {
-      java.awt.Robot rob = new java.awt.Robot();
-      rob.mouseMove(DrawExpFrame.getScreenWidth() / 2, DrawExpFrame.getScreenHeight() / 2);
-    } catch (AWTException ex) {
-      Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
-    }
-  }
-
-  public static void delay(int milliseconds) {
+  public void delay(int milliseconds) {
     if (milliseconds <= 0) {
       return;
     }
@@ -129,26 +121,26 @@ public class Experiment implements ExpInterface {
     }
   }
 
-  public static void rest() {
+  public void rest() {
     response.displayNotificationFrame(frame, "Please take a break.  Click the OK button to resume the experiment");
   }
 
-  public static void thankYou() {
+  public void thankYou() {
     response.displayNotificationFrame(frame, "THANK YOU for participating!  Click the OK button to end the experiment");
   }
 
 
-  public static void prepareToStartExperiment(JFrame parent) {
+  public void prepareToStartExperiment(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the experiment");
   }
 
-  public static void prepareToStartPractice(JFrame parent) {
+  public void prepareToStartPractice(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the practice trials");
   }
 
-  public static boolean paramMatches(String param, String property) {
+  public boolean paramMatches(String param, String property) {
     boolean isMatch = false;
     if ((param.trim()).equalsIgnoreCase(property)) {
       isMatch = true;
@@ -156,7 +148,7 @@ public class Experiment implements ExpInterface {
     return isMatch;
   }
 
-  public static boolean isParamOn(String param) {
+  public boolean isParamOn(String param) {
     boolean isOn = false;
     if (paramMatches(param, "on")) {
       isOn = true;
@@ -168,7 +160,7 @@ public class Experiment implements ExpInterface {
     return getURL(codeBase, localFile);
   }
 
-  public static URL getURL(String codeBase, String localFile) {
+  public URL getURL(String codeBase, String localFile) {
     URL fileURL = null;
 
     try {
@@ -201,17 +193,17 @@ public class Experiment implements ExpInterface {
   }
 
 
-  public static void presentBlankScreen(int blankDelay) {
+  public void presentBlankScreen(int blankDelay) {
     setExpFrame();
     delay(blankDelay);
   }
 
-  protected static void setExpFrame() {
-    frame.setContentPane(Experiment.blankPanel);
+  protected void setExpFrame() {
+    frame.setContentPane(blankPanel);
     frame.validate();
   }
 
-  public static String getRandomFontName(String[] fontNames) {
+  public String getRandomFontName(String[] fontNames) {
     String myFontName;
     int tmp1;
     if (fontNames.length == 1) {
@@ -225,9 +217,5 @@ public class Experiment implements ExpInterface {
 
   public DrawExpFrame getFrame() {
     return frame;
-  }
-
-  public Response getResponse() {
-    return response;
   }
 }

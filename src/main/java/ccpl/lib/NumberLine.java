@@ -1165,16 +1165,15 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (!isEstimateTask) {
       if (atDragRegion) { //&& cursorInBoundingBigBox(e.getX(), e.getY())){
         if (!vertical) {
+          //both are false allow handle to move freely
           if (!keepWithinBounds[0] && !keepWithinBounds[1]) {
             if (flag) {
               currentDragPoint = new Point2D.Float(getCorrespondingX(e.getY()), e.getY());
             } else {
               currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
             }
-          }//both are false allow handle to move freely
-
-
-          else if (keepWithinBounds[0] && keepWithinBounds[1]) {
+          } else if (keepWithinBounds[0] && keepWithinBounds[1]) {
+            //both are true handle is bound by both bounds
             if (regularX) {
               if ((!flag && e.getX() > extendPoint2D.getX()) || (regularY && flag && e.getY() < extendPoint2D.getY())
                   || (!regularY && flag && e.getY() > extendPoint2D.getY())) {
@@ -1204,10 +1203,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
                 }
               }
             }
-          }//both are true handle is bound by both bounds
-
-
-          else if (keepWithinBounds[0] && !keepWithinBounds[1]) {
+          } else if (keepWithinBounds[0] && !keepWithinBounds[1]) {
             if (regularX) {
               if ((!flag && e.getX() < startPoint.getX()) || (regularY && flag && e.getY() > startPoint.getY())
                   || (!regularY && flag && e.getY() < startPoint.getY())) {
@@ -1288,7 +1284,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         } else { // line is vertical line must move vertically
           moveLineVertically(e.getX(), e.getY(), regularX);
         }
-
       }
     }
   }
@@ -1622,7 +1617,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }//getStartPoint
 
   private Point2D.Float getRightBound() {
-    float x, y;
+    float x;
+    float y;
     double r = degreeOfLine + 180;
     r = Math.toRadians(r);
 
@@ -1667,10 +1663,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       int lengthSU = fm.stringWidth(s);
       int lengthTU = fm.stringWidth(t);
       int lengthEU = fm.stringWidth(e);
-      int lengthHU = fm.stringWidth(handleLabel);
       int fontHeight = fm.getHeight();
       double theta;
-      double deltaX, deltaY;
+      double deltaX;
+      double deltaY;
       Point2D.Float temp;
 
 
@@ -1750,17 +1746,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         startLoc.x = startLoc.x - fontHeight;
         endLoc.x = endLoc.x - fontHeight;
         targetLoc.x = targetLoc.x - (fontHeight * 2);
-//                endLoc.y = endLoc.y - (lengthEU/2);
-//                startLoc.y = startLoc.y - (lengthSU/2);
-//                targetLoc.y = targetLoc.y - (lengthTU/2);
         endLoc.y = endLoc.y - (lengthEU);
       } else if (degreeOfLine == 270) {
         startLoc.x = startLoc.x + fontHeight;
         endLoc.x = endLoc.x + fontHeight;
         targetLoc.x = targetLoc.x + (fontHeight * 2);
-//                endLoc.y = endLoc.y + (lengthEU/2);
-//                startLoc.y = startLoc.y + (lengthSU/2);
-//                targetLoc.y = targetLoc.y + (lengthTU/2);
         endLoc.y = endLoc.y + (lengthEU);
       } else {
         System.out.println("not supported yet adjust Change");
@@ -1894,123 +1884,53 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     private String getStartLabel() {
-      String start;
-      String[] fract_temp;
-
-      StringBuilder sb = new StringBuilder();
-      switch (startUnit.getType()) {
-        case FRACT:
-          fract_temp = startUnit.getValue().split("/");
-          //sb.append(html1);
-          sb.append(fract_temp[0]);
-          //sb.append(html2);
-          sb.append("/");
-          sb.append(fract_temp[1]);
-          //sb.append(html3);
-          break;
-        case ODDS:
-          fract_temp = startUnit.getValue().split("in");
-          sb.append(fract_temp[0]);
-          sb.append(" in ");
-          sb.append(fract_temp[1]);
-          break;
-        case DECI:
-          sb.append(startUnit.toDouble());
-          break;
-        case INT:
-          sb.append(startUnit.toInteger());
-          break;
-        default:
-          System.out.println("Unsupported Unit type");
-          System.exit(0);
-      }
-      start = sb.toString();
-      return start;
+      return getLabel(startUnit);
     }
 
     private String getEndLabel() {
-      String end;
-
-      String[] fract_temp;
-      StringBuilder sb = new StringBuilder();
-//            String html1 = "<html><body><sup>";
-//            String html2 = "</sup><font size=+1>/<font size=-1><sub>";
-//            String html3 = "</sub></body></html>";
-
-      switch (endUnit.getType()) {
-        case FRACT:
-          fract_temp = endUnit.getValue().split("/");
-          //sb.append(html1);
-          sb.append(fract_temp[0]);
-          //sb.append(html2);
-          sb.append("/");
-          sb.append(fract_temp[1]);
-          //sb.append(html3);
-          break;
-        case ODDS:
-          fract_temp = endUnit.getValue().split("in");
-          sb.append(fract_temp[0]);
-          sb.append(" in ");
-          sb.append(fract_temp[1]);
-          break;
-        case DECI:
-          sb.append(endUnit.toDouble());
-          break;
-        case INT:
-          sb.append(endUnit.toInteger());
-          break;
-        default:
-          System.out.println("Unsupported Unit type");
-          System.exit(0);
-      }
-      end = sb.toString();
-      return end;
+      return getLabel(endUnit);
     }
 
     private String getTargetLabel() {
-      String target;
+      return getLabel(targetUnit);
+    }
 
-      String[] fract_temp;
+    private String getLabel(Unit unit) {
+      String[] tempFraction;
       StringBuilder sb = new StringBuilder();
-//            String html1 = "<html><body><sup>";
-//            String html2 = "</sup><font size=+1>/<font size=-1><sub>";
-//            String html3 = "</sub></body></html>";
-      switch (targetUnit.getType()) {
+      switch (unit.getType()) {
         case FRACT:
-          fract_temp = targetUnit.getValue().split("/");
-          //sb.append(html1);
-          sb.append(fract_temp[0]);
-          //sb.append(html2);
+          tempFraction = unit.getValue().split("/");
+          sb.append(tempFraction[0]);
           sb.append("/");
-          sb.append(fract_temp[1]);
-          //sb.append(html3);
+          sb.append(tempFraction[1]);
           break;
         case ODDS:
-          fract_temp = targetUnit.getValue().split("in");
-          sb.append(fract_temp[0]);
+          tempFraction = unit.getValue().split("in");
+          sb.append(tempFraction[0]);
           sb.append(" in ");
-          sb.append(fract_temp[1]);
+          sb.append(tempFraction[1]);
           break;
         case DECI:
-          sb.append(targetUnit.toDouble());
+          sb.append(unit.toDouble());
           break;
         case INT:
-          sb.append(targetUnit.toInteger());
+          sb.append(unit.toInteger());
           break;
         default:
           System.out.println("Unsupported Unit type");
           System.exit(0);
       }
-      target = sb.toString();
-      return target;
+
+      return sb.toString();
     }
 
-    /*********************************
-     * Overrides this panel's paintComponent method
+    /**
+     * Overrides this panel's paintComponent method.
      * NOTE: The class is a subclass of JPanel
      * Necessary to ensure current graphics are
      * redrawn on panel when panel is refreshed
-     *********************************/
+     */
     @Override
     public void paintComponent(Graphics g) {
       super.paintComponent(g);

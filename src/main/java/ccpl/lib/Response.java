@@ -40,6 +40,8 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
+
 /**
  * The RESPONSE class is very important.  It specifies methods for collecting
  * and checking responses.  It implements KEYLISTENER so that keyboard responses
@@ -645,10 +647,10 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     resetMouseClickButton();
     int x = getMouseClickButton();
 
-    /**
+    /*
      * The following polls a variable to make the computer wait for the
      * mouse response
-     **/
+     */
     while (x == -1) {
       x = getMouseClickButton();
       System.out.print("");
@@ -700,27 +702,26 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     }
   }
 
-  private final disableMouseListener dml = new disableMouseListener();
+  private final DisableMouseListener dml = new DisableMouseListener();
   private boolean mouseEnabled = true;
   private JFrame mouseFrame;
 
-  public void disableMouse(JFrame f) {
+  private void disableMouse(JFrame f) {
     mouseFrame = f;
     f.addMouseMotionListener(dml);
     mouseEnabled = false;
   }
 
-  public void enableMouse(JFrame f) {
+  private void enableMouse(JFrame f) {
     f.removeMouseMotionListener(dml);
     mouseEnabled = true;
   }
 
-  private class disableMouseListener implements MouseMotionListener {
-    public void mouseDragged(MouseEvent e) {
-    }
+  private class DisableMouseListener implements MouseMotionListener {
+    public void mouseDragged(MouseEvent e) { }
 
     public void mouseMoved(MouseEvent e) {
-      Experiment.resetMouseToCenterScreen();
+      resetMouseToCenter(mouseFrame);
     }
   }
 }

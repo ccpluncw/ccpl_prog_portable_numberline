@@ -1,7 +1,7 @@
 instructions:   instruct.txt
 
-prac_trial:     prac_bounded_prod.txt
-exp_trial:      exp_bounded_prod.txt
+prac_trial:     none
+exp_trial:      exp_bounded_0.txt
 rest_num:       86
 
 fonts:          fontNames.txt
