@@ -66,7 +66,7 @@ public class Unit {
     UNITTYPE uIntervalType = interval.getType();
 
     if (uLowType != uHighType || uLowType != uIntervalType || uHighType != uIntervalType) {
-       throw new IllegalArgumentException("Units not all of same type");
+      throw new IllegalArgumentException("Units not all of same type");
     }
 
     if (uLowType == UNITTYPE.INT) {

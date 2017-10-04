@@ -14,7 +14,8 @@ import javax.swing.*;
  *****/
 public class DrawExpFrame extends JFrame {
 
-  private static int screenHeight, screenWidth;
+  private static int screenHeight;
+  private static int screenWidth;
   private Cursor curs;
 
   public DrawExpFrame(Response resp) {
@@ -31,7 +32,8 @@ public class DrawExpFrame extends JFrame {
 
     BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 
-    curs = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
+    curs = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0),
+        "blank cursor");
 
     setBackground(Color.BLACK);
     getContentPane().setBackground(Color.BLACK);

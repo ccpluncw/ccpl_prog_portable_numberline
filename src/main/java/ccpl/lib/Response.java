@@ -1,29 +1,58 @@
 
 package ccpl.lib;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-/*****	The RESPONSE class is very important.  It specifies methods for collecting
- ******	and checking responses.  It implements KEYLISTENER so that keyboard responses
- ******	can be collected.  The class must be added to the panel as the keyListener
- ******	(i.e., addKeyListener (Response)
- ****** Before any timing routine is run, testTimer () must be run once
- *****/
+/**
+ * The RESPONSE class is very important.  It specifies methods for collecting
+ * and checking responses.  It implements KEYLISTENER so that keyboard responses
+ * can be collected.  The class must be added to the panel as the keyListener
+ * (i.e., addKeyListener (Response)
+ * Before any timing routine is run, testTimer () must be run once
+ */
 public class Response implements KeyListener, ActionListener, ChangeListener {
 
   private int mouseClickButton = -1;
   protected boolean isSliderMoved = false;
   protected String textValue;
-  protected long textRT;
+  protected long textRt;
   private long RT = 99999;
   private volatile char userChoice = '~';
   protected JDialog respFrame;
@@ -68,7 +97,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) { }
+  public void keyTyped(KeyEvent keyEvent) {
+  }
 
   /**
    * When a button is hit this is triggered
@@ -89,7 +119,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       } else {
         userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
       }
-    } catch (Exception ignored) { }
+    } catch (Exception ignored) {
+    }
   }
 
   @Override
@@ -100,6 +131,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   /**
    * YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK
    * Calibrates timing to ensure accuracy
+   *
    * @param inputPanel panel this method will draw in (its just going to indicate the timer is being
    *                   calibrated.
    * @param textColor  text color for the panel
@@ -290,7 +322,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     createNumPadResponseFrame(parent, info, targetFieldFormat);
 
     inputDone = false;
-    textRT = pollForResponse();
+    textRt = pollForResponse();
 
     textValue = numPadResponse.getResponse();
   }
@@ -333,9 +365,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
   public void actionPerformed(ActionEvent evt) {
     if (respFrame != null) {
-
       JButton button = (JButton) evt.getSource();
-
 
       if (button.equals(sliderOkButton)) {
         if (isSliderMoved) {
@@ -348,7 +378,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
       if (button.equals(textOkButton)) {
         endTime = new Date().getTime();
-        textRT = endTime - startTime;
+        textRt = endTime - startTime;
         if (textInput != null && !"".equals(textInput.getText())) {
           textValue = (textInput.getText()).trim();
           respFrame.dispose();
@@ -376,7 +406,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
       if (button.equals(rbOkButton)) {
         endTime = new Date().getTime();
-        ArrayList<Integer> boxId = new ArrayList<>();
+        List<Integer> boxId = new ArrayList<>();
 
         int temp = boxId.size();
 
@@ -522,7 +552,9 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
     if (!closedProperly) {
       okButton.doClick();
-      JOptionPane.showMessageDialog(null, "You must choose an option.  Do NOT use the Close Box", "alert", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(null,
+          "You must choose an option.  Do NOT use the Close Box", "alert",
+          JOptionPane.ERROR_MESSAGE);
     }
   }
 
@@ -591,7 +623,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   public long getTextRT() {
-    return textRT;
+    return textRt;
   }
 
   public String getTextValue() {
@@ -684,7 +716,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   private class disableMouseListener implements MouseMotionListener {
-    public void mouseDragged(MouseEvent e) { }
+    public void mouseDragged(MouseEvent e) {
+    }
 
     public void mouseMoved(MouseEvent e) {
       Experiment.resetMouseToCenterScreen();

@@ -887,7 +887,7 @@ public class UniversalNumberLine implements ActionListener {
     sbuf.append("estTask\t");
     sbuf.append("estStimTime\t");
     sbuf.append("numLineRT\t");
-    sbuf.append("textRT\t");
+    sbuf.append("textRt\t");
     sbuf.append("feedbackType\t");
 
     if (isQuestionEnabled) {

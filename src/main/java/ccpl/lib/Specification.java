@@ -34,12 +34,13 @@ public class Specification {
   }
 
 
-  /***			The following method, and the ones below it, return one piece of
-   ****			information from the input string.  You specify the token number, and the
-   ****      method returns the info at that point in the string.  Use the appropriate
-   ****			method for the type of info you are returning, i.e., String, int, double,
-   ****			or char.
-   ***/
+  /**
+   * The following method, and the ones below it, return one piece of
+   *  information from the input string.  You specify the token number, and the
+   * method returns the info at that point in the string.  Use the appropriate
+   * method for the type of info you are returning, i.e., String, int, double,
+   * or char.
+   */
   public String getParsedStringSpec(int stringPosition) {
     int i;
     String outString = "";
@@ -93,8 +94,9 @@ public class Specification {
     return outString.charAt(0);
   }
 
-  /***			This returns the entire string, unparsed.
-   ***/
+  /**
+   * This returns the entire string, unparsed.
+   */
   public String getAllSpecs() {
     return allSpecs;
   }
