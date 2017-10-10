@@ -1,6 +1,5 @@
 package ccpl.lib;
 
-import java.awt.AWTException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -24,10 +23,10 @@ public class Experiment implements ExpInterface {
   protected final Response response;
   private DrawExpFrame frame;
 
-  public String practiceTrialFile;
-  public String expTrialFile;
-  public String instructFile;
-  public String fontFile;
+  protected String practiceTrialFile;
+  protected String expTrialFile;
+  protected String instructFile;
+  protected String fontFile;
 
   protected int restNumber;
 
@@ -43,8 +42,6 @@ public class Experiment implements ExpInterface {
   private final String REL_DATA_FILE;
   private final String DATA_FILE_NAME;
   private final String INFILES_PATH;
-
-  private FileInTextBox instruct;
 
   private final BlankPanel blankPanel = new BlankPanel();
 
@@ -66,15 +63,15 @@ public class Experiment implements ExpInterface {
     this.INFILES_PATH = "exp/infiles/";
   }
 
-  public String getInfilesPath() {
+  protected String getInfilesPath() {
     return INFILES_PATH;
   }
 
-  public URL getInstructionFile() {
+  protected URL getInstructionFile() {
     return this.getClass().getClassLoader().getResource(INFILES_PATH + instructFile);
   }
 
-  public URL getDataFile() {
+  protected URL getDataFile() {
     // TODO: Change this to allow a user to select where to save the file.
     try {
       return new URL("file:/home/aray/temp/cohen" + DATA_FILE_NAME);
@@ -85,31 +82,31 @@ public class Experiment implements ExpInterface {
     return null;
   }
 
-  public URL getFontFile() {
+  protected URL getFontFile() {
     return getClass().getClassLoader().getResource(INFILES_PATH + fontFile);
   }
 
-  public URL getPracticeFile() {
+  protected URL getPracticeFile() {
     return this.getClass().getClassLoader().getResource(INFILES_PATH + practiceTrialFile);
   }
 
-  public URL getExperimentFile() {
+  protected URL getExperimentFile() {
     return this.getClass().getClassLoader().getResource(INFILES_PATH + expTrialFile);
   }
 
-  public URL getCGI() {
+  protected URL getCGI() {
     return CGI;
   }
 
-
-  public void setFullScreen() {
+  protected void setFullScreen() {
+    // Make Mac go full screen
     if (System.getProperty("os.name").startsWith("Mac")) {
       // TODO: Figure out how to handle this on non-Mac machines.
       // com.apple.eawt.Application.getApplication().requestToggleFullScreen(frame);
-    }//make mac go full screen
+    }
   }
 
-  public void delay(int milliseconds) {
+  protected void delay(int milliseconds) {
     if (milliseconds <= 0) {
       return;
     }
@@ -121,26 +118,26 @@ public class Experiment implements ExpInterface {
     }
   }
 
-  public void rest() {
+  protected void rest() {
     response.displayNotificationFrame(frame, "Please take a break.  Click the OK button to resume the experiment");
   }
 
-  public void thankYou() {
+  protected void thankYou() {
     response.displayNotificationFrame(frame, "THANK YOU for participating!  Click the OK button to end the experiment");
   }
 
 
-  public void prepareToStartExperiment(JFrame parent) {
+  protected void prepareToStartExperiment(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the experiment");
   }
 
-  public void prepareToStartPractice(JFrame parent) {
+  protected void prepareToStartPractice(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the practice trials");
   }
 
-  public boolean paramMatches(String param, String property) {
+  private boolean paramMatches(String param, String property) {
     boolean isMatch = false;
     if ((param.trim()).equalsIgnoreCase(property)) {
       isMatch = true;
@@ -148,7 +145,7 @@ public class Experiment implements ExpInterface {
     return isMatch;
   }
 
-  public boolean isParamOn(String param) {
+  protected boolean isParamOn(String param) {
     boolean isOn = false;
     if (paramMatches(param, "on")) {
       isOn = true;
@@ -156,11 +153,11 @@ public class Experiment implements ExpInterface {
     return isOn;
   }
 
-  public URL getURL(String localFile) {
+  protected URL getURL(String localFile) {
     return getURL(codeBase, localFile);
   }
 
-  public URL getURL(String codeBase, String localFile) {
+  private URL getURL(String codeBase, String localFile) {
     URL fileURL = null;
 
     try {
@@ -187,23 +184,18 @@ public class Experiment implements ExpInterface {
     throw new UnsupportedOperationException("Not supported yet.");
   }
 
-  public void setInstruction(String instFile) {
-    instructFile = instFile;
-    instruct = new FileInTextBox(getURL(INFILES_PATH + instFile));
-  }
 
-
-  public void presentBlankScreen(int blankDelay) {
+  protected void presentBlankScreen(int blankDelay) {
     setExpFrame();
     delay(blankDelay);
   }
 
-  protected void setExpFrame() {
+  private void setExpFrame() {
     frame.setContentPane(blankPanel);
     frame.validate();
   }
 
-  public String getRandomFontName(String[] fontNames) {
+  protected String getRandomFontName(String[] fontNames) {
     String myFontName;
     int tmp1;
     if (fontNames.length == 1) {
@@ -215,7 +207,7 @@ public class Experiment implements ExpInterface {
     return (myFontName);
   }
 
-  public DrawExpFrame getFrame() {
+  protected DrawExpFrame getFrame() {
     return frame;
   }
 }

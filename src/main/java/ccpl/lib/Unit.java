@@ -8,7 +8,9 @@ import javax.swing.JLabel;
 
 public class Unit {
 
-  public enum UNITTYPE {INT, DECI, FRACT, ODDS}
+  public enum UNITTYPE {
+    INT, DECI, FRACT, ODDS
+  }
 
   private final UNITTYPE TYPE;
   private final String VALUE;

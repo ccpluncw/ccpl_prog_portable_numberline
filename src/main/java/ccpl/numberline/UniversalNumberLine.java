@@ -1,11 +1,11 @@
 package ccpl.numberline;
 
+import static ccpl.numberline.DatabaseFileReaderKt.readDbFile;
+
 import ccpl.lib.BlankPanel;
 import ccpl.lib.DrawExpFrame;
 import ccpl.lib.Experiment;
-import ccpl.lib.Fixation;
 import ccpl.lib.Fraction;
-import ccpl.lib.Mask;
 import ccpl.lib.NumberLine;
 import ccpl.lib.RandomIntGenerator;
 import ccpl.lib.Response;
@@ -16,7 +16,6 @@ import ccpl.lib.Unit;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
@@ -29,18 +28,10 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 import java.util.Date;
-import java.util.StringTokenizer;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.WindowConstants;
-
-import static ccpl.numberline.DatabaseFileReaderKt.readDbFile;
 
 /**
  * Number line experiment that displays a number line and asks the user for feedback.
@@ -167,19 +158,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     final int handleR = dbfile[7].getParsedIntSpec(1);
     final int handleG = dbfile[7].getParsedIntSpec(2);
     final int handleB = dbfile[7].getParsedIntSpec(3);
-
-    boolean isMask = false;
-
-    int stimMaskTime = 0;
-    int maskTime = 0;
-    int fixationTime = 0;
-
-    if (isParamOn(dbfile[11].getParsedStringSpec(1))) {
-      isMask = true;
-      stimMaskTime = dbfile[11].getParsedIntSpec(2);
-      maskTime = dbfile[11].getParsedIntSpec(3);
-      fixationTime = dbfile[11].getParsedIntSpec(4);
-    }
     /* END PARSING OF DATABASE FILE */
 
     Color baseColor = new Color(baseR, baseG, baseB);
@@ -197,8 +175,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     String handleColorVal = "(" + handleActiveColor.getRed() + ", "
         + handleActiveColor.getGreen() + ", "
         + handleActiveColor.getBlue() + ")";
-    Color[] numLineColors = {baseColor, dragColor, handleActiveColor};
-
 
     frame = getFrame();
     setFullScreen();
@@ -210,13 +186,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     DecimalFormat df = new DecimalFormat("#.####");
     StringBuilder outString = new StringBuilder();
 
-    boolean responseEnabled = false;
-    boolean questionEnabled = dbfile[12].getParsedStringSpec(1).trim().equalsIgnoreCase("on");
-
-    if (questionEnabled) {
-      responseEnabled = dbfile[13].getParsedStringSpec(1).trim().equalsIgnoreCase("response");
-    }
-
     boolean useMouse;
 
     try {
@@ -226,27 +195,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       useMouse = false;
     }
 
-    dataAP.writeToURL(getCGI(), dataFile,
-        createOutputHeader(questionEnabled, responseEnabled));
-
-    Specification[] questions = null;
-    Specification[] practiceQuestions = null;
-    int questionPointer = 0;
-    int practiceQuestionPointer = 0;
-    if (questionEnabled) {
-      String path = getInfilesPath() + dbfile[12].getParsedStringSpec(7);
-      URL url = cl.getResource(path);
-      questions = dataAP.readFromURL(url);
-
-      questions = dataAP.randomize(questions);
-
-      if (!practiceTrialFile.equalsIgnoreCase("none")) {
-        practiceQuestions = dataAP.readFromURL(getURL(getInfilesPath()
-            + dbfile[12].getParsedStringSpec(8)));
-
-        practiceQuestions = dataAP.randomize(practiceQuestions);
-      }
-    }
+    dataAP.writeToURL(getCGI(), dataFile, createOutputHeader());
 
     //----prepare frame---------
     Color imColor = Color.BLACK;
@@ -296,32 +245,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     frame.remove(instructionPanel);
     frame.validate();
 
-    String leftValue = "";
-    String rightValue = "";
-
-    if (responseEnabled) {
-      leftValue = dbfile[13].getParsedStringSpec(2);
-      rightValue = dbfile[13].getParsedStringSpec(3);
-    }
-
-    String instruct2;
-
-    try {
-      instruct2 = dbfile[2].getParsedStringSpec(2);
-    } catch (Exception e) {
-      e.printStackTrace();
-      instruct2 = null;
-    }
-
-
-    getButtonMap("Left click", "Right click", leftValue, rightValue, frame);
-
-    boolean flag = false;
-
     for (; trialType < 2; trialType++) {
-
       if (trialType == 0) {
-        flag = true;
         stims = dataAP.readFromURL(getPracticeFile());
         stims = dataAP.randomize(stims);
         prepareToStartPractice(frame);
@@ -333,38 +258,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         frame.showCursor();
         prepareToStartExperiment(frame);
 
-        if (instruct2 != null) {
-          // Get a secondary instruction panel.
-          JPanel secondInstruct = getInstructionPanel(
-              getURL(getInfilesPath() + instruct2));
-
-          // Set the content pane and make the frame visible
-          frame.setContentPane(secondInstruct);
-          frame.setVisible(true);
-
-          // Wait for panel to close
-          try {
-            synchronized (this) {
-              wait();
-            }
-          } catch (InterruptedException e) {
-            // Nothing
-          }
-
-          // Remove the panel
-          frame.remove(secondInstruct);
-
-          // Validate the frame
-          frame.validate();
-        }
-
-        if (flag) {
-          // Uncomment for old button map.
-          //resp.getMouseMap(leftValue, rightValue, frame);
-          // Display new button map
-          getButtonMap("Left click", "Right click", leftValue, rightValue, frame);
-          flag = false;
-        }
         frame.hideCursor();
       }
 
@@ -453,144 +346,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         String myFontName = getRandomFontName(fontNames);
 
-        int questionDelay = -1;
-        String initQuestion = "";
-        double questionAffectValue = -1.0;
-        BlankPanel questionPanel = new BlankPanel(imColor);
-        String questionPosNeg = "";
-
-        if (questionEnabled) {
-          if (trialType == 1) {
-            if (questionPointer >= questions.length) {
-              questionPointer = 0;
-              questions = dataAP.randomize(questions);
-            }
-
-            initQuestion = questions[questionPointer].getParsedStringSpec(1);
-            questionPosNeg = questions[questionPointer].getParsedStringSpec(3);
-            handleLabel = questions[questionPointer].getParsedStringSpec(2);
-            questionAffectValue = questions[questionPointer].getParsedDoubleSpec(4);
-            questionPointer++;
-          } else {
-            initQuestion = practiceQuestions[practiceQuestionPointer].getParsedStringSpec(1);
-            questionPosNeg = practiceQuestions[practiceQuestionPointer].getParsedStringSpec(3);
-            handleLabel = practiceQuestions[practiceQuestionPointer].getParsedStringSpec(2);
-            questionAffectValue = practiceQuestions[practiceQuestionPointer].getParsedDoubleSpec(4);
-            practiceQuestionPointer++;
-          }
-
-          final int fsize = dbfile[12].getParsedIntSpec(5);
-          final int questionWidth = dbfile[12].getParsedIntSpec(6);
-
-          int fontColorR = dbfile[12].getParsedIntSpec(2);
-          int fontColorG = dbfile[12].getParsedIntSpec(3);
-          int fontColorB = dbfile[12].getParsedIntSpec(4);
-
-          final Color fontColor = new Color(fontColorR, fontColorG, fontColorB);
-
-          //int questionMargin = 200;
-          Dimension d = frame.getSize();
-          questionPanel.setSize(d);
-          questionPanel.setLayout(new GridBagLayout());
-
-          if (initQuestion.contains("#")) {
-            initQuestion = initQuestion.substring(0, initQuestion.indexOf('#'))
-                + randTarget.toString()
-                + initQuestion.substring(initQuestion.indexOf('#') + 1);
-          }
-
-          String html1;
-          String html2;
-          html1 = "<html><body style='width:";
-          html2 = "px'><center>";
-
-          Font f = new Font(myFontName, Font.PLAIN, fsize);
-
-          JLabel questionLabel = new JLabel(html1 + questionWidth + html2 + initQuestion);
-          questionLabel.setFont(f);
-          questionLabel.setForeground(fontColor);
-          questionPanel.add(questionLabel);
-        }
-
-        String unitLabel = stims[trialNum].getParsedStringSpec(28);
         int degrees = stims[trialNum].getParsedIntSpec(27);
 
         char leftOrRight = stims[trialNum].getParsedCharSpec(24);
 
         numLine = new NumberLine(randWidth, height, thickness, startUnit, endUnit,
             randTarget, baseColor, dragColor, handleActiveColor, myFontName,
-            isEstimateTask, degrees, leftMargin, keepWithinBounds, leftOrRight,
-            showFullBaseScale, handleLabel, unitLabel);
-
-        //show question if enabled and gather appropriate response
-        int mouseResponse;
-        long mouseRt = -1;
-        String mouseResponseLabel = "";
-        String mouseResponseCorrect = "";
-
-        String temp = dbfile[13].getParsedStringSpec(1).trim();
-
-        if (temp.equalsIgnoreCase("response") && questionEnabled) {
-          imPanel.add(questionPanel, BorderLayout.CENTER);
-          frame.setContentPane(imPanel);
-          frame.validate();
-          frame.hideCursor();
-
-          response.getTimedMouseClickResponse(questionPanel);
-          mouseResponse = response.getMouseClickButton();
-          mouseRt = response.getRT();
-          imPanel.remove(questionPanel);
-
-          if (mouseResponse == 1) {
-            mouseResponseLabel = leftValue;
-          } else if (mouseResponse == 3) {
-            mouseResponseLabel = rightValue;
-          }
-
-          if (mouseResponseLabel.trim().equalsIgnoreCase(questionPosNeg.trim())) {
-            mouseResponseCorrect = "correct";
-          } else if (questionPosNeg.equals("neutral")) {
-            mouseResponseCorrect = "N/A";
-          } else {
-            mouseResponseCorrect = "incorrect";
-          }
-        } else if (temp.equalsIgnoreCase("time") && questionEnabled) {
-          String fixedOrWord = dbfile[13].getParsedStringSpec(2).trim();
-          questionDelay = dbfile[13].getParsedIntSpec(3);
-          int wordCount = 0;
-          if (fixedOrWord.equalsIgnoreCase("word")) {
-            StringTokenizer tk = new StringTokenizer(initQuestion, " ");
-            while (tk.hasMoreTokens()) {
-              tk.nextToken();
-              wordCount++;
-            }
-
-            questionDelay *= wordCount;
-          }
-
-          imPanel.add(questionPanel, BorderLayout.CENTER);
-          frame.setContentPane(imPanel);
-          frame.setVisible(true);
-          delay(questionDelay);
-          imPanel.remove(questionPanel);
-        }
-        //End question
-
-        //Displays Fixation if necessary
-        Fixation fixation = new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
-        fixationPanel.removeAll();
-        //fixationPanel.add(new JLabel()); //Top row of gridpanel is blank
-        fixationPanel.add(fixation, BorderLayout.CENTER); //Middle row has the NumberLine
-        //fixationPanel.add(new JLabel()); //Bottom row of gridPanel is blank
-
-        if (isEstimateTask && isMask) {
-          imPanel.add(fixationPanel, BorderLayout.CENTER);
-          frame.setContentPane(imPanel);
-          frame.validate();
-          delay(fixationTime);
-          imPanel.remove(fixationPanel);
-        }
-        //end fixation
+            isEstimateTask, 180, leftMargin, keepWithinBounds, leftOrRight,
+            showFullBaseScale, handleLabel);
 
         //show numline and gather response
         presentTrial();
@@ -623,41 +386,23 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
             frame.setContentPane(endPanel);
             frame.validate();
           }
-          if (isMask) {
-            delay(stimMaskTime);
-
-            Mask lineMask = new Mask(thickness, imColor, numLineColors);
-            frame.setContentPane(lineMask);
-            frame.validate();
-
-            delay(maskTime);
-
-            frame.remove(lineMask);
-          }
 
           frame.showCursor();
           frame.setContentPane(startPanel);
           frame.validate();
           response.getTimedNumPadResponse(frame, "What is the target of this number line?",
               estTargetFormat);
-          textRt = response.getTextRT();
+          textRt = response.getTextRt();
           userResp = response.getTextValue();
           userRespVal = df.format(numLine.getUnitLength(userResp));
         }
-        //frame.hideCursor();
+
+        frame.hideCursor();
         frame.remove(startPanel);
         frame.setContentPane(endPanel);
         frame.validate();
 
         delay(1000);
-
-        if ("incorrect".equals(mouseResponseCorrect) && trialType == 0) {
-          frame.showCursor();
-          reminderMessage(leftValue, rightValue, response);
-          frame.hideCursor();
-        }
-
-        //Feedback.setNextFeedback(trialType, trialNum, totalTrials);
 
         double numLineUnitErr;
         if (!isEstimateTask) {
@@ -687,7 +432,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(targetUnitFormat).append("\t");
         outString.append(handleLabel);
         outString.append("\t");
-        outString.append(unitLabel);
         outString.append("\t");
         outString.append(baseColorVal).append("\t");
         outString.append(dragColorValue).append("\t");
@@ -707,24 +451,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(estimateTime).append("\t");
         outString.append(reactTime).append("\t");
         outString.append(textRt).append("\t");
-        if (questionEnabled) {
-          outString.append(initQuestion);
-          outString.append("\t");
-          outString.append(questionPosNeg); //positive/negative question
-          outString.append("\t");
-          outString.append(questionAffectValue);
-          outString.append("\t");
-          if (questionDelay != -1) {
-            outString.append(questionDelay);
-          } else {
-            outString.append(mouseResponseLabel);
-            outString.append("\t");
-            outString.append(mouseRt);
-            outString.append("\t");
-            outString.append(mouseResponseCorrect);
-            outString.append("\t");
-          }
-        }
 
         String outStringTmp = outString.toString().replaceAll("true", "TRUE");
         outStringTmp = outStringTmp.replaceAll("false", "FALSE");
@@ -794,8 +520,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     gb.setConstraints(l, c);
     j.add(l);
 
-    JButton okbutton = new JButton("OK");
-    okbutton.addActionListener(this);
+    JButton okButton = new JButton("OK");
+    okButton.addActionListener(this);
 
 
     c.gridx = 0;
@@ -803,21 +529,18 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     c.gridwidth = 1;
     c.gridheight = 1;
 
-    gb.setConstraints(okbutton, c);
+    gb.setConstraints(okButton, c);
 
-    j.add(okbutton);
+    j.add(okButton);
 
     return j;
   }
 
   /**
    * Creates the OutputHeader for the data file.
-   *
-   * @param isQuestionEnabled Does the experiment ask questions
-   * @param questionResponse  Does the experiment has question responses
    * @return String of column headers
    */
-  private String createOutputHeader(boolean isQuestionEnabled, boolean questionResponse) {
+  public String createOutputHeader() {
     StringBuilder sbuf = new StringBuilder();
     sbuf.append("exp\t");
     sbuf.append("sn\t");
@@ -825,7 +548,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     sbuf.append("trial\t");
     sbuf.append("cond\t");
     sbuf.append("session\t");
-    sbuf.append("margin\t");//("leftMargin\t");
+    sbuf.append("margin\t");
     sbuf.append("width\t");
     sbuf.append("height\t");
     sbuf.append("thick\t");
@@ -851,7 +574,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     sbuf.append("leftBound\t");
     sbuf.append("rightBound\t");
     sbuf.append("degrees\t");
-    //sbuf.append("allBaseUnits\t");
     sbuf.append("userResp\t");
     sbuf.append("userRespValue\t");
     sbuf.append("unitErr\t");
@@ -861,30 +583,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     sbuf.append("textRt\t");
     sbuf.append("feedbackType\t");
 
-    if (isQuestionEnabled) {
-      sbuf.append("question\t");
-      sbuf.append("questionKey\t");
-      sbuf.append("questionAffectValue\t");
-      if (!questionResponse) {
-        sbuf.append("questionDisplay");
-      } else {
-        sbuf.append("mouseResponse\t");
-        sbuf.append("mouseRT\t");
-        sbuf.append("questionCorrect\t");
-      }
-    }
-
     return sbuf.toString();
-  }
-
-  private String createOutput(Bundle bundle) {
-    StringBuilder outString = new StringBuilder();
-
-
-    String outStringTmp = outString.toString().replaceAll("true", "TRUE");
-    outStringTmp = outStringTmp.replaceAll("false", "FALSE");
-
-    return outStringTmp;
   }
 
   /**
@@ -944,82 +643,5 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       }
     }
     return reducedUnit;
-  }
-
-  private void getButtonMap(String b1, String b2, String b1Label, String b2Label,
-                            JFrame parentFrame) {
-    // Create a dialog to prompt
-    final JDialog dialog = new JDialog(parentFrame, true);
-
-    JButton ok = new JButton("OK");
-    ok.addActionListener(actionEvent -> {
-      dialog.setVisible(false);
-      dialog.dispose();
-    });
-
-
-    // Do not let people close out
-    dialog.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-    String topMsg = String.format("Please use the '%s' and '%s' to indicate your response", b1, b2);
-
-    JLabel topLabel = new JLabel(topMsg);
-    topLabel.setHorizontalAlignment(SwingConstants.CENTER);
-    topLabel.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 10));
-
-    Font font2 = new Font(topLabel.getFont().getFontName(), Font.PLAIN, 14);
-    topLabel.setFont(font2);
-
-
-    Font font = new Font(topLabel.getFont().getFontName(), Font.PLAIN, 32);
-
-
-    String sameMsg = String.format("%s = %s", b1, b1Label.toLowerCase());
-    String diffMsg = String.format("%s = %s", b2, b2Label.toLowerCase());
-
-    JLabel sameL = getLabel(sameMsg, font);
-    sameL.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
-
-    JLabel diffL = getLabel(diffMsg, font);
-    diffL.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
-
-    JPanel topPanel = new JPanel();
-    topPanel.setBackground(new Color(200, 200, 200));
-    topPanel.add(topLabel);
-    topPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.GRAY));
-
-    JPanel bodyPanel = new JPanel();
-    bodyPanel.setBackground(new Color(200, 200, 200));
-    bodyPanel.setLayout(new GridLayout(0, 1));
-    bodyPanel.add(sameL);
-    bodyPanel.add(diffL);
-
-    JPanel buttonPanel = new JPanel();
-    buttonPanel.setBackground(new Color(200, 200, 200));
-    buttonPanel.add(ok);
-
-    dialog.setLayout(new BorderLayout());
-
-    dialog.getContentPane().add(topPanel, BorderLayout.NORTH);
-    dialog.getContentPane().add(bodyPanel, BorderLayout.CENTER);
-    dialog.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-
-    dialog.getRootPane().setDefaultButton(ok);
-    dialog.pack();
-
-    Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-
-    dialog.setLocation((d.width - dialog.getWidth()) / 2, (d.height - dialog.getHeight()) / 2);
-    dialog.setVisible(true);
-
-    frame.hideCursor(0, 0);
-  }
-
-  private JLabel getLabel(String message, Font font) {
-    JLabel newLabel = new JLabel(message);
-    newLabel.setFont(font);
-    newLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-    return newLabel;
   }
 }

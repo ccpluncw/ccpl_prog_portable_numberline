@@ -1,5 +1,7 @@
 package ccpl.lib;
 
+import java.util.Random;
+
 /**
  * An improved random number generator based on Algorithm B
  * in Knuth Vol 2 p32.
@@ -9,10 +11,18 @@ package ccpl.lib;
  * @author Cay Horstmann
  * @version 1.01 15 Feb 1996
  */
-
 public class RandomIntGenerator {
+
+  private int low;
+  private int high;
+  private int interval;
+  private double dLow;
+  private double dHigh;
+  private double dInterval;
+  private static final Random randomObj = new Random(System.currentTimeMillis());
+
   /**
-   * Constructs an object that generates random integers in a given range
+   * Constructs an object that generates random integers in a given range.
    */
   public RandomIntGenerator() {
     low = 0;
@@ -48,7 +58,7 @@ public class RandomIntGenerator {
   }
 
   /**
-   * Generates a random integer in a range of integers
+   * Generates a random integer in a range of integers.
    *
    * @return a random integer
    */
@@ -95,24 +105,4 @@ public class RandomIntGenerator {
       buffer[i] = Math.random();
     }
   }
-
-  public static void main(String[] args) {
-    RandomIntGenerator r1
-        = new RandomIntGenerator(1, 10);
-    RandomIntGenerator r2
-        = new RandomIntGenerator();
-    RandomIntGenerator r3 = new RandomIntGenerator(1.25, 2.50, .25);
-    int i;
-    for (i = 1; i <= 100; i++) {
-      System.out.println(r1.draw() + " " + r2.draw() + " " + r3.drawDoubleWithInterval());
-    }
-  }
-
-  private int low;
-  private int high;
-  private int interval;
-  private double dLow;
-  private double dHigh;
-  private double dInterval;
-  private static final java.util.Random randomObj = new java.util.Random(System.currentTimeMillis());
 }

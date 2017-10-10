@@ -7,7 +7,7 @@ fun main(args: Array<String>) {
   val session = ""
 
   val bounded = false
-  val estimation = true
+  val estimation = false
 
   val targetHigh = 21
   val targetLow = 2

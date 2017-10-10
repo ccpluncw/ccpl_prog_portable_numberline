@@ -9,8 +9,7 @@ public class Specification {
 
   }
 
-  public Specification() {
-  }
+  public Specification() { }
 
   public static String stripComments(String line) {
     int idx;
@@ -65,20 +64,6 @@ public class Specification {
       outString = t.nextToken();
     }
     out = Integer.parseInt(outString);
-    return out;
-  }
-
-  public double getParsedDoubleSpec(int stringPosition) {
-    int i;
-    double out = 0.0;
-    String outString = "";
-
-    StringTokenizer t = new StringTokenizer(allSpecs, "\t");
-
-    for (i = 0; i < stringPosition; i++) {
-      outString = t.nextToken();
-    }
-    out = Double.parseDouble(outString);
     return out;
   }
 

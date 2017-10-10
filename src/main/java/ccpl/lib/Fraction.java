@@ -39,7 +39,6 @@ public class Fraction {
   //Allows you to print a fraction to System.out directly
   @Override
   public String toString() {
-    //Fraction f = reduceFract(this);
     return numerator + "/" + denominator;
   }
 

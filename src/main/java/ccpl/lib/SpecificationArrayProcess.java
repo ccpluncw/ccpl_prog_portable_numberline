@@ -34,9 +34,6 @@ public class SpecificationArrayProcess {
         isRead = true;
       }
     }
-    //int n = Integer.parseInt(in.readLine());
-    //Specification[] stims = new Specification[n];
-    //for (i = 0; i < n; i++) {
 
     while (isRead) {
       stims.add(new Specification());
@@ -59,21 +56,6 @@ public class SpecificationArrayProcess {
     System.arraycopy(stimsArray, 0, stimsCpy, 0, stimsArray.length);
 
     return stimsCpy;
-  }
-
-  public Specification[] readFromFile(String filename) {
-    Specification[] specs = null;
-    try {
-      BufferedReader in = new BufferedReader(new
-          FileReader(filename));
-      specs = readData(in);
-      in.close();
-    } catch (IOException e) {
-      System.out.println("Error: " + e);
-      System.out.println("File: " + filename);
-      //System.exit(1);
-    }
-    return specs;
   }
 
   public Specification[] readFromURL(URL fileURL) {
@@ -126,9 +108,7 @@ public class SpecificationArrayProcess {
     return writeToFile(fileURL.getPath(), outString);
   }
 
-  public boolean writeToURL(URL cgi, URL filename, String outString) {
-    boolean success = false;
-
+  public void writeToURL(URL cgi, URL filename, String outString) {
     if (cgi != null) {
       try {
         final String message = "out=" + URLEncoder.encode(outString, "UTF-8") + "&file="
@@ -155,20 +135,14 @@ public class SpecificationArrayProcess {
           if (resp.equals("0")) {
             System.err.println("Error posting data to server");
           } else {
-            success = true;
           }
         }
         input.close();
       } catch (IOException ioe) {
         ioe.getMessage();
       }
-    } else {
-      success = writeToFile(filename, outString);
     }
-
-    return success;
   }
-
 
   public Specification[] randomize(Specification[] specs) {
     int tmp1;

@@ -1,9 +1,10 @@
 
 package ccpl.lib;
 
+import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -19,16 +20,13 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -40,7 +38,6 @@ import javax.swing.WindowConstants;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
 
 /**
  * The RESPONSE class is very important.  It specifies methods for collecting
@@ -49,29 +46,20 @@ import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
  * (i.e., addKeyListener (Response)
  * Before any timing routine is run, testTimer () must be run once
  */
-public class Response implements KeyListener, ActionListener, ChangeListener {
+public class Response implements KeyListener, ActionListener {
 
-  private int mouseClickButton = -1;
-  protected boolean isSliderMoved = false;
   protected String textValue;
   protected long textRt;
-  private long RT = 99999;
   private volatile char userChoice = '~';
   protected JDialog respFrame;
-  private JButton sliderOkButton;
   protected JButton textOkButton;
-  private JButton rbOkButton;
-  private JButton dotOkButton;
-  private JButton radioOkButton;
   protected JTextField textInput;
   protected long startTime;
   protected long endTime;
   protected volatile boolean inputDone;
   protected boolean closedProperly = true;
-  private long loopsPerMS = 0;
+  private long loopsPerMs = 0;
   private NumPadResponse numPadResponse;
-  private JCheckBox[] buttons;
-  private List<Character> responseList;
 
   public AbstractAction returnMouseAction() {
     return new MouseAction();
@@ -99,29 +87,19 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) {
-  }
+  public void keyTyped(KeyEvent keyEvent) { }
 
   /**
-   * When a button is hit this is triggered
-   * saves the button that was hit
-   * and deals with it depending on the response mode
+   * When a button is hit this is triggered saves the button that was hit and deal with it depending
+   * on the response mode.
    *
-   * @param evt
+   * @param evt   KeyEvent
    */
   public void keyPressed(KeyEvent evt) {
-    try {
-      boolean isMultipleButton = false;
-      if (evt.isControlDown() && (evt.getKeyChar() + "").toLowerCase().charAt(0) == 'q') {
-        System.exit(0);
-      } else if (isMultipleButton) {
-        userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
-        responseList.add(userChoice);
-        resetUserChoice();
-      } else {
-        userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
-      }
-    } catch (Exception ignored) {
+    if (evt.isControlDown() && (evt.getKeyChar() + "").toLowerCase().charAt(0) == 'q') {
+      System.exit(0);
+    } else {
+      userChoice = (evt.getKeyChar() + "").toLowerCase().charAt(0);
     }
   }
 
@@ -131,27 +109,28 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
   /**
-   * YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK
-   * Calibrates timing to ensure accuracy
+   * Calibrates timing to ensure accuracy.
+   * YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK.
    *
    * @param inputPanel panel this method will draw in (its just going to indicate the timer is being
    *                   calibrated.
    * @param textColor  text color for the panel
    * @param reps       how many reps the timing calibrator will iterate through (normally 1000)
-   * @return
+   * @return           How many loops can happen per millisecond.
    */
   public synchronized long testTimer(BlankPanel inputPanel, Color textColor, int reps) {
-    long timeA, timeB;
-    int i;
-    long devisor, overRun;
+    long timeA;
+    long timeB;
+    long devisor;
+    long overRun;
     long[] testLoop = new long[reps];
     long tmpTot = 0;
 
     // reset the user choice so that the polling call below will work.
     Font myFont = new Font("SansSerif", Font.BOLD, 24);
     Dimension d1 = inputPanel.getSize();
-    int dotAreaHeight = d1.height;
-    int dotAreaWidth = d1.width;
+    final int dotAreaHeight = d1.height;
+    final int dotAreaWidth = d1.width;
 
     JLabel timerLabel = new JLabel("Please wait while the timer is calibrated.");
     inputPanel.setLayout(null);
@@ -164,7 +143,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     inputPanel.revalidate();
     inputPanel.repaint();
 
-    for (i = 0; i < reps; i++) {
+    for (int i = 0; i < reps; i++) {
       resetUserChoice();
       overRun = 0;
       timeA = new Date().getTime();
@@ -180,27 +159,23 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
     }
 
-    for (i = 0; i < reps; i++) {
+    for (int i = 0; i < reps; i++) {
       tmpTot += testLoop[i];
     }
 
-    loopsPerMS = tmpTot / reps;
+    loopsPerMs = tmpTot / reps;
 
     inputPanel.remove(timerLabel);
     inputPanel.validate();
 
-    return loopsPerMS;
+    return loopsPerMs;
   }
 
   private long pollForKeyResponse(char c) {
-    long rt;
-    long timeA, timeB, tmpTime;
-    long overRun;
-
-    overRun = 0;
-    timeA = new Date().getTime();
-    timeB = new Date().getTime();
-    tmpTime = timeA;
+    long overRun = 0;
+    long timeA = new Date().getTime();
+    long timeB = new Date().getTime();
+    long tmpTime = timeA;
 
     while (getUserChoice() != c) {
       timeB = new Date().getTime();
@@ -212,20 +187,14 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
     }
 
-    rt = (timeB - timeA) + (overRun / loopsPerMS);
-
-    return rt;
+    return (timeB - timeA) + (overRun / loopsPerMs);
   }
 
   private long pollForMouseResponse(NumberLine numLine) {
-    long rt;
-    long timeA, timeB, tempTime;
-    long overRun;
-
-    overRun = 0;
-    timeA = new Date().getTime();
-    timeB = new Date().getTime();
-    tempTime = timeA;
+    long overRun = 0;
+    long timeA = new Date().getTime();
+    long timeB = new Date().getTime();
+    long tempTime = timeA;
 
     // This is a hack to pass variables between anonymous classes.
     // Since the array is final, the anonymous class can use it
@@ -277,23 +246,19 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
 
     numLine.linePanel.removeMouseListener(tempListener);
 
-    rt = (timeB - timeA) + (overRun / loopsPerMS);
-
-    return rt;
+    return (timeB - timeA) + (overRun / loopsPerMs);
   }
 
   private long pollForResponse() {
-    long rt;
-    long timeA, timeB, tmpTime;
     long overRun = 0;
 
 
-    timeA = new Date().getTime();
-    timeB = new Date().getTime();
-    tmpTime = timeA;
+    long timeA = new Date().getTime();
+    long timeB = new Date().getTime();
+    long tmpTime = timeA;
 
 
-    while (!getInputDone()) {
+    while (!isInputDone()) {
       timeB = new Date().getTime();
       if (tmpTime != timeB) {
         overRun = 0;
@@ -303,10 +268,14 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
       }
     }
 
-    rt = (timeB - timeA) + (overRun / loopsPerMS);
-    return rt;
+    return (timeB - timeA) + (overRun / loopsPerMs);
   }
 
+  /**
+   * Displays a notification frame with a desired message.
+   * @param parent  Parent JFrame
+   * @param info    Message to be displayed.
+   */
   public synchronized void displayNotificationFrame(JFrame parent, String info) {
     inputDone = false;
     textOkButton = new JButton("OK");
@@ -314,10 +283,16 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
 
+  /**
+   * Initializes a TimedNumPadResponse.
+   * @param parent              Parent JFrame.
+   * @param info                Message to be displayed.
+   * @param targetFieldFormat   Format to apply to the target.
+   */
   public void getTimedNumPadResponse(JFrame parent, String info, String targetFieldFormat) {
-
-    if (loopsPerMS == 0) {
-      JOptionPane.showMessageDialog(null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
+    if (loopsPerMs == 0) {
+      JOptionPane.showMessageDialog(null,
+          "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
       System.exit(1);
     }
 
@@ -330,11 +305,17 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
   }
 
 
-  public long getTimedNumberLineResponse(NumberLine lPanel, boolean useMouse) {
+  /**
+   * Get a timed numberline response.
+   * @param numberLine  NumberLine panel to use.
+   * @param useMouse    If response if based on mouse click
+   * @return            The amount of time it look for the user to click.
+   */
+  public long getTimedNumberLineResponse(NumberLine numberLine, boolean useMouse) {
     //Only the spacebar will trigger a timer stop, anything else is ignored
     char submitKey = ' ';
 
-    if (loopsPerMS == 0) {
+    if (loopsPerMs == 0) {
       JOptionPane.showMessageDialog(null, "Must run the testTimer first.  Fatal Error",
           "alert", JOptionPane.ERROR_MESSAGE);
       System.exit(1);
@@ -344,7 +325,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     resetUserChoice();
 
     //Idle here until user has dragged the handle
-    while (!lPanel.isHandleDragged()) {
+    while (!numberLine.isHandleDragged()) {
       try {
         Thread.sleep(20);
       } catch (InterruptedException ex) {
@@ -356,28 +337,20 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     resetUserChoice();
 
     //User has moved handle so respond to the space bar
+    long rt;
     if (!useMouse) {
-      RT = pollForKeyResponse(submitKey);
+      rt = pollForKeyResponse(submitKey);
     } else {
-      RT = pollForMouseResponse(lPanel);
+      rt = pollForMouseResponse(numberLine);
     }
 
-    return RT;
+    return rt;
   }
 
   public void actionPerformed(ActionEvent evt) {
     if (respFrame != null) {
       JButton button = (JButton) evt.getSource();
 
-      if (button.equals(sliderOkButton)) {
-        if (isSliderMoved) {
-          endTime = new Date().getTime();
-          respFrame.setVisible(false);
-          respFrame.dispose();
-          respFrame = null;
-          inputDone = true;
-        }
-      }
       if (button.equals(textOkButton)) {
         endTime = new Date().getTime();
         textRt = endTime - startTime;
@@ -388,14 +361,9 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
         } else if (numPadResponse != null) {
           textValue = numPadResponse.getResponse();
           if (numPadResponse.validateResponse(textValue)) {
-            boolean legacy = true;
-            if (legacy) {
-              respFrame.setVisible(false);
-              respFrame.dispose();
-              respFrame = null;
-            } else {
-              respFrame.setVisible(false);
-            }
+            respFrame.setVisible(false);
+            respFrame.dispose();
+            respFrame = null;
 
             inputDone = true;
           }
@@ -405,54 +373,26 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
           inputDone = true;
         }
       }
-
-      if (button.equals(rbOkButton)) {
-        endTime = new Date().getTime();
-        List<Integer> boxId = new ArrayList<>();
-
-        int temp = boxId.size();
-
-        for (int i = 0; i < buttons.length; i++) {
-
-          if (buttons[i].isSelected()) {
-            boxId.add(i);
-          }
-        }
-
-        if (temp != boxId.size()) {
-          inputDone = true;
-          respFrame.setVisible(false);
-          respFrame.dispose();
-          respFrame = null;
-        } else {
-          JOptionPane.showMessageDialog(respFrame.getContentPane(), "Please select one or more options");
-        }
-      }
-      if (button.equals(dotOkButton)) {
-        respFrame.dispose();
-        inputDone = true;
-      }
-      if (button.equals(radioOkButton)) {
-        endTime = new Date().getTime();
-        respFrame.setVisible(false);
-        respFrame.dispose();
-        respFrame = null;
-        inputDone = true;
-      }
     }
   }
 
+  /**
+   * Called when the state has been changed.
+   * @param changeEvent   ChangeEvent
+   */
   public void stateChanged(ChangeEvent changeEvent) {
-    Object source = changeEvent.getSource();
-    if (source instanceof JSlider) {
-      JSlider jslider = (JSlider) source;
-      if (!jslider.getValueIsAdjusting()) {
-        isSliderMoved = true;
-      }
-    }
   }
 
-  public void createNotificationFrame(JFrame parent, String label, JButton okButton, int width, int height) {
+  /**
+   * Create a NotificationFrame with a desired message, button, and dimensions.
+   * @param parent      Parent JFrame
+   * @param labelText   Message to be displayed.
+   * @param okButton    Custom OK Button.
+   * @param width       Width of the frame.
+   * @param height      Height of the frame.
+   */
+  public void createNotificationFrame(JFrame parent, String labelText, JButton okButton, int width,
+                                      int height) {
     respFrame = new JDialog(parent, false);
     respFrame.setTitle("Notification");
 
@@ -466,22 +406,22 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     respFrame.setLocation((d.width - width) / 2, (d.height - height) / 2);
     Color tempC = new Color(200, 200, 200);
     BlankPanel inputPanel = new BlankPanel(tempC);
-    BlankPanel buttonPanel = new BlankPanel(tempC);
-    BlankPanel blackPanelA = new BlankPanel(tempC);
-    BlankPanel blackPanelB = new BlankPanel(tempC);
-    BlankPanel blackPanelC = new BlankPanel(tempC);
+    final BlankPanel buttonPanel = new BlankPanel(tempC);
+    final BlankPanel blackPanelA = new BlankPanel(tempC);
+    final BlankPanel blackPanelB = new BlankPanel(tempC);
+    final BlankPanel blackPanelC = new BlankPanel(tempC);
 
-    /*** this set of code allows one to get multiple line headers on the slider ***/
-    JLabel rLabel = new JLabel(label);
-    Font labelFont = rLabel.getFont();
-    FontMetrics fm = rLabel.getFontMetrics(labelFont);
+    /* this set of code allows one to get multiple line headers on the slider */
+    JLabel label = new JLabel(labelText);
+    Font labelFont = label.getFont();
+    FontMetrics fm = label.getFontMetrics(labelFont);
     int fontWidth;
 
     int i = 0;
     int totalTokens;
     String[] outString = new String[5];
     String tmp;
-    StringTokenizer t = new StringTokenizer(label, " ");
+    StringTokenizer t = new StringTokenizer(labelText, " ");
 
     do {
       tmp = t.nextToken();
@@ -548,7 +488,7 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     respFrame.getRootPane().setDefaultButton(okButton);
     respFrame.setVisible(true);
 
-    while (!getInputDone()) {
+    while (!isInputDone()) {
       Thread.yield();
     }
 
@@ -560,6 +500,12 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     }
   }
 
+  /**
+   * Create a NumpadResponseFrame.
+   * @param parent                Parent frame
+   * @param label                 Label for the frame
+   * @param targetFieldFormat     How the field should be formatted
+   */
   public void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
     respFrame = new JDialog(parent);
     respFrame.setTitle("Response");
@@ -586,7 +532,8 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     final int respFrameWidth = respFrameDim.width + 150;
     final int respFrameHeight = respFrameDim.height + 75;
     respFrame.setSize(respFrameWidth, respFrameHeight);
-    respFrame.setLocation((parent.getWidth() - respFrameWidth) / 2, (parent.getHeight() - respFrameHeight) / 2);
+    respFrame.setLocation((parent.getWidth() - respFrameWidth) / 2,
+        (parent.getHeight() - respFrameHeight) / 2);
     respFrame.setResizable(false);
 
     textOkButton.addActionListener(this);
@@ -608,98 +555,16 @@ public class Response implements KeyListener, ActionListener, ChangeListener {
     userChoice = '~';
   }
 
-  public long getRT() {
-    return RT;
-  }
-
-  public boolean getInputDone() {
+  public boolean isInputDone() {
     return inputDone;
   }
 
-  public int getMouseClickButton() {
-    return mouseClickButton;
-  }
-
-  public void resetMouseClickButton() {
-    mouseClickButton = -1;
-  }
-
-  public long getTextRT() {
+  public long getTextRt() {
     return textRt;
   }
 
   public String getTextValue() {
     return textValue;
-  }
-
-  private final DualMouseClickListener dmcl = new DualMouseClickListener();
-
-  public synchronized long getTimedMouseClickResponse(Component parent) {
-    long timeA, timeB, tmpTime;
-    long overRun;
-    parent.addMouseListener(dmcl);
-
-    overRun = 0;
-    timeA = new Date().getTime();
-    timeB = new Date().getTime();
-    tmpTime = timeA;
-
-    resetMouseClickButton();
-    int x = getMouseClickButton();
-
-    /*
-     * The following polls a variable to make the computer wait for the
-     * mouse response
-     */
-    while (x == -1) {
-      x = getMouseClickButton();
-      System.out.print("");
-      timeB = new Date().getTime();
-      if (tmpTime != timeB) {
-        overRun = 0;
-        tmpTime = timeB;
-      } else {
-        overRun++;
-      }
-    }
-
-    RT = (timeB - timeA) + (overRun / loopsPerMS);
-
-    parent.removeMouseListener(dmcl);
-
-    return RT;
-  }
-
-  private class DualMouseClickListener implements MouseListener {
-
-    public void mouseClicked(MouseEvent e) {
-    }
-
-    public void mousePressed(MouseEvent e) {
-      int temp = e.getButton();
-
-
-      switch (temp) {
-        case 1:
-          mouseClickButton = temp;
-          break;
-        case 3:
-          mouseClickButton = temp;
-          break;
-
-        default:
-          break;
-      }
-    }
-
-    public void mouseReleased(MouseEvent e) {
-    }
-
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    public void mouseExited(MouseEvent e) {
-    }
   }
 
   private final DisableMouseListener dml = new DisableMouseListener();

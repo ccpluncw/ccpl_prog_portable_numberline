@@ -30,8 +30,6 @@ import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
  */
 public class DrawExpFrame extends JFrame {
 
-  private static int screenHeight;
-  private static int screenWidth;
   private Cursor curs;
 
   public DrawExpFrame(Response resp) {
@@ -42,9 +40,7 @@ public class DrawExpFrame extends JFrame {
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension d = tk.getScreenSize();
-    screenHeight = d.height;
-    screenWidth = d.width;
-    setSize(screenWidth, screenHeight);
+    setSize(d.width, d.height);
 
     BufferedImage cursorImg = new BufferedImage(16, 16, BufferedImage.TYPE_INT_ARGB);
 
@@ -57,16 +53,16 @@ public class DrawExpFrame extends JFrame {
     setLocation(0, 0);
     setFocusable(true);
 
-    //ENABLES FULL SCREEN FUNCTION ONLY FOR MAC OS
-    //OTHER OS SIMPLY SETTING THE WINDOW TO UNDECORATED ACCOMPLISHES THE SAME GOAL
+    // ENABLES FULL SCREEN FUNCTION ONLY FOR MAC OS
+    // OTHER OS SIMPLY SETTING THE WINDOW TO UNDECORATED ACCOMPLISHES THE SAME GOAL
     if (System.getProperty("os.name").startsWith("Mac")) {
       // TODO: Figure out how to fix this on non-Mac machines
       // com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
     } else {
       setUndecorated(true); //Hides minimize and maximize buttons on jframe title bar
     }
-    setVisible(true);
 
+    setVisible(true);
   }
 
   private void assignKeyBindings(Response resp) {
@@ -118,6 +114,7 @@ public class DrawExpFrame extends JFrame {
     } catch (AWTException ex) {
       Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, null, ex);
     }
+
     hideCursor();
   }
 
