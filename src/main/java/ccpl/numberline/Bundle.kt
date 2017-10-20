@@ -10,7 +10,7 @@ class Bundle {
     values.put(key, value)
   }
 
-  fun get(key: String): Any? {
+  private fun get(key: String): Any? {
     return if (!values.containsKey(key)) {
       throw Exception("Bundle does not contain key: " + key)
     } else {
@@ -21,5 +21,7 @@ class Bundle {
   fun getAsString(key: String) = get(key) as String
 
   fun getAsInt(key: String) = Integer.parseInt(getAsString(key))
+
+  fun getAsBoolean(key: String) = get(key) as Boolean
 
 }

@@ -77,7 +77,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private boolean adjustChange = true;
   private boolean centerHandle = true;
 
-  /*************************************************
+  /***************************************************************
    * Class Member Graphic Objects for holding graphics that change
    * -------------------------------------------------------------
    * handleLine is the line for the handle which can be moved

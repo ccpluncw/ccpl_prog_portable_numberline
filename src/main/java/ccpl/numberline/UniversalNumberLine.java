@@ -72,26 +72,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private static DrawExpFrame frame;
 
   /**
-   * Creates and displays a reminder message about the correct key presses.
-   *
-   * @param leftValue  Value of the left key press
-   * @param rightValue Value of the right key press
-   * @param resp       Response object that will display the notification
-   */
-  private void reminderMessage(String leftValue, String rightValue, Response resp) {
-    // Message that will be displayed.
-    String message = "Please remember: The left click indicates '" + leftValue
-        + "'. The right click indicates '" + rightValue + "'";
-    //JOptionPane optionPane = new JOptionPane(new JLabel(message), JLabel.CENTER);
-    //JDialog d = optionPane.createDialog("Reminder");
-    //d.setVisible(true);
-
-    // Display the notification with the above message string
-    resp.displayNotificationFrame(frame, message);
-    // JOptionPane.showMessageDialog(frame, message, "Reminder", JOptionPane.INFORMATION_MESSAGE);
-  }
-
-  /**
    * Parameterized constructor allow the specification of an experiment file,
    * the subject ID, condition, and session number.
    *
@@ -335,7 +315,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         int randWidth = randGen.drawWithInterval();
 
         Unit randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
-
 
         Unit startUnit = reduceUnit(startUnitFormat, defaultStartUnit);
         Unit endUnit = reduceUnit(endUnitFormat, defaultEndUnit);
