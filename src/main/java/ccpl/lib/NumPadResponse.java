@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 
-public class NumPadResponse {
+class NumPadResponse {
 
   private static final String APP_IMG_DIR = "images/";
 
@@ -26,7 +26,12 @@ public class NumPadResponse {
   private final JPanel estTaskRespPanel;
   private final JDialog parentDialog;
 
-  public NumPadResponse(String fieldFormat, JDialog parent) {
+  /**
+   * Create a NumPadResponse given a fieldFormat and parent to attach to.
+   * @param fieldFormat     Format for the response.
+   * @param parent          Parent Dialog that number pad will attach to.
+   */
+  NumPadResponse(String fieldFormat, JDialog parent) {
     estTaskRespPanel = new JPanel(new BorderLayout());
 
     keyboard = new VirtualKeyboard();
@@ -46,16 +51,16 @@ public class NumPadResponse {
     estTaskRespPanel.add(centerPanel, BorderLayout.CENTER);
   }
 
-  public JPanel getPanel() {
+  JPanel getPanel() {
     estTaskRespPanel.setSize(estTaskRespPanel.getPreferredSize());
     return estTaskRespPanel;
   }
 
-  public String getResponse() {
+  String getResponse() {
     return fields.getFieldResponse();
   }
 
-  public boolean validateResponse(String response) {
+  boolean validateResponse(String response) {
     return fields.isValidResponse(response);
   }
 
@@ -64,7 +69,7 @@ public class NumPadResponse {
     private final JButton[] buttons;
     private ActionListener keyBoardHandler;
 
-    public VirtualKeyboard() {
+    VirtualKeyboard() {
       buttons = new JButton[12];
       keyboardPanel = new JPanel();
       keyboardPanel.setLayout(new GridLayout(4, 3));
@@ -80,11 +85,14 @@ public class NumPadResponse {
       // TODO: Fix this
       ClassLoader cl = this.getClass().getClassLoader();
       URL leftArrow = cl.getResource(APP_IMG_DIR + "left_arrow.gif");
-      URL rightArrow = cl.getResource(APP_IMG_DIR + "right_arrow.gif");
 
+      assert leftArrow != null;
       buttons[10] = new JButton(new ImageIcon(leftArrow));
       buttons[10].setToolTipText("Previous Field");
       buttons[10].setActionCommand("P");
+
+      URL rightArrow = cl.getResource(APP_IMG_DIR + "right_arrow.gif");
+      assert rightArrow != null;
       buttons[11] = new JButton(new ImageIcon(rightArrow));
       buttons[11].setToolTipText("Next Field");
       buttons[11].setActionCommand("N");
@@ -132,19 +140,19 @@ public class NumPadResponse {
     private final ArrayList<JTextField> responseFields;
     private final FieldFormat fieldFormat;
     private int activeFieldIdx;
-    private final Color DEFAULT_FIELD_COLOR;
+    private final Color defaultFieldColor;
     private String responseStr;
 
-    public ResponseFields(String format) {
+    ResponseFields(String format) {
       responsePanel = new JPanel();
       responseFields = new ArrayList<>();
       activeFieldIdx = 0;
       fieldFormat = new FieldFormat(format);
       createPanel();
-      DEFAULT_FIELD_COLOR = responsePanel.getBackground();
+      defaultFieldColor = responsePanel.getBackground();
     }
 
-    public void setActiveFieldIdx(String respText) {
+    void setActiveFieldIdx(String respText) {
       JTextField activeField = responseFields.get(activeFieldIdx);
       activeField.setText(respText);
     }
@@ -192,7 +200,6 @@ public class NumPadResponse {
       JPanel leftIdxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
       JPanel rightIdxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
 
-      JLabel label = new JLabel(".");
       int numLeftFields = fieldFormat.getNumLeftVals();
       createFields(numLeftFields);
       for (int i = 0; i < numLeftFields; ++i) {
@@ -205,6 +212,8 @@ public class NumPadResponse {
       for (int i = numLeftFields; i < totalFields; ++i) {
         rightIdxPanel.add(responseFields.get(i));
       }
+
+      JLabel label = new JLabel(".");
 
       responsePanel.add(leftIdxPanel);
       responsePanel.add(label);
@@ -215,7 +224,6 @@ public class NumPadResponse {
       responsePanel.setLayout(new GridLayout(3, 1));
       JPanel leftIdxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
       JPanel rightIdxPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 2, 0));
-      JPanel fractLinePanel = new FractLinePanel();
 
       int numLeftFields = fieldFormat.getNumLeftVals();
       createFields(numLeftFields);
@@ -229,6 +237,8 @@ public class NumPadResponse {
       for (int i = numLeftFields; i < totalFields; ++i) {
         rightIdxPanel.add(responseFields.get(i));
       }
+
+      JPanel fractLinePanel = new FractLinePanel();
 
       responsePanel.add(leftIdxPanel);
       responsePanel.add(fractLinePanel);
@@ -240,7 +250,6 @@ public class NumPadResponse {
       JPanel leftIdxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
       JPanel rightIdxPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
 
-      JLabel label = new JLabel(" in ");
       int numLeftFields = fieldFormat.getNumLeftVals();
       createFields(numLeftFields);
       for (int i = 0; i < numLeftFields; ++i) {
@@ -254,16 +263,17 @@ public class NumPadResponse {
         rightIdxPanel.add(responseFields.get(i));
       }
 
+      JLabel label = new JLabel(" in ");
       responsePanel.add(leftIdxPanel);
       responsePanel.add(label);
       responsePanel.add(rightIdxPanel);
     }
 
-    public int getFieldCount() {
+    int getFieldCount() {
       return responseFields.size();
     }
 
-    public String getFieldResponse() {
+    String getFieldResponse() {
       StringBuilder response = new StringBuilder();
       int numLeftVals = fieldFormat.getNumLeftVals();
       int numRightVals = fieldFormat.getNumRightVals();
@@ -280,8 +290,11 @@ public class NumPadResponse {
           break;
         case ODD:
           response.append(" in ");
+          break;
+        default:
+          response.append(" ");
       }
-      if (fieldFormat.getType() != FIELDTYPE.INT) {
+      if (fieldFormat.getType() != FieldType.INT) {
         int totalVals = numLeftVals + numRightVals;
         for (int i = numLeftVals; i < totalVals; ++i) {
           response.append(responseFields.get(i).getText());
@@ -291,10 +304,10 @@ public class NumPadResponse {
       return responseStr;
     }
 
-    public boolean isValidResponse(String response) {
+    boolean isValidResponse(String response) {
       boolean isGreaterZero = true;
       boolean isValidFraction = true;
-      String fract[];
+      String[] fract;
       switch (fieldFormat.getType()) {
         case DECI:
           if (Double.parseDouble(response) <= 0.0) {
@@ -315,7 +328,8 @@ public class NumPadResponse {
         case ODD:
           fract = response.split("in");
           try {
-            Fraction f = new Fraction(Integer.parseInt(fract[0].trim()), Integer.parseInt(fract[1].trim()));
+            Fraction f = new Fraction(Integer.parseInt(fract[0].trim()),
+                Integer.parseInt(fract[1].trim()));
             if (f.toDouble() <= 0.0) {
               isGreaterZero = false;
             }
@@ -331,7 +345,8 @@ public class NumPadResponse {
       if (!isGreaterZero) {
         JOptionPane.showMessageDialog(parentDialog, "Your response must be greater than zero.");
       } else if (!isValidFraction) {
-        JOptionPane.showMessageDialog(parentDialog, "The second field of the response must be greater than zero.");
+        JOptionPane.showMessageDialog(parentDialog, "The second field of the response must be "
+                                                     + "greater than zero.");
       }
       return (isGreaterZero && isValidFraction);
     }
@@ -365,57 +380,57 @@ public class NumPadResponse {
 
     private void removeActiveFieldFocus() {
       JTextField focusField = responseFields.get(activeFieldIdx);
-      focusField.setBackground(DEFAULT_FIELD_COLOR);
+      focusField.setBackground(defaultFieldColor);
       focusField.revalidate();
     }
 
     private class FractLinePanel extends JPanel {
-      public FractLinePanel() {
+      FractLinePanel() {
         super(null);
       }
 
       @Override
       public void paintComponent(Graphics g) {
-        int hPos = getHeight() / 2;
-        g.drawLine(0, hPos, getWidth(), hPos);
+        int heightPosition = getHeight() / 2;
+        g.drawLine(0, heightPosition, getWidth(), heightPosition);
       }
     }
 
   }
 
-  private enum FIELDTYPE {INT, DECI, FRACT, ODD}
+  private enum FieldType { INT, DECI, FRACT, ODD }
 
-  private static FIELDTYPE findType(String formatStr) {
-    FIELDTYPE TYPE = FIELDTYPE.INT;
+  private static FieldType findType(String formatStr) {
+    FieldType type = FieldType.INT;
     if (formatStr.contains(".")) {
-      TYPE = FIELDTYPE.DECI;
+      type = FieldType.DECI;
     } else if (formatStr.contains("/")) {
-      TYPE = FIELDTYPE.FRACT;
+      type = FieldType.FRACT;
     } else if (formatStr.contains("in")) {
-      TYPE = FIELDTYPE.ODD;
+      type = FieldType.ODD;
     }
-    return TYPE;
+    return type;
   }
 
   private class FieldFormat {
     private final String format;
-    private final FIELDTYPE TYPE;
+    private final FieldType type;
 
-    public FieldFormat(String fieldFormat) {
+    FieldFormat(String fieldFormat) {
       if (isValid(fieldFormat)) {
         format = fieldFormat;
-        TYPE = findType(fieldFormat);
+        type = findType(fieldFormat);
       } else {
         format = null;
-        TYPE = null;
+        type = null;
         System.err.println("Invalid target format" + fieldFormat);
         System.exit(1);
       }
     }
 
-    public int getNumLeftVals() {
-      int left = 1;
-      switch (TYPE) {
+    int getNumLeftVals() {
+      int left;
+      switch (type) {
         case DECI:
           left = Integer.parseInt((format.substring(0, format.indexOf(".")).trim()));
           break;
@@ -431,10 +446,10 @@ public class NumPadResponse {
       return left;
     }
 
-    public int getNumRightVals() {
-      int right = 1;
+    int getNumRightVals() {
+      int right;
       int lastIdx = format.length();
-      switch (TYPE) {
+      switch (type) {
         case DECI:
           right = Integer.parseInt((format.substring(format.indexOf(".") + 1, lastIdx).trim()));
           break;
@@ -450,14 +465,14 @@ public class NumPadResponse {
       return right;
     }
 
-    public FIELDTYPE getType() {
-      return TYPE;
+    FieldType getType() {
+      return type;
     }
 
-    private boolean isValid(String aFormat) {
+    private boolean isValid(String format) {
       String regex = "^(\\d)*(\\s)*((.|/|(in))(\\s)*(\\d)+)?$";
       boolean isValid = false;
-      if (aFormat.matches(regex)) {
+      if (format.matches(regex)) {
         isValid = true;
       }
       return isValid;

@@ -1,9 +1,9 @@
 package ccpl.lib;
 
-
-import javax.swing.JPanel;
 import java.awt.Color;
 import java.awt.Graphics;
+
+import javax.swing.JPanel;
 
 /**
  * The following creates a blank panel with the appropriate background color.

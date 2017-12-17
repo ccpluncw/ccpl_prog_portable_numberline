@@ -1,19 +1,17 @@
 package ccpl.lib;
 
-import java.awt.AWTException;
+import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
+
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.Robot;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -23,7 +21,6 @@ import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
 
-import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
 
 /**
  * The DRAWEXPFRAME sets up a frame the size of the screen to run the experiment in.
@@ -32,7 +29,11 @@ public class DrawExpFrame extends JFrame {
 
   private Cursor curs;
 
-  public DrawExpFrame(Response resp) {
+  /**
+   * The frame that the experiment is displayed on.
+   * @param resp  Response object.
+   */
+  DrawExpFrame(Response resp) {
     setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     addKeyListener(resp);
@@ -58,6 +59,14 @@ public class DrawExpFrame extends JFrame {
     if (System.getProperty("os.name").startsWith("Mac")) {
       // TODO: Figure out how to fix this on non-Mac machines
       // com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
+      Object fsu;
+      try {
+        fsu = Class.forName("com.apple.eawt.FullScreenUtilities").newInstance().getClass();
+        fsu.getClass().getMethod("setWindowCanFullScreen").invoke(fsu, this, true);
+      } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
+          | InvocationTargetException | ClassNotFoundException e) {
+        e.printStackTrace();
+      }
     } else {
       setUndecorated(true); //Hides minimize and maximize buttons on jframe title bar
     }
@@ -96,26 +105,6 @@ public class DrawExpFrame extends JFrame {
     setCursor(curs);
 
     resetMouseToCenter(this);
-  }
-
-  /**
-   * Hide the cursor and move it to a specific spot.
-   * This method is to work around an issue in MacOS where the OS will take control of the mouse.
-   * @param x   X coordinate.
-   * @param y   Y coordinate.
-   */
-  public void hideCursor(int x, int y) {
-    Robot bot;
-    try {
-      bot = new Robot();
-      bot.mouseMove(x, y);
-      bot.mousePress(InputEvent.BUTTON1_MASK);
-      bot.mouseRelease(InputEvent.BUTTON1_MASK);
-    } catch (AWTException ex) {
-      Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, null, ex);
-    }
-
-    hideCursor();
   }
 
   public void showCursor() {

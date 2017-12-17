@@ -1,5 +1,6 @@
 package ccpl.numberline
 
+
 class Bundle {
   private val values: MutableMap<String, Any> = hashMapOf()
 
@@ -20,8 +21,21 @@ class Bundle {
 
   fun getAsString(key: String) = get(key) as String
 
-  fun getAsInt(key: String) = Integer.parseInt(getAsString(key))
+  fun getAsInt(key: String) = if (get(key) is String) Integer.parseInt(getAsString(key))
+  else get(key) as Int
 
-  fun getAsBoolean(key: String) = get(key) as Boolean
+  fun getAsBoolean(key: String): Boolean = if (get(key) is String) getAsString(key).toBoolean()
+  else get(key) as Boolean
+
+  fun merge(secondBundle: Bundle) : Bundle {
+    val newBundle = Bundle()
+
+    secondBundle.values.forEach { newBundle.add(it.key, it.value) }
+    values.forEach { newBundle.add(it.key, it.value) }
+
+    return newBundle
+  }
+
+  override fun toString(): String = values.map { it.key + ": " + it.value }.joinToString("\n")
 
 }

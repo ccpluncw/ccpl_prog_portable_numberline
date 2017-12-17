@@ -1,6 +1,10 @@
 package ccpl.numberline
 
+import javax.swing.UIManager
+
 fun main(args: Array<String>) {
+
+  UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
   val listener = PopupCallback()
   val popup = ConfigurationPopup(listener, "Configure")
@@ -13,21 +17,11 @@ fun main(args: Array<String>) {
 
   if (bundle.size != 0) {
     val expFile = "exp"
-    val subject = ""
-    val condition = ""
-    val session = ""
+    val subject = bundle.getAsString("subject")
+    val condition = bundle.getAsString("condition")
+    val session = bundle.getAsString("session")
 
-    val bounded = false
-    val estimation = bundle.getAsBoolean("estimation_task")
-
-    val targetHigh = 21
-    val targetLow = 2
-
-    val leftBound = 1
-    val rightBound = 1
-
-    val exp = UniversalNumberLine(expFile, subject, condition, session, bounded, estimation,
-        targetLow, targetHigh, leftBound, rightBound)
+    val exp = UniversalNumberLine(expFile, subject, condition, session, bundle)
 
     exp.run()
   }

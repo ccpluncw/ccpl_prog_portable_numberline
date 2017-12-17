@@ -1,17 +1,22 @@
 package ccpl.lib;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.StringTokenizer;
 
 public class Specification {
-  public Specification(String s) {
+  Specification(String s) {
     allSpecs = s;
-
   }
 
-  public Specification() { }
+  Specification() { }
 
-  public static String stripComments(String line) {
+  /**
+   * Strip comments from an input line.
+   * @param line    Input line
+   * @return        Input line without comments.
+   */
+  static String stripComments(String line) {
     int idx;
     if ((idx = line.indexOf("//")) >= 0) {
       line = line.substring(0, idx).trim();
@@ -19,7 +24,13 @@ public class Specification {
     return line;
   }
 
-  public boolean readData(BufferedReader in) throws IOException {
+  /**
+   * Read data from a BufferedReader.
+   * @param in              Reader
+   * @return                Every specification stripped of comments.
+   * @throws IOException    Throw an IOException if there is a problem reading.
+   */
+  boolean readData(BufferedReader in) throws IOException {
     if ((allSpecs = in.readLine()) != null) {
       allSpecs = stripComments(allSpecs);
       return true;
@@ -28,7 +39,7 @@ public class Specification {
     }
   }
 
-  public boolean isEmpty() {
+  boolean isEmpty() {
     return allSpecs.isEmpty();
   }
 
@@ -51,32 +62,6 @@ public class Specification {
     }
 
     return outString;
-  }
-
-  public int getParsedIntSpec(int stringPosition) {
-    int i;
-    int out = 0;
-    String outString = "";
-
-    StringTokenizer t = new StringTokenizer(allSpecs, "\t");
-
-    for (i = 0; i < stringPosition; i++) {
-      outString = t.nextToken();
-    }
-    out = Integer.parseInt(outString);
-    return out;
-  }
-
-  public char getParsedCharSpec(int stringPosition) {
-    int i;
-    String outString = "";
-
-    StringTokenizer t = new StringTokenizer(allSpecs, "\t");
-
-    for (i = 0; i < stringPosition; i++) {
-      outString = t.nextToken();
-    }
-    return outString.charAt(0);
   }
 
   /**

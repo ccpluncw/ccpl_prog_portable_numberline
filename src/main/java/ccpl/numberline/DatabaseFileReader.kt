@@ -25,3 +25,13 @@ fun readDbFile(path: URL): Bundle {
 
   return dbfileValues
 }
+
+fun writeDbFile(bundle: Bundle, path: URL) {
+  val file = File(path.toURI())
+  file.parentFile.mkdirs()
+
+
+  val pw = PrintWriter(FileOutputStream(file))
+  pw.println(bundle.toString())
+  pw.close()
+}

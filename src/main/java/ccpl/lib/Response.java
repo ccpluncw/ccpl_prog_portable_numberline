@@ -1,7 +1,7 @@
 
 package ccpl.lib;
 
-import static ccpl.lib.Util.MouseUtilKt.resetMouseToCenter;
+import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,11 +32,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JSlider;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 
 /**
@@ -48,16 +45,14 @@ import javax.swing.event.ChangeListener;
  */
 public class Response implements KeyListener, ActionListener {
 
-  protected String textValue;
-  protected long textRt;
+  private String textValue;
+  private long textRt;
   private volatile char userChoice = '~';
-  protected JDialog respFrame;
-  protected JButton textOkButton;
-  protected JTextField textInput;
-  protected long startTime;
-  protected long endTime;
-  protected volatile boolean inputDone;
-  protected boolean closedProperly = true;
+  private JDialog respFrame;
+  private JButton textOkButton;
+  private JTextField textInput;
+  private long startTime;
+  private volatile boolean inputDone;
   private long loopsPerMs = 0;
   private NumPadResponse numPadResponse;
 
@@ -116,9 +111,8 @@ public class Response implements KeyListener, ActionListener {
    *                   calibrated.
    * @param textColor  text color for the panel
    * @param reps       how many reps the timing calibrator will iterate through (normally 1000)
-   * @return           How many loops can happen per millisecond.
    */
-  public synchronized long testTimer(BlankPanel inputPanel, Color textColor, int reps) {
+  public synchronized void testTimer(BlankPanel inputPanel, Color textColor, int reps) {
     long timeA;
     long timeB;
     long devisor;
@@ -168,7 +162,6 @@ public class Response implements KeyListener, ActionListener {
     inputPanel.remove(timerLabel);
     inputPanel.validate();
 
-    return loopsPerMs;
   }
 
   private long pollForKeyResponse(char c) {
@@ -258,7 +251,7 @@ public class Response implements KeyListener, ActionListener {
     long tmpTime = timeA;
 
 
-    while (!isInputDone()) {
+    while (isInputRunning()) {
       timeB = new Date().getTime();
       if (tmpTime != timeB) {
         overRun = 0;
@@ -347,40 +340,39 @@ public class Response implements KeyListener, ActionListener {
     return rt;
   }
 
+  /**
+   * Perform an action of the response frame.
+   * @param evt   Action event
+   */
   public void actionPerformed(ActionEvent evt) {
-    if (respFrame != null) {
-      JButton button = (JButton) evt.getSource();
+    if (respFrame == null) {
+      return;
+    }
 
-      if (button.equals(textOkButton)) {
-        endTime = new Date().getTime();
-        textRt = endTime - startTime;
-        if (textInput != null && !"".equals(textInput.getText())) {
-          textValue = (textInput.getText()).trim();
-          respFrame.dispose();
-          inputDone = true;
-        } else if (numPadResponse != null) {
-          textValue = numPadResponse.getResponse();
-          if (numPadResponse.validateResponse(textValue)) {
-            respFrame.setVisible(false);
-            respFrame.dispose();
-            respFrame = null;
+    JButton button = (JButton) evt.getSource();
 
-            inputDone = true;
-          }
-        } else if (textInput == null) {
+    if (button.equals(textOkButton)) {
+      long endTime = new Date().getTime();
+      textRt = endTime - startTime;
+      if (textInput != null && !"".equals(textInput.getText())) {
+        textValue = (textInput.getText()).trim();
+        respFrame.dispose();
+        inputDone = true;
+      } else if (numPadResponse != null) {
+        textValue = numPadResponse.getResponse();
+        if (numPadResponse.validateResponse(textValue)) {
           respFrame.setVisible(false);
           respFrame.dispose();
+          respFrame = null;
+
           inputDone = true;
         }
+      } else if (textInput == null) {
+        respFrame.setVisible(false);
+        respFrame.dispose();
+        inputDone = true;
       }
     }
-  }
-
-  /**
-   * Called when the state has been changed.
-   * @param changeEvent   ChangeEvent
-   */
-  public void stateChanged(ChangeEvent changeEvent) {
   }
 
   /**
@@ -391,14 +383,13 @@ public class Response implements KeyListener, ActionListener {
    * @param width       Width of the frame.
    * @param height      Height of the frame.
    */
-  public void createNotificationFrame(JFrame parent, String labelText, JButton okButton, int width,
-                                      int height) {
+  private void createNotificationFrame(JFrame parent, String labelText, JButton okButton, int width,
+                                       int height) {
     respFrame = new JDialog(parent, false);
     respFrame.setTitle("Notification");
 
     // dont let people close out
     respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-    closedProperly = true;
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension d = tk.getScreenSize();
@@ -443,11 +434,11 @@ public class Response implements KeyListener, ActionListener {
       blackPanelA.add(responseLabel);
     }
 
-    Insets cInset = new Insets(10, 10, 10, 10);
+    Insets inset = new Insets(10, 10, 10, 10);
     GridBagLayout gridBag = new GridBagLayout();
     inputPanel.setLayout(gridBag);
     GridBagConstraints c = new GridBagConstraints();
-    c.insets = cInset;
+    c.insets = inset;
     c.weightx = 1.0;
     c.weighty = 1.0;
     c.anchor = GridBagConstraints.CENTER;
@@ -488,15 +479,8 @@ public class Response implements KeyListener, ActionListener {
     respFrame.getRootPane().setDefaultButton(okButton);
     respFrame.setVisible(true);
 
-    while (!isInputDone()) {
+    while (isInputRunning()) {
       Thread.yield();
-    }
-
-    if (!closedProperly) {
-      okButton.doClick();
-      JOptionPane.showMessageDialog(null,
-          "You must choose an option.  Do NOT use the Close Box", "alert",
-          JOptionPane.ERROR_MESSAGE);
     }
   }
 
@@ -506,7 +490,7 @@ public class Response implements KeyListener, ActionListener {
    * @param label                 Label for the frame
    * @param targetFieldFormat     How the field should be formatted
    */
-  public void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
+  private void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
     respFrame = new JDialog(parent);
     respFrame.setTitle("Response");
 
@@ -543,24 +527,20 @@ public class Response implements KeyListener, ActionListener {
 
   }
 
-  public char getUserChoice() {
+  private char getUserChoice() {
     return userChoice;
   }
 
-  public void setUserChoice(char a) {
+  private void setUserChoice(char a) {
     userChoice = a;
   }
 
-  public void resetUserChoice() {
+  private void resetUserChoice() {
     userChoice = '~';
   }
 
-  public boolean isInputDone() {
-    return inputDone;
-  }
-
-  public long getTextRt() {
-    return textRt;
+  private boolean isInputRunning() {
+    return !inputDone;
   }
 
   public String getTextValue() {

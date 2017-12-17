@@ -2,7 +2,7 @@
 package ccpl.lib;
 
 
-public interface ExpInterface {
+interface ExpInterface {
   // method signatures
   String createOutputHeader();
 

@@ -1,4 +1,4 @@
-package ccpl.lib.Util
+package ccpl.lib.util
 
 import java.awt.Robot
 import javax.swing.JFrame

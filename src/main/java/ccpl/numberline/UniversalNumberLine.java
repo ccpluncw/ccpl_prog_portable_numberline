@@ -8,7 +8,6 @@ import ccpl.lib.Experiment;
 import ccpl.lib.Fraction;
 import ccpl.lib.NumberLine;
 import ccpl.lib.RandomIntGenerator;
-import ccpl.lib.Response;
 import ccpl.lib.Specification;
 import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
@@ -37,38 +36,21 @@ import javax.swing.JPanel;
  * Number line experiment that displays a number line and asks the user for feedback.
  * Modified by Kyle Holt.
  * November, 2010.
+ *
  * @author dalecohen
  */
 public class UniversalNumberLine extends Experiment implements ActionListener {
 
-  private boolean isEstimationTask;
-  private boolean isBounded;
+  private final boolean isEstimationTask;
 
-  private int leftBound;
-  private int rightBound;
+  private Bundle dataBundle;
 
-  private int targetLow;
-  private int targetHigh;
-
-  /**
-   * Implemented method from ActionListener.
-   * Whenever an action is performed, display a blank screen and notify the
-   * experiment of the action
-   *
-   * @param e ActionEvent object used to get information about the action
-   */
-  @Override
-  public void actionPerformed(ActionEvent e) {
-    presentBlankScreen(0);
-    synchronized (this) {
-      notify();
-    }
-  }
+  private final int numberOfTrials;
+  private final int numOfPracTrials;
 
   private static NumberLine numLine = null;
   private static RandomIntGenerator randGen = new RandomIntGenerator();
   private static BlankPanel imPanel;
-  private static BlankPanel gridPanel;
   private static DrawExpFrame frame;
 
   /**
@@ -81,21 +63,18 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * @param sess    Session number
    */
   public UniversalNumberLine(String expFile, String sub, String cond, String sess,
-                             boolean isBounded, boolean isEstimation, int targetLow,
-                             int targetHigh, int leftBound, int rightBound) {
-    super(expFile, sub, cond, sess);
+                             Bundle dataBundle) {
+    super(expFile, sub, cond, sess, dataBundle.getAsString("save_dir"));
+
+    this.dataBundle = dataBundle;
 
     trialType = 0;
     trialNum = 0;
 
-    this.isEstimationTask = isEstimation;
-    this.isBounded = isBounded;
+    this.numberOfTrials = dataBundle.getAsInt("num_trials");
+    this.numOfPracTrials = dataBundle.getAsInt("num_prac_trials");
 
-    this.targetLow = targetLow;
-    this.targetHigh = targetHigh;
-
-    this.leftBound = leftBound;
-    this.rightBound = rightBound;
+    this.isEstimationTask = dataBundle.getAsBoolean("estimation_task");
   }
 
   /**
@@ -103,25 +82,21 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    */
   public void run() {
     ClassLoader cl = this.getClass().getClassLoader();
-    URL dbFilePath = cl.getResource(experiment + "/infiles/dbfile_ut_0_1.txt");
     URL newLayoutPath = cl.getResource(experiment + "/infiles/dbfile_new_layout.txt");
+    URL baseExpPath = cl.getResource(experiment + "/infiles/base_exp.txt");
 
     // Read DB
-    Bundle dbBundle = readDbFile(newLayoutPath);
+    assert newLayoutPath != null;
+    final Bundle dbBundle = readDbFile(newLayoutPath);
 
-    // Read in the database file
-    dbfile = dataAP.readFromURL(dbFilePath);
+    assert baseExpPath != null;
+    Bundle baseExp = readDbFile(baseExpPath);
+
+    dataBundle = dataBundle.merge(baseExp);
 
     // BEGIN PARSING OF DATABASE FILE
-    practiceTrialFile = dbBundle.getAsString("prac_trial");
+    trialType = numOfPracTrials != 0 ? 0 : 1;
 
-    if (practiceTrialFile.equalsIgnoreCase("none")) {
-      trialType = 1;
-    } else {
-      trialType = 0;
-    }
-
-    expTrialFile = dbBundle.getAsString("exp_trial");
     instructFile = dbBundle.getAsString("instructions");
     fontFile = dbBundle.getAsString("fonts");
 
@@ -131,30 +106,18 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     final int baseG = dbBundle.getAsInt("base_green");
     final int baseB = dbBundle.getAsInt("base_blue");
 
-    final int dragR = dbfile[6].getParsedIntSpec(1);
-    final int dragG = dbfile[6].getParsedIntSpec(2);
-    final int dragB = dbfile[6].getParsedIntSpec(3);
+    final int dragR = dbBundle.getAsInt("drag_red");
+    final int dragG = dbBundle.getAsInt("drag_green");
+    final int dragB = dbBundle.getAsInt("drag_blue");
 
-    final int handleR = dbfile[7].getParsedIntSpec(1);
-    final int handleG = dbfile[7].getParsedIntSpec(2);
-    final int handleB = dbfile[7].getParsedIntSpec(3);
+    final int handleR = dbBundle.getAsInt("handle_red");
+    final int handleG = dbBundle.getAsInt("handle_green");
+    final int handleB = dbBundle.getAsInt("handle_blue");
     /* END PARSING OF DATABASE FILE */
 
     Color baseColor = new Color(baseR, baseG, baseB);
     Color dragColor = new Color(dragR, dragG, dragB);
     Color handleActiveColor = new Color(handleR, handleG, handleB);
-
-    String baseColorVal = "(" + baseColor.getRed() + ", "
-        + baseColor.getGreen() + ", "
-        + baseColor.getBlue() + ")";
-
-    String dragColorValue = "(" + dragColor.getRed() + ", "
-        + dragColor.getGreen() + ", "
-        + dragColor.getBlue() + ")";
-
-    String handleColorVal = "(" + handleActiveColor.getRed() + ", "
-        + handleActiveColor.getGreen() + ", "
-        + handleActiveColor.getBlue() + ")";
 
     frame = getFrame();
     setFullScreen();
@@ -169,13 +132,13 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     boolean useMouse;
 
     try {
-      useMouse = dbfile[15].getParsedStringSpec(1).trim().equalsIgnoreCase("on");
+      useMouse = dbBundle.getAsBoolean("use_mouse");
     } catch (IndexOutOfBoundsException e) {
       System.out.println("useMouse click flag missing, defaulting to spacebar");
       useMouse = false;
     }
 
-    dataAP.writeToURL(getCGI(), dataFile, createOutputHeader());
+    dataAp.writeToUrl(getDataFile(), createOutputHeader());
 
     //----prepare frame---------
     Color imColor = Color.BLACK;
@@ -183,7 +146,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     imPanel = new BlankPanel(imColor);
     final BlankPanel leftMarginPanel = new BlankPanel(imColor);
     // BlankPanel rightMarginPanel = new BlankPanel(imColor);
-    gridPanel = new BlankPanel(imColor);
+    BlankPanel gridPanel = new BlankPanel(imColor);
     BlankPanel fixationPanel = new BlankPanel(imColor);
     //fixationPanel.setLayout(new GridLayout(3,1));
     fixationPanel.setLayout(new BorderLayout());
@@ -201,7 +164,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     String userRespVal;
 
     //  get array of usable font names
-    fonts = dataAP.readFromURL(getFontFile());
+    fonts = dataAp.readFromUrl(getFontFile());
     String[] fontNames = new String[fonts.length];
 
     for (int i = 0; i < fonts.length; i++) {
@@ -220,74 +183,69 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       synchronized (this) {
         wait();
       }
-    } catch (InterruptedException ignored) { }
+    } catch (InterruptedException ignored) { /* IGNORE */ }
 
     frame.remove(instructionPanel);
     frame.validate();
 
+    String numberLineSize = dataBundle.getAsString("line_size");
+
+    int widthMod = getModifier("width", numberLineSize);
+
     for (; trialType < 2; trialType++) {
+      int tempTrials;
       if (trialType == 0) {
-        stims = dataAP.readFromURL(getPracticeFile());
-        stims = dataAP.randomize(stims);
+        tempTrials = numOfPracTrials;
         prepareToStartPractice(frame);
       } else {
-        frame.showCursor();
-
-        stims = dataAP.readFromURL(getExperimentFile());
-        stims = dataAP.randomize(stims);
+        tempTrials = numberOfTrials;
         frame.showCursor();
         prepareToStartExperiment(frame);
 
         frame.hideCursor();
       }
 
-      final int trialLength = stims.length;
-      totalTrials = stims.length;
       frame.requestFocus();
 
-      for (trialNum = 0; trialNum < trialLength; trialNum++) {
+      for (trialNum = 0; trialNum < tempTrials; trialNum++) {
         frame.showCursor();
         long reactTime;
-        long textRt = 0;
 
-        final int leftMarginLow = stims[trialNum].getParsedIntSpec(1);
-        final int leftMarginHigh = stims[trialNum].getParsedIntSpec(2);
-        final int leftMarginInterval = stims[trialNum].getParsedIntSpec(3);
-        final int widthLow = stims[trialNum].getParsedIntSpec(4);
-        final int widthHigh = stims[trialNum].getParsedIntSpec(5);
-        final int widthInterval = stims[trialNum].getParsedIntSpec(6);
-        final int height = stims[trialNum].getParsedIntSpec(7);
-        final int thickness = stims[trialNum].getParsedIntSpec(8);
+        final int leftMarginLow = dataBundle.getAsInt("left_margin_low");
+        final int leftMarginHigh = dataBundle.getAsInt("left_margin_high");
+        final int leftMarginInterval = dataBundle.getAsInt("left_margin_interval");
 
-        final Unit defaultStartUnit = new Unit(stims[trialNum].getParsedStringSpec(9));
-        final Unit defaultEndUnit = new Unit(stims[trialNum].getParsedStringSpec(10));
+        final int widthLow = widthMod * dataBundle.getAsInt("width_low");
+        final int widthHigh = widthMod * dataBundle.getAsInt("width_high") * dataBundle.getAsInt("end_unit");
+        final int widthInterval = dataBundle.getAsInt("width_interval");
 
-        final Unit targetUnitLow = new Unit(String.valueOf(targetLow));
-        final Unit targetUnitHigh = new Unit(String.valueOf(targetHigh));
-        final Unit targetUnitInterval = new Unit(stims[trialNum].getParsedStringSpec(13));
+        final int height = getModifier("height", numberLineSize);
+        final int thickness = getModifier("thickness", numberLineSize);
 
-        String startUnitFormat = stims[trialNum].getParsedStringSpec(14);
-        startUnitFormat = startUnitFormat.toUpperCase();
-        String endUnitFormat = stims[trialNum].getParsedStringSpec(15);
-        endUnitFormat = endUnitFormat.toUpperCase();
-        String targetUnitFormat = stims[trialNum].getParsedStringSpec(16);
-        targetUnitFormat = targetUnitFormat.toUpperCase();
+        final Unit defaultStartUnit = new Unit(dataBundle.getAsString("start_unit"));
+        final Unit defaultEndUnit = new Unit(dataBundle.getAsString("end_unit"));
 
-        boolean isEstimateTask = isEstimationTask;
+        final Unit targetUnitLow = new Unit(dataBundle.getAsString("target_unit_low"));
+        final Unit targetUnitHigh = new Unit(dataBundle.getAsString("target_unit_high"));
+        final Unit targetUnitInterval = new Unit(dataBundle.getAsString("target_unit_interval"));
+
+        final String startUnitFormat = dataBundle.getAsString("start_unit_format").toUpperCase();
+        final String endUnitFormat = dataBundle.getAsString("end_unit_format").toUpperCase();
+        final String targetUnitFormat = dataBundle.getAsString("target_unit_format").toUpperCase();
 
         int estimateTime = 0;
-        if (isEstimateTask) {
-          estimateTime = stims[trialNum].getParsedIntSpec(18);
+        if (isEstimationTask) {
+          estimateTime = dataBundle.getAsInt("est_stim_time");
         }
 
-        String estTargetFormat = stims[trialNum].getParsedStringSpec(19);
+        String estTargetFormat = dataBundle.getAsString("est_target_format");
 
-        final String start = stims[trialNum].getParsedStringSpec(20);
-        final String end = stims[trialNum].getParsedStringSpec(21);
-        final String target = stims[trialNum].getParsedStringSpec(22);
-        final String handle = stims[trialNum].getParsedStringSpec(23);
+        final String start = dataBundle.getAsString("start_label_on");
+        final String end = dataBundle.getAsString("end_label_on");
+        final String target = dataBundle.getAsString("target_label_on");
+        final String handle = "false";
 
-        boolean[]  showFullBaseScale = new boolean[4];
+        boolean[] showFullBaseScale = new boolean[4];
         showFullBaseScale[0] = Boolean.parseBoolean(start);
         showFullBaseScale[1] = Boolean.parseBoolean(end);
         showFullBaseScale[2] = Boolean.parseBoolean(target);
@@ -296,8 +254,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         // location 0 in the array determines if the handle can move past the left bound
         // location 1 determines the right bound
         boolean[] keepWithinBounds = new boolean[2];
-        keepWithinBounds[0] = isBounded;
-        keepWithinBounds[1] = isBounded;
+        keepWithinBounds[0] = dataBundle.getAsBoolean("bound_interior");
+        keepWithinBounds[1] = dataBundle.getAsBoolean("bound_exterior");
 
         //Update the leftMarginPanel in each trial
         int leftMargin = getRandomLeftMargin(leftMarginLow, leftMarginHigh, leftMarginInterval);
@@ -306,10 +264,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         paneld.width = leftMargin;
         leftMarginPanel.setPreferredSize(paneld);
 
-        //imPanel.add(leftMarginPanel, BorderLayout.WEST);
-
         frame.remove(startPanel);
-        //frame.hideCursor();
 
         randGen = new RandomIntGenerator(widthLow, widthHigh, widthInterval);
         int randWidth = randGen.drawWithInterval();
@@ -321,23 +276,19 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         randTarget = reduceUnit(targetUnitFormat, randTarget);
 
-        String handleLabel = "";
-
         String myFontName = getRandomFontName(fontNames);
 
-        int degrees = stims[trialNum].getParsedIntSpec(27);
+        char leftOrRight = dataBundle.getAsString("handle_start_point").charAt(0);
 
-        char leftOrRight = stims[trialNum].getParsedCharSpec(24);
-
-        numLine = new NumberLine(randWidth, height, thickness, startUnit, endUnit,
+        numLine = new NumberLine(randWidth + thickness, height, thickness, startUnit, endUnit,
             randTarget, baseColor, dragColor, handleActiveColor, myFontName,
-            isEstimateTask, 180, leftMargin, keepWithinBounds, leftOrRight,
-            showFullBaseScale, handleLabel);
+            isEstimationTask, leftMargin, keepWithinBounds, leftOrRight,
+            showFullBaseScale);
 
         //show numline and gather response
         presentTrial();
 
-        if (!isEstimateTask) {
+        if (!isEstimationTask) {
           frame.showCursor();
 
           //Idle here until user has hit the space bar
@@ -371,7 +322,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           frame.validate();
           response.getTimedNumPadResponse(frame, "What is the target of this number line?",
               estTargetFormat);
-          textRt = response.getTextRt();
           userResp = response.getTextValue();
           userRespVal = df.format(numLine.getUnitLength(userResp));
         }
@@ -383,58 +333,27 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         delay(1000);
 
-        double numLineUnitErr;
-        if (!isEstimateTask) {
-          numLineUnitErr = numLine.getUnitError(true);
-        } else {
-          numLineUnitErr = numLine.getUnitError(true, userResp);
-        }
-
-        outString.append(experiment).append("\t");
+        // Format as decimal output.
         outString.append(subject).append("\t");
         outString.append(trialType).append("\t");
         outString.append(trialNum).append("\t");
         outString.append(condition).append("\t");
         outString.append(session).append("\t");
-        outString.append(leftMargin).append("\t");
-        outString.append(numLine.getBaseWidth()).append("\t");
-        outString.append(height).append("\t");
-        outString.append(thickness).append("\t");
-        outString.append(numLine.getStartUnitString()).append("\t");
+        outString.append(numberLineSize).append("\t");
+        outString.append(df.format(numLine.getUnitLength())).append("\t");
         outString.append(df.format(numLine.getStartUnit())).append("\t");
-        outString.append(startUnitFormat).append("\t");
-        outString.append(numLine.getEndUnitString()).append("\t");
         outString.append(df.format(numLine.getEndUnit())).append("\t");
-        outString.append(endUnitFormat).append("\t");
-        outString.append(numLine.getTargetUnitString()).append("\t");
         outString.append(df.format(numLine.getTargetUnit())).append("\t");
-        outString.append(targetUnitFormat).append("\t");
-        outString.append(handleLabel);
-        outString.append("\t");
-        outString.append("\t");
-        outString.append(baseColorVal).append("\t");
-        outString.append(dragColorValue).append("\t");
-        outString.append(handleColorVal).append("\t");
-        outString.append(myFontName).append("\t");
-        outString.append(showFullBaseScale[0]).append("\t");
-        outString.append(showFullBaseScale[1]).append("\t");
-        outString.append(showFullBaseScale[2]).append("\t");
-        outString.append(leftOrRight).append("\t");
-        outString.append(keepWithinBounds[0]).append("\t");
-        outString.append(keepWithinBounds[1]).append("\t");
-        outString.append(degrees).append("\t");
-        outString.append(userResp).append("\t");
+        outString.append(keepWithinBounds[1] ? "Bounded" : "Unbounded").append("\t");
         outString.append(userRespVal).append("\t");
-        outString.append(df.format(numLineUnitErr)).append("\t");
-        outString.append(isEstimateTask).append("\t");
+        outString.append(isEstimationTask ? "Estimation" : "Production").append("\t");
         outString.append(estimateTime).append("\t");
         outString.append(reactTime).append("\t");
-        outString.append(textRt).append("\t");
 
         String outStringTmp = outString.toString().replaceAll("true", "TRUE");
         outStringTmp = outStringTmp.replaceAll("false", "FALSE");
 
-        dataAP.writeToURL(getCGI(), dataFile, outStringTmp);
+        dataAp.writeToUrl(dataFile, outStringTmp);
         outString.setLength(0);
 
         frame.remove(endPanel);
@@ -454,6 +373,17 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     System.exit(0);
   }
 
+  private int getModifier(String prefix, String key) {
+    switch (key.toUpperCase()) {
+      case "SMALL":
+        return dataBundle.getAsInt(prefix + "_small_mod");
+      case "MEDIUM":
+        return dataBundle.getAsInt(prefix + "_med_mod");
+      default:
+        return dataBundle.getAsInt(prefix + "_large_mod");
+    }
+  }
+
   /**
    * Returns an instance of JPanel formatted to display the instruction file.
    *
@@ -469,7 +399,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     j.setLocation(0, 0);
 
     SpecificationArrayProcess sap = new SpecificationArrayProcess();
-    Specification[] instructions = sap.readFromURL(u);
+    Specification[] instructions = sap.readFromUrl(u);
 
     String html1;
     String html2;
@@ -517,52 +447,25 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
   /**
    * Creates the OutputHeader for the data file.
+   *
    * @return String of column headers
    */
   public String createOutputHeader() {
-    StringBuilder sbuf = new StringBuilder();
-    sbuf.append("exp\t");
-    sbuf.append("sn\t");
-    sbuf.append("pract\t");
-    sbuf.append("trial\t");
-    sbuf.append("cond\t");
-    sbuf.append("session\t");
-    sbuf.append("margin\t");
-    sbuf.append("width\t");
-    sbuf.append("height\t");
-    sbuf.append("thick\t");
-    sbuf.append("sUnit\t");
-    sbuf.append("sUnitValue\t");
-    sbuf.append("sUnitFormat\t");
-    sbuf.append("bUnit\t");
-    sbuf.append("bUnitValue\t");
-    sbuf.append("bUnitFormat\t");
-    sbuf.append("tUnit\t");
-    sbuf.append("tUnitValue\t");
-    sbuf.append("tUnitFormat\t");
-    sbuf.append("handleLabel\t");
-    sbuf.append("unitLabel\t");
-    sbuf.append("bColor\t");
-    sbuf.append("dColor\t");
-    sbuf.append("hColor\t");
-    sbuf.append("font\t");
-    sbuf.append("dispStart\t");
-    sbuf.append("dispEnd\t");
-    sbuf.append("dispTarget\t");
-    sbuf.append("handleStart\t");
-    sbuf.append("leftBound\t");
-    sbuf.append("rightBound\t");
-    sbuf.append("degrees\t");
-    sbuf.append("userResp\t");
-    sbuf.append("userRespValue\t");
-    sbuf.append("unitErr\t");
-    sbuf.append("estTask\t");
-    sbuf.append("estStimTime\t");
-    sbuf.append("numLineRT\t");
-    sbuf.append("textRt\t");
-    sbuf.append("feedbackType\t");
-
-    return sbuf.toString();
+    return "sn\t"
+        + "pract\t"
+        + "trial\t"
+        + "cond\t"
+        + "session\t"
+        + "Small,Medium,Large\t"
+        + "unitWidth\t"
+        + "startUnit\t"
+        + "endUnit\t"
+        + "target\t"
+        + "Bounded\t"
+        + "userRespValue\t"
+        + "estTask\t"
+        + "estStimTime\t"
+        + "numLineRT\t";
   }
 
   /**
@@ -605,22 +508,37 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     if (unitFormat.matches("^.*[Ll][Cc][Dd]$")) {
       String[] fractStr = new String[2];
       Fraction fract;
-      if (unit.getType() == Unit.UNITTYPE.FRACT) {
+      if (unit.getType() == Unit.UnitType.FRACT) {
         fractStr = unit.getValue().split("/");
-      } else if (unit.getType() == Unit.UNITTYPE.ODDS) {
+      } else if (unit.getType() == Unit.UnitType.ODDS) {
         fractStr = unit.getValue().split("in");
       }
       fract = new Fraction(Integer.parseInt(fractStr[0].trim()),
           Integer.parseInt(fractStr[1].trim()));
 
       String reducedFractStr = Fraction.reduceFract(fract).toString();
-      if (unit.getType() == Unit.UNITTYPE.FRACT) {
+      if (unit.getType() == Unit.UnitType.FRACT) {
         reducedUnit = new Unit(reducedFractStr);
-      } else if (unit.getType() == Unit.UNITTYPE.ODDS) {
+      } else if (unit.getType() == Unit.UnitType.ODDS) {
         fractStr = reducedFractStr.split("/");
         reducedUnit = new Unit(fractStr[0].trim() + " in " + fractStr[1].trim());
       }
     }
     return reducedUnit;
+  }
+
+  /**
+   * Implemented method from ActionListener.
+   * Whenever an action is performed, display a blank screen and notify the
+   * experiment of the action
+   *
+   * @param e ActionEvent object used to get information about the action
+   */
+  @Override
+  public void actionPerformed(ActionEvent e) {
+    presentBlankScreen(0);
+    synchronized (this) {
+      notify();
+    }
   }
 }

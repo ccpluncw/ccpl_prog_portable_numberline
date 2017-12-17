@@ -8,96 +8,111 @@ import javax.swing.JLabel;
 
 public class Unit {
 
-  public enum UNITTYPE {
+  public enum UnitType {
     INT, DECI, FRACT, ODDS
   }
 
-  private final UNITTYPE TYPE;
-  private final String VALUE;
-  private final double DOUBLE_VALUE;
+  private final UnitType type;
+  private final String value;
+  private final double doubleValue;
 
+  /**
+   * Unit class.
+   * @param unit  Unit stored in String format.
+   */
   public Unit(String unit) {
-    VALUE = unit;
+    value = unit;
     unit = unit.trim();
     String intRegex = "^(\\d)+$";
     String deciRegex = "^(\\d)*(.(\\d)+)?$";
     String fractRegex = "^(\\d)+\\s*/\\s*(\\d)+$";
     String oddRegex = "^(\\d)+\\s*in\\s*(\\d)+$";
+
     if (unit.matches(intRegex)) {
-      TYPE = UNITTYPE.INT;
-      DOUBLE_VALUE = Double.parseDouble(unit);
+      type = UnitType.INT;
+      doubleValue = Double.parseDouble(unit);
     } else if (unit.matches(fractRegex)) {
-      TYPE = UNITTYPE.FRACT;
+      type = UnitType.FRACT;
       Fraction f = new Fraction(unit);
-      DOUBLE_VALUE = f.toDouble();
+      doubleValue = f.toDouble();
     } else if (unit.matches(deciRegex)) {
-      TYPE = UNITTYPE.DECI;
-      DOUBLE_VALUE = Double.parseDouble(unit);
+      type = UnitType.DECI;
+      doubleValue = Double.parseDouble(unit);
     } else if (unit.matches(oddRegex)) {
-      TYPE = UNITTYPE.ODDS;
+      type = UnitType.ODDS;
       String[] odds = unit.split("in");
       Fraction f = new Fraction(Integer.parseInt(odds[0].trim()), Integer.parseInt(odds[1].trim()));
-      DOUBLE_VALUE = f.toDouble();
+      doubleValue = f.toDouble();
     } else {
       throw new IllegalArgumentException("Invalid Unit Format: " + unit);
     }
   }
 
   public String getValue() {
-    return VALUE;
+    return value;
   }
 
   public int toInteger() {
-    return (int) DOUBLE_VALUE;
+    return (int) doubleValue;
   }
 
   public double toDouble() {
-    return DOUBLE_VALUE;
+    return doubleValue;
   }
 
-  public UNITTYPE getType() {
-    return TYPE;
+  public UnitType getType() {
+    return type;
   }
 
+  /**
+   * Get a random unit given a minimum, maximum, and interval.
+   * @param low         Minimum
+   * @param high        Maximum
+   * @param interval    Interval
+   * @return            Randomized number.
+   */
   public static Unit getRandomUnit(Unit low, Unit high, Unit interval) {
     RandomIntGenerator randGen = new RandomIntGenerator();
     String targetUnit = "";
 
-    UNITTYPE uLowType = low.getType();
-    UNITTYPE uHighType = high.getType();
-    UNITTYPE uIntervalType = interval.getType();
+    UnitType unitLowType = low.getType();
+    UnitType unitHighType = high.getType();
+    UnitType unitIntervalType = interval.getType();
 
-    if (uLowType != uHighType || uLowType != uIntervalType || uHighType != uIntervalType) {
+    if (unitLowType != unitHighType || unitLowType != unitIntervalType) {
       throw new IllegalArgumentException("Units not all of same type");
     }
 
-    if (uLowType == UNITTYPE.INT) {
-      randGen.setIntervalRange(Integer.parseInt(low.getValue()), Integer.parseInt(high.getValue()), Integer.parseInt(interval.getValue()));
+    if (unitLowType == UnitType.INT) {
+      randGen.setIntervalRange(Integer.parseInt(low.getValue()), Integer.parseInt(high.getValue()),
+          Integer.parseInt(interval.getValue()));
       targetUnit = Integer.toString(randGen.drawWithInterval());
-    } else if (uLowType == UNITTYPE.DECI) {
-      randGen.setDoubleIntervalRange(Double.parseDouble(low.getValue()), Double.parseDouble(high.getValue()), Double.parseDouble(interval.getValue()));
+    } else if (unitLowType == UnitType.DECI) {
+      randGen.setDoubleIntervalRange(Double.parseDouble(low.getValue()),
+          Double.parseDouble(high.getValue()), Double.parseDouble(interval.getValue()));
       targetUnit = Double.toString(randGen.drawDoubleWithInterval());
-    } else if (uLowType == UNITTYPE.FRACT || uLowType == UNITTYPE.ODDS) {
-      String fract[] = {"", ""};
+    } else if (unitLowType == UnitType.FRACT || unitLowType == UnitType.ODDS) {
+      String[] fract = {"", ""};
 
-      Fraction targetFracts[] = new Fraction[3];
+      Fraction[] targetFracts = new Fraction[3];
 
       boolean matched = false;
-      int randTargetNum = 0;
 
-      Unit parseUnits[] = {low, high, interval};
+      Unit[] parseUnits = {low, high, interval};
 
       for (int i = 0; i < parseUnits.length; i++) {
-        if (parseUnits[i].getType() == UNITTYPE.FRACT) {
+        if (parseUnits[i].getType() == UnitType.FRACT) {
           fract = parseUnits[i].getValue().split("/");
           matched = true;
-        } else if (parseUnits[i].getType() == UNITTYPE.ODDS) {
+        } else if (parseUnits[i].getType() == UnitType.ODDS) {
           fract = parseUnits[i].getValue().split("in");
           matched = true;
         }
+
         if (matched) {
           try {
-            targetFracts[i] = new Fraction(Integer.parseInt(fract[0].trim()), Integer.parseInt(fract[1].trim()));
+            targetFracts[i] = new Fraction(Integer.parseInt(fract[0].trim()),
+                Integer.parseInt(fract[1].trim()));
           } catch (NumberFormatException e) {
             System.err.println("Could not parse target value " + parseUnits[i]);
             System.exit(1);
@@ -107,7 +122,7 @@ public class Unit {
           System.exit(1);
         }
         matched = false;
-      }// end for
+      }
 
       int commonDenom = Fraction.getCommonDenom(targetFracts);
       for (int i = 0; i < 3; i++) {
@@ -121,13 +136,13 @@ public class Unit {
         System.exit(1);
       }
 
-      //System.err.println(fractArray[0][0] + ", " + fractArray[1][0]+ ", " + fractArray[2][0]);
-      randGen.setIntervalRange(targetFracts[0].getNumerator(), targetFracts[1].getNumerator(), targetFracts[2].getNumerator());
-      randTargetNum = randGen.drawWithInterval();
-      //System.err.println(""+randTargetNum + "/" + commonDenom);
-      if (uLowType == UNITTYPE.FRACT) {
+      randGen.setIntervalRange(targetFracts[0].getNumerator(), targetFracts[1].getNumerator(),
+          targetFracts[2].getNumerator());
+      int randTargetNum = randGen.drawWithInterval();
+
+      if (unitLowType == UnitType.FRACT) {
         targetUnit = Integer.toString(randTargetNum) + "/" + commonDenom;
-      } else if (uLowType == UNITTYPE.ODDS) {
+      } else {
         targetUnit = Integer.toString(randTargetNum) + " in " + commonDenom;
       }
 
@@ -137,7 +152,7 @@ public class Unit {
 
   @Override
   public String toString() {
-    return VALUE;
+    return value;
   }
 
   private static JLabel getLabel(String val, Font labelFont) {
@@ -154,6 +169,6 @@ public class Unit {
   }
 
   public JLabel getLabel(Font labelFont) {
-    return getLabel(VALUE, labelFont);
+    return getLabel(value, labelFont);
   }
 }

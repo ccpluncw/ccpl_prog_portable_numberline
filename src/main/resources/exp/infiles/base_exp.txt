@@ -1,0 +1,35 @@
+left_margin_low:            100
+left_margin_high:           200
+left_margin_interval:       1
+
+width_small_mod:            1
+width_med_mod:              2
+width_large_mod:            3
+
+width_low:                  2
+
+width_high:                 32
+
+start_unit_format:          int
+end_unit_format:            int
+target_unit_format:         int
+
+est_stim_time:              0
+est_target_format:          2.1
+
+start_label_on:             true
+end_label_on:               true
+
+handle_start_point:         R
+
+height_small_mod:           10
+height_med_mod:             20
+height_large_mod:           30
+
+thickness_small_mod:        1
+thickness_med_mod:          3
+thickness_large_mod:        5
+
+width_interval:             1
+
+bound_interior:             true

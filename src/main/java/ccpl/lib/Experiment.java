@@ -1,6 +1,6 @@
 package ccpl.lib;
 
-import java.io.File;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
@@ -9,43 +9,34 @@ import javax.swing.JFrame;
 
 
 public class Experiment implements ExpInterface {
-  private final URL CGI = null;
 
   protected final String experiment;
   protected final String subject;
   protected final String condition;
   protected final String session;
 
-  protected int totalTrials;
   protected int trialNum;
   protected int trialType;
 
   protected final Response response;
-  private DrawExpFrame frame;
+  private final DrawExpFrame frame;
 
-  protected String practiceTrialFile;
-  protected String expTrialFile;
   protected String instructFile;
   protected String fontFile;
 
   protected int restNumber;
 
-  protected Specification[] dbfile;
-  protected Specification[] stims;
   protected Specification[] fonts;
 
-  protected final SpecificationArrayProcess dataAP = new SpecificationArrayProcess();
-  private final String WORKING_DIR = System.getProperty("user.dir");
+  protected final SpecificationArrayProcess dataAp = new SpecificationArrayProcess();
 
-  private final String codeBase = new File(WORKING_DIR).toURI().toString();
-
-  private final String REL_DATA_FILE;
-  private final String DATA_FILE_NAME;
-  private final String INFILES_PATH;
+  private final String relativeDataDirectory;
+  private final String dataFileName;
+  private final String infilesPath;
 
   private final BlankPanel blankPanel = new BlankPanel();
 
-  public Experiment(String exp, String sub, String cond, String sess) {
+  protected Experiment(String exp, String sub, String cond, String sess, String saveDirectory) {
     this.subject = sub;
     this.condition = cond;
     this.session = sess;
@@ -58,23 +49,19 @@ public class Experiment implements ExpInterface {
 
     this.response.setFrame(frame);
 
-    this.DATA_FILE_NAME = "/p" + subject + "s" + session + ".dat";
-    this.REL_DATA_FILE = experiment + "/data/";
-    this.INFILES_PATH = "exp/infiles/";
-  }
-
-  protected String getInfilesPath() {
-    return INFILES_PATH;
+    this.dataFileName = "/p" + subject + "s" + session + ".dat";
+    this.relativeDataDirectory = saveDirectory;
+    this.infilesPath = "exp/infiles/";
   }
 
   protected URL getInstructionFile() {
-    return this.getClass().getClassLoader().getResource(INFILES_PATH + instructFile);
+    return this.getClass().getClassLoader().getResource(infilesPath + instructFile);
   }
 
   protected URL getDataFile() {
     // TODO: Change this to allow a user to select where to save the file.
     try {
-      return new URL("file:/home/aray/temp/cohen" + DATA_FILE_NAME);
+      return new URL("file://" + relativeDataDirectory + dataFileName);
     } catch (MalformedURLException e) {
       e.printStackTrace();
     }
@@ -83,26 +70,22 @@ public class Experiment implements ExpInterface {
   }
 
   protected URL getFontFile() {
-    return getClass().getClassLoader().getResource(INFILES_PATH + fontFile);
-  }
-
-  protected URL getPracticeFile() {
-    return this.getClass().getClassLoader().getResource(INFILES_PATH + practiceTrialFile);
-  }
-
-  protected URL getExperimentFile() {
-    return this.getClass().getClassLoader().getResource(INFILES_PATH + expTrialFile);
-  }
-
-  protected URL getCGI() {
-    return CGI;
+    return getClass().getClassLoader().getResource(infilesPath + fontFile);
   }
 
   protected void setFullScreen() {
     // Make Mac go full screen
     if (System.getProperty("os.name").startsWith("Mac")) {
-      // TODO: Figure out how to handle this on non-Mac machines.
       // com.apple.eawt.Application.getApplication().requestToggleFullScreen(frame);
+      try {
+        Class.forName("com.apple.eawt.Application").newInstance()
+            .getClass()
+            .getMethod("getApplication")
+            .invoke(null);
+      } catch (IllegalAccessException | InvocationTargetException | InstantiationException
+             | NoSuchMethodException | ClassNotFoundException e) {
+        e.printStackTrace();
+      }
     }
   }
 
@@ -119,11 +102,13 @@ public class Experiment implements ExpInterface {
   }
 
   protected void rest() {
-    response.displayNotificationFrame(frame, "Please take a break.  Click the OK button to resume the experiment");
+    response.displayNotificationFrame(frame,
+        "Please take a break.  Click the OK button to resume the experiment");
   }
 
   protected void thankYou() {
-    response.displayNotificationFrame(frame, "THANK YOU for participating!  Click the OK button to end the experiment");
+    response.displayNotificationFrame(frame,
+        "THANK YOU for participating!  Click the OK button to end the experiment");
   }
 
 
@@ -135,37 +120,6 @@ public class Experiment implements ExpInterface {
   protected void prepareToStartPractice(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the practice trials");
-  }
-
-  private boolean paramMatches(String param, String property) {
-    boolean isMatch = false;
-    if ((param.trim()).equalsIgnoreCase(property)) {
-      isMatch = true;
-    }
-    return isMatch;
-  }
-
-  protected boolean isParamOn(String param) {
-    boolean isOn = false;
-    if (paramMatches(param, "on")) {
-      isOn = true;
-    }
-    return isOn;
-  }
-
-  protected URL getURL(String localFile) {
-    return getURL(codeBase, localFile);
-  }
-
-  private URL getURL(String codeBase, String localFile) {
-    URL fileURL = null;
-
-    try {
-      fileURL = new URL(codeBase + localFile);
-    } catch (MalformedURLException ex) {
-      Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
-    }
-    return fileURL;
   }
 
   public String createOutputHeader() {

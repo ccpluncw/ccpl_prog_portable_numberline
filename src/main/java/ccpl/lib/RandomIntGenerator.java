@@ -1,5 +1,6 @@
 package ccpl.lib;
 
+import java.security.SecureRandom;
 import java.util.Random;
 
 /**
@@ -16,10 +17,11 @@ public class RandomIntGenerator {
   private int low;
   private int high;
   private int interval;
-  private double dLow;
-  private double dHigh;
-  private double dInterval;
-  private static final Random randomObj = new Random(System.currentTimeMillis());
+  private double doubleLow;
+  private double doubleHigh;
+  private double doubleInterval;
+
+  private static final Random randomObj = new SecureRandom();
 
   /**
    * Constructs an object that generates random integers in a given range.
@@ -29,56 +31,76 @@ public class RandomIntGenerator {
     high = 1;
   }
 
-  public RandomIntGenerator(int l, int h) {
+  RandomIntGenerator(int l, int h) {
     this(l, h, 1);
   }
 
-  public RandomIntGenerator(int l, int h, int intv) {
-    low = l;
-    high = h;
-    interval = intv;
+  /**
+   * Initialize a RandomIntGenerator with a minimum, maximum, and interval.
+   *
+   * @param low         Minimum value
+   * @param high        Maximum value
+   * @param interval    Interval
+   */
+  public RandomIntGenerator(int low, int high, int interval) {
+    this.low = low;
+    this.high = high;
+    this.interval = interval;
   }
 
-  public RandomIntGenerator(double l, double h, double intv) {
-    dLow = l;
-    dHigh = h;
-    dInterval = intv;
+  /**
+   * Set the interval range.
+   * @param low         Minimum value
+   * @param high        Maximum value
+   * @param interval    Interval
+   */
+  public void setIntervalRange(int low, int high, int interval) {
+    this.low = low;
+    this.high = high;
+    this.interval = interval;
   }
 
-  public void setIntervalRange(int l, int h, int intv) {
-    low = l;
-    high = h;
-    interval = intv;
-  }
-
-  public void setDoubleIntervalRange(double l, double h, double intv) {
-    dLow = l;
-    dHigh = h;
-    dInterval = intv;
+  /**
+   * Set the interval for a floating point number.
+   * @param low         Minimum value
+   * @param high        Maximum value
+   * @param interval    Interval in the range
+   */
+  void setDoubleIntervalRange(double low, double high, double interval) {
+    doubleLow = low;
+    doubleHigh = high;
+    doubleInterval = interval;
   }
 
   /**
    * Generates a random integer in a range of integers.
-   *
    * @return a random integer
    */
-  public int draw() {
+  int draw() {
     return low + (int) ((high - low + 1) * nextRandom());
   }
 
+  /**
+   * Select a random value in the interval with a set interval distance.
+   * @return    Random value between minimum and maximum.
+   */
   public int drawWithInterval() {
     int r1 = (high - low + interval) / interval;
     int r2 = (int) (r1 * nextRandom());
     int r3 = r2 * interval;
-    //System.out.println(r1 + " " + r2 + " " + r3 + " " + r4);
+
     return (r3 + low);
   }
 
-  public double drawDoubleWithInterval() {
-    double r = dLow;
-    double numPosValues = (dHigh - dLow) / dInterval + 1.0;
+  /**
+   * Randomize a double value within the interval.
+   * @return    Randomized double value
+   */
+  double drawDoubleWithInterval() {
+    double r = doubleLow;
+    double numPosValues = (doubleHigh - doubleLow) / doubleInterval + 1.0;
     double randLimit = (int) (nextRandom() * numPosValues);
-    r += (dInterval * randLimit);
+    r += (doubleInterval * randLimit);
     return r;
   }
 
