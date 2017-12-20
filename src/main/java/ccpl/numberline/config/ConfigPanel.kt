@@ -3,6 +3,7 @@ package ccpl.numberline.config
 import ccpl.lib.Bundle
 import java.awt.Component
 import java.awt.Dimension
+import java.awt.GridLayout
 import javax.swing.*
 
 class ConfigPanel : JPanel() {
@@ -16,7 +17,7 @@ class ConfigPanel : JPanel() {
     this.add(getEstPanel())
     this.add(getBoundedPanel())
     this.add(getSizePanel())
-    //this.add(getBiasSetting())
+    this.add(getBiasSetting())
   }
 
   /**
@@ -38,8 +39,37 @@ class ConfigPanel : JPanel() {
   private fun getSizePanel() : JPanel = buttonPanel("Number Line Size", "line_size", listOf("Small", "Medium", "Large"),
                                                     listOf("small", "medium", "large"))
 
-  private fun getBiasSetting() : JPanel = buttonPanel("Estimation Largest Bias", "bias",
-                                                      listOf("Child\n 1.4", "Adult\n 1.2", "Other"), listOf())
+  private fun getBiasSetting() : JPanel {
+    val panel = borderTitlePanel("Estimated Largest Bias")
+    panel.layout = GridLayout(2, 3)
+
+    val childRadBtn = JRadioButton("Child")
+    childRadBtn.actionCommand = "1.4"
+
+    val adultRadBtn = JRadioButton("Adult")
+    adultRadBtn.actionCommand = "1.2"
+
+    val txtFld = JTextField("0")
+    val othRadBtn   = JRadioButton("Other")
+    othRadBtn.addActionListener { othRadBtn.actionCommand = txtFld.text }
+
+    val btnGrp = ButtonGroup()
+    btnGrp.add(childRadBtn)
+    btnGrp.add(adultRadBtn)
+    btnGrp.add(othRadBtn)
+
+    btnGrps.put("bias", btnGrp)
+
+    panel.add(childRadBtn)
+    panel.add(adultRadBtn)
+    panel.add(othRadBtn)
+
+    panel.add(JLabel("1.4"))
+    panel.add(JLabel("1.2"))
+    panel.add(txtFld)
+
+    return panel
+  }
 
   private fun borderTitlePanel(title: String) : JPanel {
     val panel = JPanel()
@@ -64,6 +94,10 @@ class ConfigPanel : JPanel() {
   }
 
   fun getBundle() : Bundle {
-    return Bundle()
+    val bundle = Bundle()
+
+    btnGrps.forEach { s, btnGrp -> bundle.add(s, btnGrp.selection.actionCommand) }
+
+    return bundle
   }
 }
