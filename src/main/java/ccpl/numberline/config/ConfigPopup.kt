@@ -1,16 +1,17 @@
-package ccpl.numberline
+package ccpl.numberline.config
 
+import ccpl.lib.Bundle
+import ccpl.lib.util.readDbFile
+import ccpl.lib.util.writeDbFile
 import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.Point
 import java.awt.Toolkit
 import java.io.File
 import java.net.URL
-import java.text.NumberFormat
 import javax.swing.*
-import javax.swing.text.NumberFormatter
 
-class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
+class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
 
   private val textKeys = listOf("subject", "session", "num_trials", "num_prac_trials",
       "start_unit", "end_unit", "target_unit_low", "target_unit_high",
@@ -35,6 +36,8 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
   private val errorTextField = JLabel()
 
   private var baseBundle = Bundle()
+
+  private val configDialog = ConfigDialog()
 
   init {
     val cl = ClassLoader.getSystemClassLoader()
@@ -87,10 +90,6 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
     val estimationDropDown: JComboBox<String> = JComboBox(estimateProd)
     val widthLow: JComboBox<String> = JComboBox(smallMedLarge)
 
-    addToCenterPanel("Estimation or Production", estimationDropDown)
-    addToCenterPanel("Bounded", exteriorBoundDropDown)
-    addToCenterPanel("Number Line Size", widthLow)
-
     val okayButton = JButton("Okay")
     okayButton.addActionListener({
       if (checksPass()) {
@@ -122,6 +121,13 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
       estimationDropDown.selectedItem = if (estTask.toLowerCase() == "true") "Estimation" else "Production"
     }
 
+    val configButton = JButton("Configure")
+    configButton.addActionListener({
+      configDialog.isVisible = true
+    })
+
+    centerPanel.add(configButton)
+
     val exitButton = JButton("Exit")
     exitButton.addActionListener { System.exit(1) }
 
@@ -135,7 +141,6 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
     val screenSize = Toolkit.getDefaultToolkit().screenSize
 
     this.add(contentPanel)
-    this.add(ConfigurationPanel())
     pack()
     location = Point((screenSize.width - width) / 2, (screenSize.height  - height) / 2)
     isVisible = true
@@ -219,4 +224,9 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
   }
 
   private fun loadDefaults() : Bundle = readDbFile(URL("file://" + defaultConfigLoc))
+
+  override fun dispose() {
+    configDialog.dispose()
+    super.dispose()
+  }
 }

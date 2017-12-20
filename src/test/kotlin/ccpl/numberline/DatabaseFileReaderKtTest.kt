@@ -9,7 +9,7 @@ class DatabaseFileReaderKtTest {
   fun readDbFile() {
     val url = this.javaClass.classLoader.getResource("dbfile_new_layout.txt")
 
-    val bundle = ccpl.numberline.readDbFile(url)
+    val bundle = ccpl.lib.util.readDbFile(url)
 
     assertEquals(14, bundle.size)
     assertEquals(211, bundle.getAsInt("handle_red"))

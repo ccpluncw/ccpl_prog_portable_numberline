@@ -1,5 +1,6 @@
 package ccpl.numberline
 
+import ccpl.lib.Bundle
 import org.junit.Test
 
 import org.junit.Assert.*
