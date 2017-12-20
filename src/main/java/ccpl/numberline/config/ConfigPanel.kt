@@ -1,6 +1,7 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
+import ccpl.lib.util.addTrackedTxtField
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -10,14 +11,23 @@ class ConfigPanel : JPanel() {
 
   private val btnGrps = mutableMapOf<String, ButtonGroup>()
 
+  private val textKeys = listOf("num_trials", "num_prac_trials", "start_unit", "end_unit", "target_unit_low",
+                                "target_unit_high", "target_unit_interval")
+
+  private val textLabels = listOf("Number of Trials", "Number of Practice Trials", "Start Unit", "End Unit",
+                                  "Target Unit Low", "Target Unit High", "Target Unit Interval")
+
+  private val txtMap = mutableMapOf<String, JTextField>()
+
   init {
     this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
     this.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
 
-    this.add(getEstPanel())
-    this.add(getBoundedPanel())
-    this.add(getSizePanel())
-    this.add(getBiasSetting())
+    this.add(textPanel())
+    this.add(estPanel())
+    this.add(boundedPanel())
+    this.add(sizePanel())
+    this.add(biasPanel())
   }
 
   /**
@@ -30,16 +40,25 @@ class ConfigPanel : JPanel() {
     return super.add(Box.createRigidArea(Dimension(0, 10)))
   }
 
-  private fun getEstPanel() : JPanel = buttonPanel("Estimation or Production", "estimation_task",
-                                                   listOf("Estimation", "Production"), listOf("true", "false"))
+  private fun textPanel() : JPanel {
+    val panel = JPanel()
+    panel.layout = GridLayout(0, 2, 0, 2)
 
-  private fun getBoundedPanel() : JPanel = buttonPanel("Bounded or Unbounded", "bound_exterior",
-                                                       listOf("Bounded", "Unbounded"), listOf("true", "false"))
+    textKeys.indices.forEach { addTrackedTxtField(textKeys[it], textLabels[it], panel, txtMap) }
 
-  private fun getSizePanel() : JPanel = buttonPanel("Number Line Size", "line_size", listOf("Small", "Medium", "Large"),
-                                                    listOf("small", "medium", "large"))
+    return panel
+  }
 
-  private fun getBiasSetting() : JPanel {
+  private fun estPanel() : JPanel = buttonPanel("Estimation or Production", "estimation_task",
+                                                listOf("Estimation", "Production"), listOf("true", "false"))
+
+  private fun boundedPanel() : JPanel = buttonPanel("Bounded or Unbounded", "bound_exterior",
+                                                    listOf("Bounded", "Unbounded"), listOf("true", "false"))
+
+  private fun sizePanel() : JPanel = buttonPanel("Number Line Size", "line_size", listOf("Small", "Medium", "Large"),
+                                                 listOf("small", "medium", "large"))
+
+  private fun biasPanel() : JPanel {
     val panel = borderTitlePanel("Estimated Largest Bias")
     panel.layout = GridLayout(2, 3)
 
@@ -96,7 +115,8 @@ class ConfigPanel : JPanel() {
   fun getBundle() : Bundle {
     val bundle = Bundle()
 
-    btnGrps.forEach { s, btnGrp -> bundle.add(s, btnGrp.selection.actionCommand) }
+    txtMap.forEach { k, txt -> bundle.add(k, txt.text) }
+    btnGrps.forEach { k, btnGrp -> bundle.add(k, btnGrp.selection.actionCommand) }
 
     return bundle
   }

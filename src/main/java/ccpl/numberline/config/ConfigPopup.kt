@@ -1,8 +1,7 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
-import ccpl.lib.util.readDbFile
-import ccpl.lib.util.writeDbFile
+import ccpl.lib.util.*
 import java.awt.BorderLayout
 import java.awt.GridLayout
 import java.awt.Point
@@ -13,22 +12,13 @@ import javax.swing.*
 
 class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
 
-  private val textKeys = listOf("subject", "session", "num_trials", "num_prac_trials",
-      "start_unit", "end_unit", "target_unit_low", "target_unit_high",
-      "target_unit_interval")
+  private val textKeys = listOf("subject", "session")
 
-  private val textLabels = listOf("Subject",  "Session", "Number of Trials", "Number of Practice Trials",
-      "Start Unit", "End Unit", "Target Unit Low", "Target Unit High",
-      "Target Unit Interval")
+  private val textLabels = listOf("Subject",  "Session")
 
   private val textFields: MutableMap<String, JTextField> = mutableMapOf()
 
-  private val estimateProd: Array<String> = arrayOf("Estimation", "Production")
-  private val trueFalse: Array<String> = arrayOf("Bounded", "Unbounded")
-  private val smallMedLarge: Array<String> = arrayOf("Small", "Medium", "Large")
   private val centerPanel = JPanel()
-
-  private val exteriorBoundDropDown: JComboBox<String> = JComboBox(trueFalse)
 
   private val homeDir: String = System.getProperty("user.home")
   private val defaultConfigLoc = homeDir + "/.port_num/defaults_config_popup"
@@ -81,26 +71,18 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
     val textField = JTextField()
     textFields.put("condition", textField)
-    addToCenterPanel("Condition", textField)
+    expandGridPanel(centerPanel, "Condition", textField)
 
     textFields.put("condition", textField)
 
-    textKeys.indices.forEach { addTextField(textKeys[it], textLabels[it]) }
-
-    val estimationDropDown: JComboBox<String> = JComboBox(estimateProd)
-    val widthLow: JComboBox<String> = JComboBox(smallMedLarge)
+    textKeys.indices.forEach { addTrackedTxtField(textKeys[it], textLabels[it], centerPanel, textFields) }
 
     val okayButton = JButton("Okay")
     okayButton.addActionListener({
       if (checksPass()) {
         textFields.forEach { tf -> bunAdd(tf.key, tf.value.text) }
 
-        bunAdd("estimation_task", estimateProd[0] == estimationDropDown.selectedItem)
-        bunAdd("target_label_on", (!cb.bundle.getAsBoolean("estimation_task")).toString())
-
-        bunAdd("bound_exterior", exteriorBoundDropDown.selectedItem == "Bounded")
-        bunAdd("line_size", widthLow.selectedItem)
-
+        baseBundle.merge(configDialog.getBundle())
         bunAdd("save_dir", saveTxtField.text)
 
         writeDbFile(cb.bundle, URL("file://" + defaultConfigLoc))
@@ -113,12 +95,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     if (defaultConfigExist) {
       val bundle = loadDefaults()
       setTextDefaults(bundle)
-      val estTask = if (safeGrab(bundle, "estimation_task") != "NULL") safeGrab(bundle, "estimation_task") else ""
 
       saveTxtField.text = if (safeGrab(bundle, "save_dir") != "NULL") safeGrab(bundle, "save_dir") else ""
-      widthLow.selectedItem = if (safeGrab(bundle, "line_size") != "NULL") safeGrab(bundle, "line_size") else ""
-      exteriorBoundDropDown.selectedItem = if (safeGrab(bundle, "bound_exterior") != "NULL") safeGrab(bundle, "bound_exterior") else ""
-      estimationDropDown.selectedItem = if (estTask.toLowerCase() == "true") "Estimation" else "Production"
     }
 
     val configButton = JButton("Configure")
@@ -147,6 +125,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
   }
 
   private fun checksPass(): Boolean {
+    val conDiagBun = configDialog.getBundle()
+
     errorTextField.isVisible = false
     errorTextField.text = ""
 
@@ -161,24 +141,23 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
       sb.append("File already exists\n")
     }
 
-    val screenWidth = Toolkit.getDefaultToolkit().screenSize.width
-    val bias = 1.4
-    val targetHigh = textFields["target_unit_high"]!!.text.toDouble()
-    val endUnit = textFields["end_unit"]!!.text.toDouble()
-    val boundedUnbounded = exteriorBoundDropDown.selectedItem
+    val bias = conDiagBun.getAsString("bias").toDouble()
+    val targetHigh = conDiagBun.getAsString("target_unit_high").toDouble()
+    val endUnit = conDiagBun.getAsString("end_unit").toDouble()
+    val bounded = conDiagBun.getAsBoolean("bound_exterior")
     val error = 0.2 * targetHigh * 3
     val margin = baseBundle.getAsInt("left_margin_low")
     val widthHigh = baseBundle.getAsInt("width_high")
 
-    if (boundedUnbounded == "Bounded") {
-      if (endUnit > screenWidth - margin * 2) {
+    if (bounded) {
+      if (endUnit > screenWidth() - margin * 2) {
         pass = false
         sb.append("End unit cannot fit on screen\n")
       }
     } else {
       val largestTarget = (Math.pow(targetHigh / endUnit, bias) + error)  * widthHigh + margin * 2
 
-      if (targetHigh > largestTarget || largestTarget > screenWidth) {
+      if (targetHigh > largestTarget || largestTarget > screenWidth()) {
         pass = false
         sb.append("Largest target cannot fit on screen\n")
       }
@@ -209,19 +188,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
       "NULL"
     }
 
-  private fun addTextField(key: String, label: String) {
-    val textField = JTextField()
-    textFields.put(key, textField)
-    addToCenterPanel(label, textField)
-  }
-
   private fun bunAdd(key: String, value: Any) = cb.bundle.add(key, value)
-
-  private fun addToCenterPanel(label: String, component: JComponent) {
-    (centerPanel.layout as GridLayout).rows.plus(1)
-    centerPanel.add(JLabel(label + ": "))
-    centerPanel.add(component)
-  }
 
   private fun loadDefaults() : Bundle = readDbFile(URL("file://" + defaultConfigLoc))
 
