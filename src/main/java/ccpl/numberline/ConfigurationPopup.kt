@@ -135,6 +135,7 @@ class ConfigurationPopup(private val cb: PopupCallback, title: String?) : JFrame
     val screenSize = Toolkit.getDefaultToolkit().screenSize
 
     this.add(contentPanel)
+    this.add(ConfigurationPanel())
     pack()
     location = Point((screenSize.width - width) / 2, (screenSize.height  - height) / 2)
     isVisible = true
