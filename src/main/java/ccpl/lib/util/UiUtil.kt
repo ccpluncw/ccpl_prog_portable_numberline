@@ -20,7 +20,7 @@ fun expandGridPanel(panel: JPanel, label: String, comp: JComponent) {
 }
 
 fun addTrackedTxtField(key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>) {
-  val textField = JTextField()
+  val textField = JTextField("0")
   tracker.put(key, textField)
   expandGridPanel(panel, label, textField)
 }

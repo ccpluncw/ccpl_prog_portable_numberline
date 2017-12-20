@@ -2,10 +2,7 @@ package ccpl.numberline.config
 
 import ccpl.lib.Bundle
 import ccpl.lib.util.*
-import java.awt.BorderLayout
-import java.awt.GridLayout
-import java.awt.Point
-import java.awt.Toolkit
+import java.awt.*
 import java.io.File
 import java.net.URL
 import javax.swing.*
@@ -23,7 +20,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
   private val homeDir: String = System.getProperty("user.home")
   private val defaultConfigLoc = homeDir + "/.port_num/defaults_config_popup"
   private val saveTxtField = JTextField(20)
-  private val errorTextField = JLabel()
+  private val errorTextField = JLabel("", SwingConstants.CENTER)
 
   private var baseBundle = Bundle()
 
@@ -32,6 +29,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
   init {
     val cl = ClassLoader.getSystemClassLoader()
     baseBundle = readDbFile(cl.getResource("exp/infiles/base_exp.txt"))
+    configDialog.baseBundle(baseBundle)
 
     val defaultConfigExist = File(defaultConfigLoc).exists()
 
@@ -48,7 +46,6 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
     val saveLabel = JLabel("Save: ")
 
-
     val saveButton = JButton("Save Directory")
     saveButton.addActionListener {
       val returnVal = fc.showSaveDialog(this)
@@ -61,6 +58,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     val topPanel = JPanel()
     topPanel.layout = BorderLayout()
     errorTextField.isVisible = false
+    errorTextField.foreground = Color.RED
     val topCenter = JPanel()
     topPanel.add(errorTextField, BorderLayout.NORTH)
     topCenter.add(saveLabel)
@@ -95,7 +93,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     if (defaultConfigExist) {
       val bundle = loadDefaults()
       setTextDefaults(bundle)
-
+      configDialog.setDefaults(bundle)
       saveTxtField.text = if (safeGrab(bundle, "save_dir") != "NULL") safeGrab(bundle, "save_dir") else ""
     }
 
@@ -139,23 +137,23 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     if (File("${saveTxtField.text}/p${subject}s$session.dat").exists()) {
       pass = false
       sb.append("File already exists\n")
+    } else if (saveTxtField.text.isEmpty()) {
+      pass = false
+      sb.append("No file specified\n")
     }
 
-    val bias = conDiagBun.getAsString("bias").toDouble()
+    val bounded = conDiagBun.getAsBoolean("bound_exterior")
     val targetHigh = conDiagBun.getAsString("target_unit_high").toDouble()
     val endUnit = conDiagBun.getAsString("end_unit").toDouble()
-    val bounded = conDiagBun.getAsBoolean("bound_exterior")
-    val error = 0.2 * targetHigh * 3
     val margin = baseBundle.getAsInt("left_margin_low")
-    val widthHigh = baseBundle.getAsInt("width_high")
 
     if (bounded) {
       if (endUnit > screenWidth() - margin * 2) {
         pass = false
-        sb.append("End unit cannot fit on screen\n")
+        sb.append("End unit cannot fit on screen \n")
       }
     } else {
-      val largestTarget = (Math.pow(targetHigh / endUnit, bias) + error)  * widthHigh + margin * 2
+      val largestTarget = conDiagBun.getAsString("largest_target").toDouble()
 
       if (targetHigh > largestTarget || largestTarget > screenWidth()) {
         pass = false
@@ -166,6 +164,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     if (sb.isNotEmpty()) {
       errorTextField.isVisible = true
       errorTextField.text = sb.toString()
+      pack()
     }
 
     return pass

@@ -38,4 +38,5 @@ class Bundle {
 
   override fun toString(): String = values.map { it.key + ": " + it.value }.joinToString("\n")
 
+  fun contains(key: String) = values.contains(key)
 }

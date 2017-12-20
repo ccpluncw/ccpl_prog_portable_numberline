@@ -6,6 +6,13 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.GridLayout
 import javax.swing.*
+import javax.swing.event.DocumentEvent
+import javax.swing.event.DocumentListener
+import javax.swing.JOptionPane
+import com.sun.org.apache.xerces.internal.util.DOMUtil.getDocument
+import com.sun.java.accessibility.util.SwingEventMonitor.addDocumentListener
+
+
 
 class ConfigPanel : JPanel() {
 
@@ -19,6 +26,14 @@ class ConfigPanel : JPanel() {
 
   private val txtMap = mutableMapOf<String, JTextField>()
 
+  private val largLbl = JLabel("Largest target value allowed: 0.0")
+
+  var baseBundle: Bundle = Bundle()
+    set(value) {
+      field = value
+      updateLargLbl()
+    }
+
   init {
     this.layout = BoxLayout(this, BoxLayout.Y_AXIS)
     this.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
@@ -28,6 +43,21 @@ class ConfigPanel : JPanel() {
     this.add(boundedPanel())
     this.add(sizePanel())
     this.add(biasPanel())
+    this.add(largestTarget())
+
+    txtMap.forEach { s, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
+      override fun changedUpdate(p0: DocumentEvent?) {
+        updateLargLbl()
+      }
+
+      override fun insertUpdate(p0: DocumentEvent?) {
+        updateLargLbl()
+      }
+      override fun removeUpdate(p0: DocumentEvent?) {
+        updateLargLbl()
+      }
+    }) }
+    btnGrps.forEach { s, btnGrp -> btnGrp.elements.toList().forEach { it.addActionListener { updateLargLbl() } } }
   }
 
   /**
@@ -64,13 +94,30 @@ class ConfigPanel : JPanel() {
 
     val childRadBtn = JRadioButton("Child")
     childRadBtn.actionCommand = "1.4"
+    childRadBtn.isSelected = true
 
     val adultRadBtn = JRadioButton("Adult")
     adultRadBtn.actionCommand = "1.2"
 
-    val txtFld = JTextField("0")
+    val txtFld = JTextField("0.0")
     val othRadBtn   = JRadioButton("Other")
+    txtFld.document.addDocumentListener(object : DocumentListener {
+      override fun removeUpdate(p0: DocumentEvent?) {
+        othRadBtn.actionCommand = txtFld.text
+        updateLargLbl()
+      }
+      override fun insertUpdate(p0: DocumentEvent?) {
+        othRadBtn.actionCommand = txtFld.text
+        updateLargLbl()
+      }
+
+      override fun changedUpdate(p0: DocumentEvent?) {
+        othRadBtn.actionCommand = txtFld.text
+        updateLargLbl()
+      }
+    })
     othRadBtn.addActionListener { othRadBtn.actionCommand = txtFld.text }
+    othRadBtn.actionCommand = txtFld.text
 
     val btnGrp = ButtonGroup()
     btnGrp.add(childRadBtn)
@@ -90,6 +137,14 @@ class ConfigPanel : JPanel() {
     return panel
   }
 
+  private fun largestTarget() : JPanel {
+    val panel = borderTitlePanel("Largest Estimation Target")
+
+    panel.add(largLbl)
+
+    return panel
+  }
+
   private fun borderTitlePanel(title: String) : JPanel {
     val panel = JPanel()
 
@@ -101,6 +156,7 @@ class ConfigPanel : JPanel() {
   private fun buttonPanel(title: String, key: String, butStrs: List<String>, cmds: List<String>) : JPanel {
     val buts = butStrs.map { JRadioButton(it) }
     buts.forEachIndexed {i, it -> it.actionCommand = cmds[i]}
+    buts[0].isSelected = true
 
     val btnGrp = ButtonGroup()
     buts.forEach { btnGrp.add(it) }
@@ -116,8 +172,39 @@ class ConfigPanel : JPanel() {
     val bundle = Bundle()
 
     txtMap.forEach { k, txt -> bundle.add(k, txt.text) }
-    btnGrps.forEach { k, btnGrp -> bundle.add(k, btnGrp.selection.actionCommand) }
+    btnGrps.forEach { s, btnGrp -> bundle.add(s, btnGrp.selection.actionCommand) }
+    bundle.add("largest_target", largLbl.text.split(":")[1])
 
     return bundle
+  }
+
+  fun applyDefaults(defs: Bundle) {
+    val txtMatches = txtMap.filter { defs.contains(it.key) }
+    val btnMatches = btnGrps.filter { defs.contains(it.key) }
+
+    txtMatches.forEach { it -> it.value.text = defs.getAsString(it.key) }
+    btnMatches.forEach { pair ->
+      pair.value.elements.toList().find { it.actionCommand == defs.getAsString(pair.key) }!!.isSelected = true
+    }
+  }
+
+  private fun calculateMaxTarget() : Double {
+    if (baseBundle.size == 0) return 0.0
+
+    val bias = getBundle().getAsString("bias").toDouble()
+    val targetHigh = getBundle().getAsString("target_unit_high").toDouble()
+    val endUnit = getBundle().getAsString("end_unit").toDouble()
+    val error = 0.2 * targetHigh * 3
+
+    val margin = baseBundle.getAsInt("left_margin_low")
+    val widthHigh = baseBundle.getAsInt("width_high")
+
+    val max = (Math.pow(targetHigh / endUnit, bias) + error)  * widthHigh + margin * 2
+
+    return if (max.isNaN()) 0.0 else max
+  }
+
+  private fun updateLargLbl() {
+    largLbl.text = "Largest target value allowed: ${calculateMaxTarget()}"
   }
 }

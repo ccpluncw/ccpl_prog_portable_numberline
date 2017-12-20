@@ -1,5 +1,6 @@
 package ccpl.numberline.config
 
+import ccpl.lib.Bundle
 import ccpl.lib.util.screenHeight
 import ccpl.lib.util.screenWidth
 import java.awt.BorderLayout
@@ -32,4 +33,8 @@ class ConfigDialog : JDialog() {
   }
 
   fun getBundle() = panel.getBundle()
+
+  fun setDefaults(defs: Bundle) = panel.applyDefaults(defs)
+
+  fun baseBundle(bun: Bundle) { panel.baseBundle = bun }
 }
