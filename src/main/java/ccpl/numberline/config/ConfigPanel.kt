@@ -8,11 +8,6 @@ import java.awt.GridLayout
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
-import javax.swing.JOptionPane
-import com.sun.org.apache.xerces.internal.util.DOMUtil.getDocument
-import com.sun.java.accessibility.util.SwingEventMonitor.addDocumentListener
-
-
 
 class ConfigPanel : JPanel() {
 
@@ -47,14 +42,14 @@ class ConfigPanel : JPanel() {
 
     txtMap.forEach { s, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
       override fun changedUpdate(p0: DocumentEvent?) {
-        updateLargLbl()
+        if (txtField.text.isNotEmpty()) updateLargLbl()
       }
 
       override fun insertUpdate(p0: DocumentEvent?) {
-        updateLargLbl()
+        if (txtField.text.isNotEmpty()) updateLargLbl()
       }
       override fun removeUpdate(p0: DocumentEvent?) {
-        updateLargLbl()
+        if (txtField.text.isNotEmpty()) updateLargLbl()
       }
     }) }
     btnGrps.forEach { s, btnGrp -> btnGrp.elements.toList().forEach { it.addActionListener { updateLargLbl() } } }

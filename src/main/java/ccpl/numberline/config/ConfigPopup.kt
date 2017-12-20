@@ -80,7 +80,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
       if (checksPass()) {
         textFields.forEach { tf -> bunAdd(tf.key, tf.value.text) }
 
-        baseBundle.merge(configDialog.getBundle())
+        cb.bundle = cb.bundle.merge(configDialog.getBundle())
+        bunAdd("target_label_on", true.toString())
         bunAdd("save_dir", saveTxtField.text)
 
         writeDbFile(cb.bundle, URL("file://" + defaultConfigLoc))
