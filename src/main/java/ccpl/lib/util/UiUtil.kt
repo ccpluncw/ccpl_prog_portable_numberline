@@ -15,12 +15,17 @@ fun screenHeight() : Int = tk.screenSize.height
 
 fun expandGridPanel(panel: JPanel, label: String, comp: JComponent) {
   (panel.layout as GridLayout).rows.plus(1)
-  panel.add(JLabel(label + ": "))
+  panel.add(JLabel("$label: "))
   panel.add(comp)
 }
 
-fun addTrackedTxtField(key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>) {
+fun addTrackedTxtField(key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>, expandGrid: Boolean = true) {
   val textField = JTextField("0")
   tracker.put(key, textField)
-  expandGridPanel(panel, label, textField)
+  if (expandGrid) {
+    expandGridPanel(panel, label, textField)
+  } else {
+    panel.add(JLabel("$label: "))
+    panel.add(textField)
+  }
 }

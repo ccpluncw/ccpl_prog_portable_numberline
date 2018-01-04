@@ -137,7 +137,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
     if (File("${saveTxtField.text}/p${subject}s$session.dat").exists()) {
       pass = false
-      sb.append("File already exists\n")
+      sb.append("Data file for subject and session number already exists.\n")
     } else if (saveTxtField.text.isEmpty()) {
       pass = false
       sb.append("No file specified\n")

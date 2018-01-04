@@ -8,7 +8,7 @@ width_large_mod:            3
 
 width_low:                  2
 
-width_high:                 32
+width_high:                 12
 
 start_unit_format:          int
 end_unit_format:            int
