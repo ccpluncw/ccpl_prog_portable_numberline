@@ -43,7 +43,7 @@ class ConfigPanel : JPanel() {
     this.add(biasPanel())
     this.add(largestTarget())
 
-    txtMap.forEach { s, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
+    txtMap.forEach { _, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
       override fun changedUpdate(p0: DocumentEvent?) {
         if (txtField.text.isNotEmpty()) updateLargeLbl()
       }
@@ -55,7 +55,7 @@ class ConfigPanel : JPanel() {
         if (txtField.text.isNotEmpty()) updateLargeLbl()
       }
     }) }
-    btnGrps.forEach { s, btnGrp -> btnGrp.elements.toList().forEach { it.addActionListener { updateLargeLbl() } } }
+    btnGrps.forEach { _, btnGrp -> btnGrp.elements.toList().forEach { it.addActionListener { updateLargeLbl() } } }
   }
 
   /**
