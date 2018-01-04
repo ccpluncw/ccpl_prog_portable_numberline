@@ -227,7 +227,7 @@ class ConfigPanel : JPanel() {
     val bounded = bun.getAsBoolean("bound_exterior")
 
     val bias = bun.getAsString("bias").toDouble()
-    val margin = baseBundle.getAsInt("left_margin_low")
+    val margin = baseBundle.getAsInt("left_margin_high")
     val widthHigh = baseBundle.getAsInt("width_high")
     val scale = bun.getAsInt("line_size")
 
