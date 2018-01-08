@@ -234,8 +234,10 @@ class ConfigPanel : JPanel() {
     val maxPix = screenWidth().toDouble() - (2.0 * margin)
     val unitPix = widthHigh.toDouble() * scale
 
-    val max = if (bounded) maxPix / unitPix
+    var max = if (bounded) maxPix / unitPix
               else pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias)
+
+    if (max > maxPix/unitPix) max = maxPix / unitPix
 
     return if (max.isNaN() || max.isInfinite()) 0 else max.toLong()
   }
