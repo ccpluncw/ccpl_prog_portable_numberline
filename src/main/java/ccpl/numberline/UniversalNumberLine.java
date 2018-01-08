@@ -325,13 +325,15 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         delay(1000);
 
+        String[] sizes = {"Small", "Medium", "Large"};
+
         // Format as decimal output.
         outString.append(subject).append("\t");
         outString.append(trialType).append("\t");
         outString.append(trialNum).append("\t");
         outString.append(condition).append("\t");
         outString.append(session).append("\t");
-        outString.append(numberLineSize).append("\t");
+        outString.append(sizes[Integer.valueOf(numberLineSize) - 1]).append("\t");
         outString.append(df.format(numLine.getUnitLength())).append("\t");
         outString.append(df.format(numLine.getStartUnit())).append("\t");
         outString.append(df.format(numLine.getEndUnit())).append("\t");
@@ -448,7 +450,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         + "trial\t"
         + "cond\t"
         + "session\t"
-        + "Small,Medium,Large\t"
+        + "numberlineSize\t"
         + "unitWidth\t"
         + "startUnit\t"
         + "endUnit\t"
