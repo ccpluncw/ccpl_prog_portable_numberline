@@ -130,6 +130,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     widthPercentage = 1;
     baseHeight = height;
     lineThickness = thickness;
+    isEstimateTask = estimateTask;
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     screen = tk.getScreenSize();
@@ -222,7 +223,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     endUnit = endU;
     targetUnit = targetU;
 
-    isEstimateTask = estimateTask;
 
     stroke = new BasicStroke(lineThickness);  //create a stroke object from the line thickness
     handleBounds = lineThickness + 15;        //Padding size of region around the handle
@@ -247,12 +247,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       handleHigh = getHighPoint(baseHeight / 2, currentDragPoint);
       handleLow = currentDragPoint;
-      handleLine.setLine(handleHigh.x + lineThickness / 2,  handleHigh.y + lineThickness * 3,
-                         handleLow.x + lineThickness / 2,   handleLow.y);
+      handleLine.setLine(handleHigh.x, handleHigh.y + lineThickness * 3,
+          handleLow.x, handleLow.y);
 
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
       guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
       handleGuide = new Line2D.Float(guideHandleLow, guideHandleHigh);
+
+
     } else {
       isHandleDragged = false;
     }
@@ -264,6 +266,16 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     linePanel = new NumberLinePanel();
     linePanel.addMouseMotionListener(this);
     linePanel.addMouseListener(this);
+
+    if (isEstimateTask) {
+      handleHigh = getHighPoint(baseHeight, currentDragPoint);
+      handleLow = currentDragPoint;
+      guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
+      guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
+      handleLoc.x = (float) guideHandleLow.getX();
+      handleLoc.y = (float) guideHandleLow.getY();
+      linePanel.updateDragLine();
+    }
   }
 
   private void setExtendPoint() {
