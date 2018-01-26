@@ -3,6 +3,7 @@ package ccpl.numberline.config
 import ccpl.lib.Bundle
 import ccpl.lib.util.screenHeight
 import ccpl.lib.util.screenWidth
+import com.sun.media.util.JMFI18N.bundle
 import java.awt.BorderLayout
 import javax.swing.JButton
 import javax.swing.JDialog
@@ -19,13 +20,16 @@ class ConfigDialog : JDialog() {
 
     val saveBtn = JButton("Save")
     saveBtn.addActionListener({
-      this.isVisible = false
+      val tempBundle = panel.getBundle()
+      val targHigh = tempBundle.getAsString("target_unit_high").toDouble()
+      val rightBound = tempBundle.getAsString("end_unit").toDouble()
+
+      if (targHigh <= rightBound) this.isVisible = false
     })
 
     val botPanel = JPanel()
     botPanel.add(saveBtn)
     this.add(botPanel, BorderLayout.SOUTH)
-
 
     this.pack()
     this.setLocation((screenWidth() - this.width) / 2, (screenHeight() - this.height) / 2)
