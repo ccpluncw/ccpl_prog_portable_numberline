@@ -7,13 +7,13 @@ import java.awt.Component
 import java.awt.Dimension
 import java.awt.GridLayout
 import java.lang.Math.pow
+import java.text.DecimalFormat
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 
 class ConfigPanel : JPanel() {
 
-  private val txtFld = JTextField("0.0")
 
   private val btnGrps = mutableMapOf<String, ButtonGroup>()
 
@@ -24,6 +24,10 @@ class ConfigPanel : JPanel() {
   private val txtMap = mutableMapOf<String, JTextField>()
 
   private val largeLbl = JLabel("Largest target value allowed: 0.0")
+  private val intOnly = DecimalFormat("###")
+  private val twoSig = DecimalFormat("###.##")
+
+  private val txtFld = JFormattedTextField(twoSig)
 
   var baseBundle: Bundle = Bundle()
     set(value) {
@@ -72,7 +76,7 @@ class ConfigPanel : JPanel() {
     val panel = JPanel()
     panel.layout = GridLayout(0, 2, 0, 2)
 
-    textKeys.indices.forEach { addTrackedTxtField(textKeys[it], textLabels[it], panel, txtMap) }
+    textKeys.indices.forEach { addTrackedTxtField(JFormattedTextField(intOnly), textKeys[it], textLabels[it], panel, txtMap) }
 
     return panel
   }
@@ -84,7 +88,7 @@ class ConfigPanel : JPanel() {
     val txtKey = listOf("target_unit_low", "target_unit_high", "target_unit_interval")
     val txtLabel = listOf("From", "To", "By")
 
-    txtKey.forEachIndexed { index, s -> addTrackedTxtField(s, txtLabel[index], panel, txtMap, false) }
+    txtKey.forEachIndexed { index, s -> addTrackedTxtField(JFormattedTextField(twoSig), s, txtLabel[index], panel, txtMap, false) }
 
     return panel
   }
@@ -110,6 +114,7 @@ class ConfigPanel : JPanel() {
     adultRadBtn.actionCommand = "1.2"
 
     val othRadBtn   = JRadioButton("Other")
+    txtFld.text = "0.0"
     txtFld.document.addDocumentListener(object : DocumentListener {
       override fun removeUpdate(p0: DocumentEvent?) {
         if (txtFld.text.isNotEmpty()) {

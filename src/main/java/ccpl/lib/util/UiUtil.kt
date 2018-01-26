@@ -21,11 +21,15 @@ fun expandGridPanel(panel: JPanel, label: String, comp: JComponent) {
 
 fun addTrackedTxtField(key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>, expandGrid: Boolean = true) {
   val textField = JTextField("0")
-  tracker.put(key, textField)
+  addTrackedTxtField(textField, key, label, panel, tracker, expandGrid)
+}
+
+fun addTrackedTxtField(txt: JTextField, key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>, expandGrid: Boolean = true) {
+  tracker.put(key, txt)
   if (expandGrid) {
-    expandGridPanel(panel, label, textField)
+    expandGridPanel(panel, label, txt)
   } else {
     panel.add(JLabel("$label: "))
-    panel.add(textField)
+    panel.add(txt)
   }
 }

@@ -5,6 +5,7 @@ import ccpl.lib.util.*
 import java.awt.*
 import java.io.File
 import java.net.URL
+import java.text.DecimalFormat
 import javax.swing.*
 
 class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
@@ -73,7 +74,14 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
     textFields.put("condition", textField)
 
-    textKeys.indices.forEach { addTrackedTxtField(textKeys[it], textLabels[it], centerPanel, textFields) }
+    textKeys.indices.forEach {
+      if (textKeys[it] == "session") {
+        val format = JFormattedTextField(DecimalFormat("###"))
+        addTrackedTxtField(format, textKeys[it], textLabels[it], centerPanel, textFields)
+      } else {
+        addTrackedTxtField(textKeys[it], textLabels[it], centerPanel, textFields)
+      }
+    }
 
     val okayButton = JButton("Okay")
     okayButton.addActionListener({
@@ -116,6 +124,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     contentPanel.add(bottomPanel, BorderLayout.SOUTH)
 
     val screenSize = Toolkit.getDefaultToolkit().screenSize
+
 
     this.add(contentPanel)
     pack()
