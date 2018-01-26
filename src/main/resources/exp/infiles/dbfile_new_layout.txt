@@ -15,9 +15,9 @@ drag_blue:      0
 drag_green:     0
 
 # RGB values of the number line handle
-handle_red:     211
-handle_blue:    211
-handle_green:   211
+handle_red:     255
+handle_blue:    200
+handle_green:   200
 
 # Use the mouse?
 use_mouse:      false
