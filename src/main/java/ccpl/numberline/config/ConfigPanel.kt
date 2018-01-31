@@ -1,6 +1,7 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
+import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
 import java.awt.Component
@@ -11,6 +12,7 @@ import java.text.DecimalFormat
 import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
+import javax.swing.text.NumberFormatter
 
 class ConfigPanel : JPanel() {
 
@@ -76,7 +78,14 @@ class ConfigPanel : JPanel() {
     val panel = JPanel()
     panel.layout = GridLayout(0, 2, 0, 2)
 
-    textKeys.indices.forEach { addTrackedTxtField(JFormattedTextField(intOnly), textKeys[it], textLabels[it], panel, txtMap) }
+    val formatter = NumberFormatter(intOnly)
+    formatter.minimum = 0
+    formatter.allowsInvalid = false
+    formatter.commitsOnValidEdit = true
+
+    textKeys.indices.forEach {
+      addTrackedTxtField(IntTextField(), textKeys[it], textLabels[it], panel, txtMap)
+    }
 
     return panel
   }
