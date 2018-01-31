@@ -224,7 +224,7 @@ class ConfigPanel : JPanel() {
     updateLargeLbl()
   }
 
-  private fun calculateMaxTarget() : Long {
+  fun calculateMaxTarget() : Long {
     if (baseBundle.size == 0) return 0
 
     val bun = getBundle()
