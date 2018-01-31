@@ -142,7 +142,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     var pass = true
     val subject = textFields["subject"]!!.text
     val session = textFields["session"]!!.text
-    val sb = StringBuffer()
+    val sb = StringBuilder()
 
     if (File("${saveTxtField.text}/p${subject}s$session.dat").exists()) {
       pass = false
@@ -172,9 +172,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     }
 
     if (sb.isNotEmpty()) {
-      errorTextField.isVisible = true
-      errorTextField.text = sb.toString()
-      pack()
+      JOptionPane.showMessageDialog(this, sb)
     }
 
     return pass
