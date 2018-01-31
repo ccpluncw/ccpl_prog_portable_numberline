@@ -133,11 +133,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
   }
 
   private fun checksPass(): Boolean {
-    val conDiagBun = configDialog.getBundle()
-
     errorTextField.isVisible = false
     errorTextField.text = ""
-
 
     var pass = true
     val subject = textFields["subject"]!!.text
@@ -150,25 +147,6 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     } else if (saveTxtField.text.isEmpty()) {
       pass = false
       sb.append("No file specified\n")
-    }
-
-    val bounded = conDiagBun.getAsBoolean("bound_exterior")
-    val targetHigh = conDiagBun.getAsString("target_unit_high").toDouble()
-    val endUnit = conDiagBun.getAsString("end_unit").toDouble()
-    val margin = baseBundle.getAsInt("left_margin_low")
-
-    if (bounded) {
-      if (endUnit > screenWidth() - margin * 2) {
-        pass = false
-        sb.append("End unit cannot fit on screen \n")
-      }
-    } else {
-      val largestTarget = conDiagBun.getAsString("largest_target").toDouble()
-
-      if (targetHigh > largestTarget || largestTarget > screenWidth()) {
-        pass = false
-        sb.append("Largest target cannot fit on screen\n")
-      }
     }
 
     if (sb.isNotEmpty()) {

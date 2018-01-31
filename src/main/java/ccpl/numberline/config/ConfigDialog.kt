@@ -42,14 +42,19 @@ class ConfigDialog : JDialog() {
 
     val tempBundle = panel.getBundle()
 
-    val isEstimation = tempBundle.getAsBoolean("estimation_task")
-    val isBounded = tempBundle.getAsBoolean("bound_exterior")
+    val isEstimation  = tempBundle.getAsBoolean("estimation_task")
+    val isBounded     = tempBundle.getAsBoolean("bound_exterior")
 
     val targLow   = tempBundle.getAsString("target_unit_low").toDouble()
     val targHigh  = tempBundle.getAsString("target_unit_high").toDouble()
 
-    val leftBound = tempBundle.getAsString("start_unit").toDouble()
-    val rightBound = tempBundle.getAsString("end_unit").toDouble()
+    val leftBound   = tempBundle.getAsString("start_unit").toDouble()
+    val rightBound  = tempBundle.getAsString("end_unit").toDouble()
+
+    val endUnit = tempBundle.getAsString("end_unit").toDouble()
+
+    val margin = tempBundle.getAsInt("left_margin_low")
+    val largestTarget = tempBundle.getAsString("largest_target").toDouble()
 
     if (isBounded) {
       if (targHigh > rightBound) {
@@ -58,6 +63,10 @@ class ConfigDialog : JDialog() {
 
       if (leftBound < targLow) {
         err.append("Target \"From\" value is lower than the left bound.\n")
+      }
+
+      if (endUnit > screenWidth() - margin * 2) {
+        err.append("End unit cannot fit on screen. Maximum end unit is $largestTarget \n")
       }
     }
 
@@ -68,6 +77,10 @@ class ConfigDialog : JDialog() {
 
       if (targHigh > panel.calculateMaxTarget()) {
         err.append("Target \"To\" value exceeds maximum target.\n")
+      }
+
+      if (targHigh > largestTarget || largestTarget > screenWidth()) {
+        err.append("Largest target cannot fit on screen\n")
       }
     }
 

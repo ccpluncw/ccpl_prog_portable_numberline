@@ -190,7 +190,7 @@ class ConfigPanel : JPanel() {
   }
 
   fun getBundle() : Bundle {
-    val bundle = Bundle()
+    val bundle = baseBundle
 
     txtMap.forEach { k, txt -> bundle.add(k, txt.text) }
     btnGrps.forEach { s, btnGrp -> bundle.add(s, btnGrp.selection.actionCommand) }
