@@ -180,7 +180,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     frame.remove(instructionPanel);
     frame.validate();
 
-    String numberLineSize = dataBundle.getAsString("line_size");
+    String numberLineSize = dataBundle.getAsString("line_size_temp");
 
     int widthMod = getModifier("width", numberLineSize);
 
@@ -211,7 +211,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final int widthHigh = widthMod * dataBundle.getAsInt("width_high") * dataBundle.getAsInt("end_unit");
         final int widthInterval = dataBundle.getAsInt("width_interval");
 
-        final int height = getModifier("height", numberLineSize);
+        final int height    = getModifier("height", numberLineSize);
         final int thickness = getModifier("thickness", numberLineSize);
 
         final Unit defaultStartUnit = new Unit(dataBundle.getAsString("start_unit"));
@@ -371,7 +371,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     switch (key.toUpperCase()) {
       case "SMALL":
         return dataBundle.getAsInt(prefix + "_small_mod");
-      case "MEDIUM":
+      case "MED":
         return dataBundle.getAsInt(prefix + "_med_mod");
       default:
         return dataBundle.getAsInt(prefix + "_large_mod");
