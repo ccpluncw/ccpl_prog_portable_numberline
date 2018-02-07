@@ -57,11 +57,11 @@ class ConfigDialog : JDialog() {
     val largestTarget = tempBundle.getAsString("largest_target").toDouble()
 
     if (isBounded) {
-      if (targHigh > rightBound) {
+      if (targHigh >= rightBound) {
         err.append("Target \"To\" value exceeds the right bound.\n")
       }
 
-      if (leftBound < targLow) {
+      if (leftBound > targLow) {
         err.append("Target \"From\" value is lower than the left bound.\n")
       }
 
