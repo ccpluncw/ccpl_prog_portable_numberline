@@ -42,6 +42,8 @@ class ConfigDialog : JDialog() {
 
     val tempBundle = panel.getBundle()
 
+    val numTrials = tempBundle.getAsInt("num_trials")
+
     val isEstimation  = tempBundle.getAsBoolean("estimation_task")
     val isBounded     = tempBundle.getAsBoolean("bound_exterior")
 
@@ -56,13 +58,17 @@ class ConfigDialog : JDialog() {
     val margin = tempBundle.getAsInt("left_margin_low")
     val largestTarget = tempBundle.getAsString("largest_target").toDouble()
 
+    if (numTrials == 0) {
+      err.append("Experiment contains no trials.\n");
+    }
+
     if (isBounded) {
       if (targHigh >= rightBound) {
-        err.append("Target \"To\" value exceeds the right bound.\n")
+        err.append("Target \"To\" value is equal to or greater than the right bound.\n")
       }
 
       if (leftBound > targLow) {
-        err.append("Target \"From\" value is lower than the left bound.\n")
+        err.append("Target \"From\" value is less than the left bound.\n")
       }
 
       if (endUnit > screenWidth() - margin * 2) {
@@ -72,11 +78,11 @@ class ConfigDialog : JDialog() {
 
     if (isEstimation) {
       if (rightBound > panel.calculateMaxTarget()) {
-        err.append("Right bound exceeds largest estimation target.\n")
+        err.append("Right bound is greater than the largest estimation target.\n")
       }
 
       if (targHigh > panel.calculateMaxTarget()) {
-        err.append("Target \"To\" value exceeds maximum target.\n")
+        err.append("Target \"To\" value is greater than maximum target.\n")
       }
 
       if (targHigh > largestTarget || largestTarget > screenWidth()) {
