@@ -43,11 +43,11 @@ class ConfigPanel : JPanel() {
 
     this.add(textPanel())
     this.add(targetPanel())
+    this.add(largestTarget())
     this.add(estPanel())
     this.add(boundedPanel())
     this.add(sizePanel())
     this.add(biasPanel())
-    this.add(largestTarget())
 
     txtMap.forEach { _, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
       override fun changedUpdate(p0: DocumentEvent?) {
@@ -247,6 +247,8 @@ class ConfigPanel : JPanel() {
 
     val maxPix = screenWidth().toDouble() - (2.0 * margin)
     val unitPix = widthHigh.toDouble() * scale
+
+    baseBundle.add("width_interval", unitPix.toInt())
 
     var max = if (bounded) maxPix / unitPix
               else pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias)
