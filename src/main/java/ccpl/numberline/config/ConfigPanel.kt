@@ -109,7 +109,7 @@ class ConfigPanel : JPanel() {
                                                     listOf("Bounded", "Unbounded"), listOf("true", "false"))
 
   private fun sizePanel() : JPanel = buttonPanel("Number Line Size", "line_size_temp", listOf("Small", "Medium", "Large"),
-                                                 listOf("small", "med", "large"))
+                                                 listOf("small", "medium", "large"))
 
   private fun biasPanel() : JPanel {
     val panel = borderTitlePanel("Estimated Largest Bias")
