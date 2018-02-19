@@ -258,7 +258,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         frame.remove(startPanel);
 
-        randGen = new RandomIntGenerator(widthLow, widthHigh, widthInterval);
+        // TODO: Fix this to handle minimum width
+        int minWidth = widthMod * dataBundle.getAsInt("width_low") * dataBundle.getAsInt("end_unit");
+        randGen = new RandomIntGenerator(minWidth, widthHigh, widthInterval);
         int randWidth = randGen.drawWithInterval();
 
         Unit randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
