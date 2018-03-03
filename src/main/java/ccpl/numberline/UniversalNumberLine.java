@@ -373,7 +373,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       case "SMALL":
         return dataBundle.getAsInt(prefix + "_small_mod");
       case "MEDIUM":
-        return dataBundle.getAsInt(prefix + "_med_mod");
+        return dataBundle.getAsInt(prefix + "_medium_mod");
       default:
         return dataBundle.getAsInt(prefix + "_large_mod");
     }
