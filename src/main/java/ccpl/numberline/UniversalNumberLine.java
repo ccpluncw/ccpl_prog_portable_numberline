@@ -19,6 +19,7 @@ import java.net.URL;
 import java.text.DecimalFormat;
 
 import java.util.Date;
+import java.util.Random;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -207,8 +208,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final int leftMarginHigh = dataBundle.getAsInt("left_margin_high");
         final int leftMarginInterval = dataBundle.getAsInt("left_margin_interval");
 
-        final int widthLow = widthMod * dataBundle.getAsInt("width_low");
-        final int widthHigh = widthMod * dataBundle.getAsInt("width_high") * dataBundle.getAsInt("end_unit");
+        final int widthLow  = widthMod * dataBundle.getAsInt("width_low");
+        final int widthHigh = widthMod * dataBundle.getAsInt("width_high")
+                                       * dataBundle.getAsInt("end_unit");
         final int widthInterval = dataBundle.getAsInt("width_interval");
 
         final int height    = getModifier("height", numberLineSize);
@@ -258,10 +260,19 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         frame.remove(startPanel);
 
-        // TODO: Fix this to handle minimum width
-        int minWidth = widthMod * dataBundle.getAsInt("width_low") * dataBundle.getAsInt("end_unit");
-        randGen = new RandomIntGenerator(minWidth, widthHigh, widthInterval);
-        int randWidth = randGen.drawWithInterval();
+        // unitSize = widthMod * random(width_low, width_high);
+        // number of units = high - low
+        final int startUnitInt   = dataBundle.getAsInt("start_unit");
+        final int endUnitInt     = dataBundle.getAsInt("end_unit");
+
+        final int low            = dataBundle.getAsInt("width_low");
+        final int high           = dataBundle.getAsInt("width_high");
+
+        final int units = endUnitInt - startUnitInt;
+
+        int unitSize = widthMod * ((new Random()).nextInt(high - low) + low);
+
+        int randWidth = units * unitSize;
 
         Unit randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
 
