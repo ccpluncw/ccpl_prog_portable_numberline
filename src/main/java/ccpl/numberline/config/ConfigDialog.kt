@@ -67,13 +67,13 @@ class ConfigDialog : JDialog() {
         err.append("Target \"To\" value is equal to or greater than the right bound.\n")
       }
 
-      if (leftBound > targLow) {
-        err.append("Target \"From\" value is less than the left bound.\n")
-      }
-
       if (endUnit > screenWidth() - margin * 2) {
         err.append("End unit cannot fit on screen. Maximum end unit is $largestTarget \n")
       }
+    }
+
+    if (leftBound > targLow) {
+      err.append("Target \"From\" value is less than the left bound.\n")
     }
 
     if (isEstimation) {
