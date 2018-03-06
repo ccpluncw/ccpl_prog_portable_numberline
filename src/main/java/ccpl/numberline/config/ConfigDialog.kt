@@ -90,6 +90,10 @@ class ConfigDialog : JDialog() {
       }
     }
 
+    if (leftBound > rightBound) {
+      err.append("Left bound is greater than the right bound.");
+    }
+
 
     if (err.isNotEmpty()) {
       JOptionPane.showMessageDialog(this, err.toString())
