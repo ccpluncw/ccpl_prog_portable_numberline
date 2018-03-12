@@ -244,6 +244,7 @@ class ConfigPanel : JPanel() {
     val margin = baseBundle.getAsInt("left_margin_high")
     val widthHigh = baseBundle.getAsInt("width_high")
     val scale = bun.getAsInt("line_size")
+    val leftBound : Long = bun.getAsInt("start_unit").toLong()
 
     val maxPix = screenWidth().toDouble() - (2.0 * margin)
     val unitPix = widthHigh.toDouble() * scale
@@ -255,7 +256,7 @@ class ConfigPanel : JPanel() {
 
     if (max > maxPix/unitPix) max = maxPix / unitPix
 
-    return if (max.isNaN() || max.isInfinite()) 0 else max.toLong()
+    return if (max.isNaN() || max.isInfinite()) leftBound else max.toLong() + leftBound
   }
 
   private fun updateLargeLbl() {

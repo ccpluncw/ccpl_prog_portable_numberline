@@ -26,6 +26,7 @@ fun addTrackedTxtField(key: String, label: String, panel: JPanel, tracker: Mutab
 
 fun addTrackedTxtField(txt: JTextField, key: String, label: String, panel: JPanel, tracker: MutableMap<String, JTextField>, expandGrid: Boolean = true) {
   tracker.put(key, txt)
+  txt.text = "0"
   if (expandGrid) {
     expandGridPanel(panel, label, txt)
   } else {
