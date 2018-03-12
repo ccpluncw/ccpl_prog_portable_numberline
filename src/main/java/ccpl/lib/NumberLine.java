@@ -155,11 +155,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     Point2D.Float guideRightLow = getLowPoint(baseHeight / 2, extendPoint2D);
     Point2D.Float guideRightHigh = getHighPoint(baseHeight + lineThickness, extendPoint2D);
 
-    leftGuide = new Line2D.Float(guideLeftLow.x,  guideLeftLow.y  - lineThickness,
-                                 guideLeftHigh.x, guideLeftHigh.y - lineThickness);
+    leftGuide = new Line2D.Float(guideLeftLow.x,  guideLeftLow.y,
+                                 guideLeftHigh.x, guideLeftHigh.y);
 
-    rightGuide = new Line2D.Float(guideRightLow.x,  guideRightLow.y - lineThickness,
-                                  guideRightHigh.x, guideLeftHigh.y - lineThickness);
+    rightGuide = new Line2D.Float(guideRightLow.x,  guideRightLow.y,
+                                  guideRightHigh.x, guideLeftHigh.y);
 
     extendLine = new Line2D.Float(startPoint, extendPoint2D);
 
@@ -194,7 +194,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     handleLine.setLine(handleHigh.x,  handleHigh.y + lineThickness * 3,
                        handleLow.x,   handleLow.y);
 
-    guideHandleHigh = getHighPoint(baseHeight + lineThickness, handleStartPoint);
+    guideHandleHigh = getHighPoint(baseHeight - lineThickness, handleStartPoint);
     guideHandleLow = getLowPoint(baseHeight / 2, handleStartPoint);
     handleGuide = new Line2D.Float(guideHandleLow, guideHandleHigh);
 
@@ -250,11 +250,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       handleLine.setLine(handleHigh.x, handleHigh.y + lineThickness * 3,
           handleLow.x, handleLow.y);
 
-      guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
+      guideHandleHigh = getHighPoint(baseHeight - lineThickness, currentDragPoint);
       guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
       handleGuide = new Line2D.Float(guideHandleLow, guideHandleHigh);
-
-
     } else {
       isHandleDragged = false;
     }
