@@ -25,7 +25,7 @@ class ConfigPanel : JPanel() {
 
   private val txtMap = mutableMapOf<String, JTextField>()
 
-  private val largeLbl = JLabel("Largest target value allowed: 0.0")
+  private val largeLbl = JLabel("Largest target value or right bound allowed: 0.0")
   private val intOnly = DecimalFormat("###")
   private val twoSig = DecimalFormat("###.##")
 
@@ -168,7 +168,7 @@ class ConfigPanel : JPanel() {
   }
 
   private fun largestTarget() : JPanel {
-    val panel = borderTitlePanel("Largest Estimation Target")
+    val panel = borderTitlePanel("Largest Estimation Target or Right Bound")
 
     panel.add(largeLbl)
 
@@ -260,6 +260,6 @@ class ConfigPanel : JPanel() {
   }
 
   private fun updateLargeLbl() {
-    largeLbl.text = "Largest target value allowed: ${calculateMaxTarget()}"
+    largeLbl.text = "Largest target value or right bound allowed: ${calculateMaxTarget()}"
   }
 }
