@@ -59,30 +59,36 @@ class ConfigDialog : JDialog() {
     val largestTarget = tempBundle.getAsString("largest_target").toDouble()
 
     if (numTrials == 0) {
-      err.append("Experiment contains no trials.\n");
+      err.append("Experiment contains no trials.\n" +
+                 "Please set the number of trials to a minimum of 1\n")
     }
 
     if (isBounded) {
       if (targHigh >= rightBound) {
-        err.append("Target \"To\" value is equal to or greater than the right bound.\n")
+        err.append("Target \"To\" value is equal to or greater than the right bound.\n" +
+                   "Please set the target \"To\" value to less than the right bound.\n")
       }
 
       if (endUnit > screenWidth() - margin * 2) {
-        err.append("End unit cannot fit on screen. Maximum end unit is $largestTarget \n")
+        err.append("End unit cannot fit on screen. Maximum end unit is $largestTarget \n" +
+                   "Please set the end unit to at most $largestTarget\n")
       }
     }
 
     if (leftBound > targLow) {
-      err.append("Target \"From\" value is less than the left bound.\n")
+      err.append("Target \"From\" value is less than the left bound.\n" +
+                 "Please set the target \"From\" value greater than the left bound.\n")
     }
 
     if (isEstimation) {
       if (rightBound > panel.calculateMaxTarget()) {
-        err.append("Right bound is greater than the largest estimation target.\n")
+        err.append("Right bound is greater than the largest estimation target.\n" +
+                   "Please set the right bound to less than or equal to the largest estimation target\n")
       }
 
       if (targHigh > panel.calculateMaxTarget()) {
-        err.append("Target \"To\" value is greater than maximum target.\n")
+        err.append("Target \"To\" value is greater than maximum target.\n" +
+                   "Please set the target \"To\" value to less than or equal to the maximum target\n")
       }
 
       if (targHigh > largestTarget || largestTarget > screenWidth()) {
@@ -91,7 +97,8 @@ class ConfigDialog : JDialog() {
     }
 
     if (leftBound > rightBound) {
-      err.append("Left bound is greater than the right bound.");
+      err.append("Left bound is greater than the right bound.\n" +
+                 "Please set the left bound to less than the right bound.\n")
     }
 
 
