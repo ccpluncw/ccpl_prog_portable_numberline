@@ -14,6 +14,7 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.io.IOException;
 import java.net.URL;
 
 import java.text.DecimalFormat;
@@ -325,8 +326,15 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           frame.showCursor();
           frame.setContentPane(startPanel);
           frame.validate();
-          response.getTimedNumPadResponse(frame, "What is the target of this number line?",
-              estTargetFormat);
+          //response.getTimedNumPadResponse(frame, "What is the target of this number line?",
+          //    estTargetFormat);
+          try {
+            response.getTimedTextResponseJustified(frame, "",
+                "What is the target of this number line?",
+                30,"center", false);
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
           userResp = response.getTextValue();
           userRespVal = df.format(numLine.getUnitLength(userResp));
         }

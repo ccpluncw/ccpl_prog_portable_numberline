@@ -3,37 +3,23 @@ package ccpl.lib;
 
 import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 
 
 /**
@@ -55,6 +41,7 @@ public class Response implements KeyListener, ActionListener {
   private volatile boolean inputDone;
   private long loopsPerMs = 0;
   private NumPadResponse numPadResponse;
+  private boolean closedProperly;
 
   public AbstractAction returnMouseAction() {
     return new MouseAction();
@@ -339,6 +326,315 @@ public class Response implements KeyListener, ActionListener {
 
     return rt;
   }
+
+  public synchronized void getTimedTextResponseJustified(JFrame parent, String info, String info2, int columns, String just, boolean mouseVisible) throws IOException {
+    inputDone = false;
+    boolean fullScreen = false;
+
+    textInput = new JTextField(columns);
+    textInput.setText(null);
+    if(just.equals("center")){
+      textInput.setHorizontalAlignment(JTextField.CENTER);
+    }
+
+    AbstractDocument doc = (AbstractDocument) textInput.getDocument();
+    doc.setDocumentFilter(new DocumentFilter(){
+      public String formatString(String s){
+        String format="";
+        Boolean dec = false;
+        int dec_loc = 0;
+        for(int i=0;i<s.length();i++){
+          if(Character.toString(s.charAt(i)).equals(".")){
+            dec =true;
+            dec_loc=i;
+          }
+        }
+        if(dec){
+          format=format+".";
+          for(int i=dec_loc+1;i<s.length();i++){
+            if(Character.toString(s.charAt(i)).equals("0")){
+              format=format+"0";
+
+            }
+            else if(Character.toString(s.charAt(i)).matches("[1-9]")){
+              format = format+"0";
+            }
+          }
+        }
+        else{
+
+        }
+        return format;
+      }
+      @Override
+      public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a)throws BadLocationException{
+        if (str.matches("[a-zA-z]")){
+
+        }
+        else{
+          String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+          text = text.substring(0,off)+str+text.substring(off,text.length());
+          //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
+          text = text.replaceAll(",","");
+
+          if(text.matches("-?[0-9]*.?[0-9]*")){
+            String f ="#,##0";
+            String signHolder = "";
+            if(text.contains("-")){
+              text.replace("-", "");
+              signHolder ="-";
+            }
+            String formatter = formatString(text);
+            f=f+formatter;
+            DecimalFormat df = new DecimalFormat(f);
+            if(str.equals(".")){
+              if(fb.getDocument().getLength()==0|( fb.getDocument().getLength()==1 && signHolder.equals("-"))){
+                super.replace(fb, off,length, "0"+str, a);
+              }
+              else{
+                BigDecimal t = new BigDecimal(text);
+                text = df.format(t);
+                super.replace(fb, 0,fb.getDocument().getLength(), text, a);
+              }
+            }
+            else if(str.length()+fb.getDocument().getLength() >3){
+              BigDecimal t = new BigDecimal(text);
+              text = df.format(t);
+              super.replace(fb, 0,fb.getDocument().getLength(), text, a);
+            }
+            else{
+              super.replace(fb, off,length, str, a);
+            }
+          }
+
+        }}
+      @Override
+      public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException{
+        if (str.matches("[a-zA-z]")){
+
+        }
+        else{
+          String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+
+          text = text.substring(0,offs)+str+text.substring(offs,text.length());
+          //text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
+          text = text.replaceAll(",","");
+          String f ="#,##0";
+          String signHolder = "";
+          if(text.contains("-")){
+            System.out.println(text);
+            signHolder ="-";
+          }
+          String formatter = formatString(text);
+          f=f+formatter;
+          DecimalFormat df = new DecimalFormat(f);
+          if(str.length()+fb.getDocument().getLength() >3){
+            BigDecimal t = new BigDecimal(text);
+            text = df.format(t);
+            super.replace(fb, 0,fb.getDocument().getLength(), text.substring(0, fb.getDocument().getLength()), a);
+            if (str.equals("0")){
+              super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+            }
+            super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+          }
+          else{
+            super.replace(fb, offs,offs+str.length(), str, a);
+          }
+        }}
+      @Override
+      public void remove(DocumentFilter.FilterBypass fb, int offset, int length)throws BadLocationException {
+        super.remove(fb, offset, length);
+        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+        text = text.replaceAll(",","");
+        String f ="#,##0";
+        String formatter = formatString(text);
+        f=f+formatter;
+        System.out.println(f);
+        DecimalFormat df = new DecimalFormat(f);
+        if(text.length()>3){
+          BigDecimal t = new BigDecimal(text);
+          text = df.format(t);
+          super.remove(fb,0,fb.getDocument().getLength());
+          super.insertString(fb, fb.getDocument().getLength(), text, null);
+        }
+        else{
+          super.remove(fb,0,fb.getDocument().getLength());
+          super.insertString(fb, 0, text, null);
+        }
+
+      }
+    });
+
+
+
+    textOkButton = new JButton("OK");
+
+    createResponseFrameMouseSwitch(parent, textInput, textOkButton, info, info2, false, mouseVisible, fullScreen);
+  }
+
+  public synchronized void createResponseFrameMouseSwitch(JFrame parent, JComponent inputComponent, JButton okButton, String stdlabel, String probelabel, boolean isFrameModal, boolean mouseVisible, boolean fullScreen) throws IOException {
+    respFrame = new JDialog(parent, isFrameModal);
+    respFrame.setTitle("Response");
+    respFrame.addKeyListener(this);
+    respFrame.setResizable(false);
+    respFrame.setUndecorated(true);
+
+
+    // dont let people close out
+    respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+
+    closedProperly = true;
+    respFrame.addWindowListener(new WindowAdapter() {
+
+      public synchronized void windowClosed(WindowEvent e) {
+      }
+
+      public synchronized void windowClosing(WindowEvent e) {
+        //inputDone = true;
+        //closedProperly = false;
+      }
+    });
+
+    Toolkit tk = Toolkit.getDefaultToolkit();
+    Dimension d = tk.getScreenSize();
+    int screenHeight = d.height;
+    int screenWidth = d.width;
+
+    //respFrame.setSize(500, 250);
+    //respFrame.setLocation((d.width - 500) / 2, (d.height - 250) / 2);
+//    respFrame.setSize(screenWidth,200);
+//    respFrame.setLocation (0,(d.height - 200)/2);
+    BlankPanel backPanel = new BlankPanel(Color.PINK);
+    backPanel.setPreferredSize(d);
+    backPanel.setLayout(new GridLayout(3,3));
+    for (int i=0; i<5;i++){
+      BlankPanel b = new BlankPanel(Color.PINK);
+      backPanel.add(b);
+    }
+    BlankPanel inputPanel = new BlankPanel(Color.lightGray);
+    BlankPanel buttonPanel = new BlankPanel(Color.lightGray);
+    BlankPanel blackPanelA = new BlankPanel(Color.lightGray);
+    BlankPanel blackPanelB = new BlankPanel(Color.lightGray);
+//    JLabel responseLabel = new JLabel (label);
+
+    /*** this set of code allows one to get multiple line headers on the slider ***/
+
+
+    JLabel rLabel = new JLabel(stdlabel);
+//    rLabel.setFont(font);
+//    rLabel.setForeground(stdFontColor);
+    blackPanelA.add(rLabel);
+
+    JLabel pLabel = new JLabel(probelabel);
+//    pLabel.setFont(font);
+//    pLabel.setForeground(probeFontColor);
+    blackPanelB.add(pLabel);
+
+
+    Insets cInset = new Insets(10, 10, 10, 10);
+    GridBagLayout gridBag = new GridBagLayout();
+    inputPanel.setLayout(gridBag);
+    GridBagConstraints c = new GridBagConstraints();
+    c.insets = cInset;
+    c.weightx = 1.0;
+    c.weighty = 1.0;
+    c.fill = GridBagConstraints.BOTH;
+
+    c.gridx = 0;
+    c.gridy = 0;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    gridBag.setConstraints(blackPanelA, c);
+    inputPanel.add(blackPanelA);
+    BlankPanel bp = new BlankPanel(Color.LIGHT_GRAY);
+    c.gridx = 0;
+    c.gridy = 1;
+    c.gridheight = 1;
+    c.gridwidth = 2;
+    gridBag.setConstraints(bp, c);
+    inputPanel.add(bp);
+    c.gridx = 0;
+    c.gridy = 3;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    gridBag.setConstraints (inputComponent, c);
+    inputPanel.add(blackPanelB);
+    c.gridx = 0;
+    c.gridy = 2;
+    c.gridwidth = 1;
+    c.gridheight = 1;
+    gridBag.setConstraints(blackPanelB, c);
+    inputPanel.add(inputComponent);
+    buttonPanel.add(okButton);
+    okButton.addActionListener(this);
+    respFrame.getContentPane().setLayout(new BorderLayout());
+    respFrame.getContentPane().add(inputPanel, BorderLayout.CENTER);
+    respFrame.getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+
+    respFrame.pack();
+    respFrame.validate();
+    Dimension trueD = respFrame.getPreferredSize();
+    respFrame.setLocation((d.width - (int)trueD.getWidth()) / 2, (d.height - (int)trueD.getHeight()) / 2);
+
+    // because this is a modal dialog, the show () command will not return until the frame has been
+    // removed from sight
+    respFrame.getRootPane().setDefaultButton(okButton);
+
+//    if(!mouseVisible){
+//      BufferedImage blankCursor = null;
+//      try {
+//        blankCursor = ImageIO.read(getClass().getResource("/app_imgs/blank1.gif"));
+//      }catch (IOException ex){
+//        Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, null, ex);}
+//      parent.setCursor(tk.createCustomCursor(blankCursor, new Point(0,0), "blank"));
+//      respFrame.setCursor(tk.createCustomCursor(blankCursor, new Point(0,0), "blank"));
+//      respFrame.addMouseListener(new MouseListener(){
+//
+//        public void mouseDragged(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//        public void mouseExited(MouseEvent e){
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//        public void mouseMoved(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//
+//        public void mouseClicked(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//
+//        public void mousePressed(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//
+//        public void mouseReleased(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//
+//        public void mouseEntered(MouseEvent e) {
+//          Experiment.resetMouseToCenterScreen();
+//        }
+//
+//      });
+
+//    }
+    //dont need this anymore since we are setting mouse to move back to center. this causes mouse to be visible between trials but it also ensures that the dialog box
+    //doesn't become unfocused.
+    //respFrame.setModal(true);
+
+    respFrame.setVisible(true);
+
+    startTime = new Date().getTime();
+    while (!inputDone) {
+      Thread.yield();
+    }
+    if (!closedProperly) {
+      okButton.doClick();
+      JOptionPane.showMessageDialog(null, "You must choose an option.  Do NOT use the Close Box", "alert", JOptionPane.ERROR_MESSAGE);
+    }
+  }
+
 
   /**
    * Perform an action of the response frame.
