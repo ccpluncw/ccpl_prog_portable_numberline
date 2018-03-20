@@ -497,13 +497,7 @@ public class Response implements KeyListener, ActionListener {
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension d = tk.getScreenSize();
-    int screenHeight = d.height;
-    int screenWidth = d.width;
 
-    //respFrame.setSize(500, 250);
-    //respFrame.setLocation((d.width - 500) / 2, (d.height - 250) / 2);
-//    respFrame.setSize(screenWidth,200);
-//    respFrame.setLocation (0,(d.height - 200)/2);
     BlankPanel backPanel = new BlankPanel(Color.PINK);
     backPanel.setPreferredSize(d);
     backPanel.setLayout(new GridLayout(3,3));
@@ -513,23 +507,13 @@ public class Response implements KeyListener, ActionListener {
     }
     BlankPanel inputPanel = new BlankPanel(Color.lightGray);
     BlankPanel buttonPanel = new BlankPanel(Color.lightGray);
-    BlankPanel blackPanelA = new BlankPanel(Color.lightGray);
     BlankPanel blackPanelB = new BlankPanel(Color.lightGray);
-//    JLabel responseLabel = new JLabel (label);
-
-    /*** this set of code allows one to get multiple line headers on the slider ***/
 
 
-    JLabel rLabel = new JLabel(stdlabel);
-//    rLabel.setFont(font);
-//    rLabel.setForeground(stdFontColor);
-    blackPanelA.add(rLabel);
-
+    Font font = new Font("Arial", Font.PLAIN, 18);
     JLabel pLabel = new JLabel(probelabel);
-//    pLabel.setFont(font);
-//    pLabel.setForeground(probeFontColor);
+    pLabel.setFont(font);
     blackPanelB.add(pLabel);
-
 
     Insets cInset = new Insets(10, 10, 10, 10);
     GridBagLayout gridBag = new GridBagLayout();
@@ -540,12 +524,6 @@ public class Response implements KeyListener, ActionListener {
     c.weighty = 1.0;
     c.fill = GridBagConstraints.BOTH;
 
-    c.gridx = 0;
-    c.gridy = 0;
-    c.gridwidth = 1;
-    c.gridheight = 1;
-    gridBag.setConstraints(blackPanelA, c);
-    inputPanel.add(blackPanelA);
     BlankPanel bp = new BlankPanel(Color.LIGHT_GRAY);
     c.gridx = 0;
     c.gridy = 1;
@@ -557,6 +535,7 @@ public class Response implements KeyListener, ActionListener {
     c.gridy = 3;
     c.gridwidth = 1;
     c.gridheight = 1;
+    inputComponent.setFont(font);
     gridBag.setConstraints (inputComponent, c);
     inputPanel.add(blackPanelB);
     c.gridx = 0;
