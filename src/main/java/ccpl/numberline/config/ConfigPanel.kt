@@ -4,6 +4,7 @@ import ccpl.lib.Bundle
 import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
+import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dimension
 import java.awt.GridLayout
@@ -48,6 +49,7 @@ class ConfigPanel : JPanel() {
     this.add(boundedPanel())
     this.add(sizePanel())
     this.add(biasPanel())
+    this.add(customInstruction())
 
     txtMap.forEach { _, txtField -> txtField.document.addDocumentListener(object : DocumentListener {
       override fun changedUpdate(p0: DocumentEvent?) {
@@ -110,6 +112,40 @@ class ConfigPanel : JPanel() {
 
   private fun sizePanel() : JPanel = buttonPanel("Number Line Size", "line_size_temp", listOf("Small", "Medium", "Large"),
                                                  listOf("small", "medium", "large"))
+
+  private fun customInstruction() : JPanel {
+    val panel = buttonPanel("Custom Instructions", "use_cust_instruct", listOf("Yes", "No"),
+            listOf("true", "false"))
+    panel.border = BorderFactory.createEmptyBorder()
+
+    val savePanel = JPanel()
+    val saveTxtField = JTextField(20)
+    addTrackedTxtField(saveTxtField,"cust_instruct", "Custom Instructions", savePanel, txtMap, false)
+    saveTxtField.text = ""
+
+    val fc = JFileChooser()
+    fc.fileSelectionMode = JFileChooser.FILES_ONLY
+
+    val saveButton = JButton("Select File")
+    saveButton.addActionListener {
+      val returnVal = fc.showSaveDialog(this)
+
+      if (returnVal == JFileChooser.APPROVE_OPTION) {
+        saveTxtField.text = fc.selectedFile.canonicalPath
+      }
+    }
+
+    savePanel.add(saveButton)
+
+    val finalPanel = JPanel()
+    finalPanel.layout = BorderLayout()
+    finalPanel.add(panel, BorderLayout.NORTH)
+    finalPanel.add(savePanel, BorderLayout.SOUTH)
+
+    finalPanel.border = BorderFactory.createTitledBorder("Custom instructions")
+
+    return finalPanel
+  }
 
   private fun biasPanel() : JPanel {
     val panel = borderTitlePanel("Estimated Largest Bias")
@@ -205,6 +241,7 @@ class ConfigPanel : JPanel() {
     btnGrps.forEach { s, btnGrp -> bundle.add(s, btnGrp.selection.actionCommand) }
     bundle.add("largest_target", largeLbl.text.split(":")[1])
     bundle.add("line_size", baseBundle.getAsString("width_${bundle.getAsString("line_size_temp")}_mod"))
+
 
     return bundle
   }

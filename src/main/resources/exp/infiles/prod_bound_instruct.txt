@@ -1,0 +1,24 @@
+PROD_BOUNDEDIn this experiment, we would like you to use a timeline to estimate times associated with life events.<BR><BR>
+On each trial, you will first be shown a statement containing a life event. Each life event will contain a blank that represents a time, in months, that this event will occur in the future. For example, the statement presented may be "You will order a pizza in _ months." <B>Once you have read the statement, you are to determine if the presented event is a positive or negative life event.</B> You are to make your choice by clicking either the left or right side of the mouse. A dialogue box following these instructions will tell you which side of the mouse should be clicked to indicate a negative life event and which side of the mouse should be clicked to indicate a positive life event.<BR><BR>
+Following your response, the statement containing the life event will disappear. <B>In its place will be a timeline. </B>The timeline will consist of three parallel vertical lines with a connecting horizontal line. The first vertical line will be labeled "0 months.” This line represents the current point in time. The second vertical line will be labeled "1 month.” This line represents 1 month in the future. Thus, the distance between these two lines is equal to 1 month. The horizontal line will extend beyond the vertical line labeled "1 month” and will end at the final vertical line. The final vertical line is not labeled with a number. Instead, this line indicates when the previously shown life event will occur. Here is an example: <BR><BR> <BR><BR>
+
+                  
+|__________|______________________________________| <BR><BR>
+0 months <span color="white">..</span> 1 month <BR>
+<span color="white">................................................................................</span>order pizza <BR><BR>        
+                  
+
+<b>Your task is to judge the number that best describes the date in the future that the final vertical line represents</b>. You do this by estimating how many one-month units long the horizontal line is from “0 months” to the event. As an example, consider the timeline shown above. From studying the timeline, you may determine that the final vertical line is best described by the number “4” because it may appear to be 4 one-month units long. Thus, the previous event statement "You will order a pizza in _ months" would become "You will order a pizza in 4 months." <br><br>
+
+The physical size of the timeline and the one-month unit will change on every trial, so please pay close attention to each timeline presented. <BR><BR> Once you are finished looking at the timeline and are ready to make your estimate, please press the spacebar. <b>Pressing the spacebar will cause the timeline to disappear</b>. After the timeline is removed, a visual display of random lines will appear briefly, followed by a numerical input window. The input window will allow you to input your judgment of the final vertical line’s value.  This window allows you to input any number between 00.1 and 99.9.  You may input any number to any precision you feel comfortable with. When you click the "OK" button, a new trial will begin. <BR><BR>
+
+You are to study the timeline and form your judgment as quickly as possible. For every trial, the amount of time that you spend looking at a timeline will be recorded. The recorded time will begin when the timeline is presented and will end when you press the spacebar. <b>If this time is too long you will hear a beep after you have input your judgment into the input window</b>. Importantly, speed is only necessary while you are looking at the timeline. You can take as much time as needed to input your judgment into the input window. <br><br>
+
+You will be wearing headphones during the experiment. The volume has already been set, so please do not change it yourself. <b>Please make sure that you wear the headphones at all times</b>. <br><br>
+
+             At no time are you to touch the computer monitor or to change any settings on the computer. <br><br>
+                  
+             <b>Remember, speed is important, but accuracy is essential</b>. If you have any questions, please ask the experimenter at this time. <BR><BR>
+                  
+
+

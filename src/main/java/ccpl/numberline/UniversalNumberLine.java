@@ -15,6 +15,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.text.DecimalFormat;
@@ -90,6 +91,17 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
     // BEGIN PARSING OF DATABASE FILE
     trialType = numOfPracTrials != 0 ? 0 : 1;
+
+    if (dataBundle.getAsBoolean("use_cust_instruct")) {
+      dbBundle.add("instructions", dataBundle.getAsString("cust_instruct"));
+    } else {
+      boolean isEst   = dataBundle.getAsBoolean("estimation_task");
+      boolean isBound = dataBundle.getAsBoolean("bound_exterior");
+
+      String instruction = String.format("%s_%s_instruct",
+          isEst? "est" : "prod", isBound? "bounded" : "unbound");
+      dbBundle.add("instructions", dbBundle.getAsString(instruction));
+    }
 
     instructFile = dbBundle.getAsString("instructions");
     fontFile = dbBundle.getAsString("fonts");
@@ -168,8 +180,18 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     frame.hideCursor();
     response.testTimer(startPanel, Color.white, 1000);
     frame.showCursor();
+    JPanel instructionPanel = new JPanel();
 
-    JPanel instructionPanel = getInstructionPanel(getInstructionFile());
+    if (dataBundle.getAsBoolean("use_cust_instruct")) {
+      try {
+        instructionPanel = getInstructionPanel(new URL("file://" + dbBundle.getAsString("instructions")));
+      } catch (MalformedURLException e) {
+        e.printStackTrace();
+      }
+    } else {
+       instructionPanel = getInstructionPanel(getInstructionFile());
+    }
+
     frame.setContentPane(instructionPanel);
     frame.setVisible(true);
 
