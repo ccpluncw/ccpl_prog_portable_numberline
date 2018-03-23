@@ -99,7 +99,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       boolean isBound = dataBundle.getAsBoolean("bound_exterior");
 
       String instruction = String.format("%s_%s_instruct",
-          isEst? "est" : "prod", isBound? "bounded" : "unbound");
+          isEst? "est" : "prod", isBound? "bound" : "unbound");
       dbBundle.add("instructions", dbBundle.getAsString(instruction));
     }
 
