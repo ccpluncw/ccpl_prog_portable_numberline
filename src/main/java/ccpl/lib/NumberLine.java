@@ -453,53 +453,51 @@ public class NumberLine implements MouseMotionListener, MouseListener {
    * @param e   MouseEvent
    */
   public void mouseDragged(MouseEvent e) {
-    if (isEstimateTask) {
+    if (isEstimateTask || !atDragRegion) {
       return;
     }
 
-    if (atDragRegion) {
-      if (keepWithinBounds[0] && keepWithinBounds[1]) {
-        //both are true handle is bound by both bounds
-        if (e.getX() > extendPoint2D.getX()) {
-          currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
-              (float) extendPoint2D.getY());
-        } else if (e.getX() < startPoint.getX()) {
-          currentDragPoint = new Point2D.Float((float) startPoint.getX(),
-              (float) startPoint.getY());
-        } else {
-          currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
-        }
-      } else if (keepWithinBounds[0]) {
-        if (e.getX() < startPoint.getX()) {
-          currentDragPoint = new Point2D.Float((float) startPoint.getX(),
-              (float) startPoint.getY());
-        } else {
-          currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
-        }
+    if (keepWithinBounds[0] && keepWithinBounds[1]) {
+      //both are true handle is bound by both bounds
+      if (e.getX() > extendPoint2D.getX()) {
+        currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
+            (float) extendPoint2D.getY());
+      } else if (e.getX() < startPoint.getX()) {
+        currentDragPoint = new Point2D.Float((float) startPoint.getX(),
+            (float) startPoint.getY());
       } else {
-        if (e.getX() > extendPoint2D.getX()) {
-          currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
-              (float) extendPoint2D.getY());
-        } else {
-          currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
-        }
+        currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
       }
-
-      //check to make sure line does not extend past right bound
-      if (currentDragPoint.getX() > rightBoundPoint.getX()) {
-        currentDragPoint = rightBoundPoint;
+    } else if (keepWithinBounds[0]) {
+      if (e.getX() < startPoint.getX()) {
+        currentDragPoint = new Point2D.Float((float) startPoint.getX(),
+            (float) startPoint.getY());
+      } else {
+        currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
       }
-
-      handleHigh = getHighPoint(baseHeight, currentDragPoint);
-      handleLow = currentDragPoint;
-      guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
-      guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
-      handleLoc.x = (float) guideHandleLow.getX();
-      handleLoc.y = (float) guideHandleLow.getY();
-      isHandleDragged = true;
-
-      linePanel.updateDragLine();
+    } else {
+      if (e.getX() > extendPoint2D.getX()) {
+        currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
+            (float) extendPoint2D.getY());
+      } else {
+        currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
+      }
     }
+
+    //check to make sure line does not extend past right bound
+    if (currentDragPoint.getX() > rightBoundPoint.getX()) {
+      currentDragPoint = rightBoundPoint;
+    }
+
+    handleHigh = getHighPoint(baseHeight, currentDragPoint);
+    handleLow = currentDragPoint;
+    guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
+    guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
+    handleLoc.x = (float) guideHandleLow.getX();
+    handleLoc.y = (float) guideHandleLow.getY();
+    isHandleDragged = true;
+
+    linePanel.updateDragLine();
   }
 
 
