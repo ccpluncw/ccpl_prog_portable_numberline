@@ -427,8 +427,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
   }
 
-  private boolean cursorInBoundingBox(int cursorX, int cursorY) {
-    Rectangle2D box = handleLine.getBounds2D();
+  private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
+    Rectangle2D box = handle.getBounds2D();
 
     box.setRect((int) (box.getMinX()   - (handleBounds / 2)),
                 (int) (box.getMinY()   - (handleBounds / 2)),
@@ -510,7 +510,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       return;
     }
 
-    if (cursorInBoundingBox(e.getX(), e.getY())) {
+    if (cursorInBoundingBox(handleLine, e.getX(), e.getY())) {
       linePanel.setLineColor(handleLine, handleActiveColor);
       currentHandleColor = handleActiveColor;
       atDragRegion = true;
