@@ -35,7 +35,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final int baseHeight; //Default overall baseHeight
   private final int lineThickness;
   private int baseWidth;
-  private final int handleBounds;  //Padding size of region around the handle
+  private final int handlePadding;  //Padding size of region around the handle
   private int basePaddingLeft; // Amount of padding applied to experiment within the panel
 
   //---Color members-----
@@ -225,7 +225,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
 
     stroke = new BasicStroke(lineThickness);  //create a stroke object from the line thickness
-    handleBounds = lineThickness + 15;        //Padding size of region around the handle
+    handlePadding = lineThickness + 15;        //Padding size of region around the handle
 
     atDragRegion = false;
 
@@ -430,10 +430,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
     Rectangle2D box = handle.getBounds2D();
 
-    box.setRect((int) (box.getMinX()   - (handleBounds / 2)),
-                (int) (box.getMinY()   - (handleBounds / 2)),
-                (int) (box.getWidth()  + handleBounds),
-                (int) (box.getHeight() + handleBounds));
+    box.setRect((int) (box.getMinX()   - (handlePadding / 2)),
+                (int) (box.getMinY()   - (handlePadding / 2)),
+                (int) (box.getWidth()  + handlePadding),
+                (int) (box.getHeight() + handlePadding));
 
     return box.contains(cursorX, cursorY);
   }
