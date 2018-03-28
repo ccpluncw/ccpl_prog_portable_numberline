@@ -77,8 +77,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final Line2D leftGuide;
   private final Line2D rightGuide;
 
-  private Line2D handleGuide;
-
   private final float slope;
 
   private final Dimension screen;
@@ -87,26 +85,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final Point2D.Float targetLoc;
   private final Point2D.Float handleLoc;
   private final Point2D.Float endLoc;
-  private Color currentHandleColor;
+
   private final Color fontColor = Color.LIGHT_GRAY;
   private final Font displayFont;
   private boolean adjustChange = true;
 
-  /**
-   * Class Member Graphic Objects for holding graphics that change.
-   * -------------------------------------------------------------
-   * handleLine is the line for the handle which can be moved
-   * dragLine is the line which is drawn to the handle
-   * extendLine is the line horizontal on the base of the number line
-   * endLine is the line that is the right bound on the base
-   * handleGuideLine is a the guideline on the handle
-   * startLine is the line that is the left bound on the base
-   */
-  private Line2D handleLine;
   private Line2D dragLine;
   private final Line2D extendLine;
   private final Line2D endLine;
-  private Line2D handleGuideLine;
   private final Line2D startLine;
   private final int startX;  //startX is x coord where numberline is visually drawn
   private int currentDragX; // Holds x coord of the drag handle
@@ -198,13 +184,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     handleHigh = getHighPoint(baseHeight, handleStartPoint);
     handleLow = handleStartPoint;
-    handleLine = new Line2D.Float(handleLow, handleHigh);
-    handleLine.setLine(handleHigh.x,  handleHigh.y + lineThickness * 3,
-                       handleLow.x,   handleLow.y);
 
     guideHandleHigh = getHighPoint(baseHeight - lineThickness, handleStartPoint);
     guideHandleLow = getLowPoint(baseHeight / 2, handleStartPoint);
-    handleGuide = new Line2D.Float(guideHandleLow, guideHandleHigh);
 
     extendPoint = new Point();
     extendPoint.x = (int) guideRightLow.getX();
@@ -241,7 +223,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     this.baseColor = baseColor;
     this.dragColor = dragColor;
-    currentHandleColor = this.baseColor;
 
     handleActiveColor = handleColor;
     fontName = font;
@@ -255,12 +236,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       handleHigh = getHighPoint(baseHeight / 2, currentDragPoint);
       handleLow = currentDragPoint;
-      handleLine.setLine(handleHigh.x, handleHigh.y + lineThickness * 3,
-          handleLow.x, handleLow.y);
 
       guideHandleHigh = getHighPoint(baseHeight - lineThickness, currentDragPoint);
       guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
-      handleGuide = new Line2D.Float(guideHandleLow, guideHandleHigh);
     } else {
       isHandleDragged = false;
     }
@@ -281,7 +259,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
       linePanel.updateDragLine();
-      currentHandleColor = handleActiveColor;
     }
   }
 
@@ -295,7 +272,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private Point2D.Float getTargetPoint() {
-    currentHandleColor = dragColor;
     return getTargetSpecial();
   }
 
@@ -746,12 +722,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       drawBaseCircle(graphics);
 
-      graphics.setColor(currentHandleColor);
-      graphics.draw(handleLine);
-
       if (currentLine != null) {
         graphics.setStroke(stroke);
-        graphics.setColor(currentLineColor);
         graphics.draw(currentLine);
         currentLine = null;
       }
@@ -760,8 +732,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       graphics.setColor(Color.RED);
       graphics.draw(leftGuide);
       graphics.draw(rightGuide);
-      graphics.setColor(currentHandleColor);
-      graphics.draw(handleGuide);
 
       displayLabels(graphics);
     }
