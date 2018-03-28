@@ -69,13 +69,14 @@ public class Response implements KeyListener, ActionListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) { }
+  public void keyTyped(KeyEvent keyEvent) {
+  }
 
   /**
    * When a button is hit this is triggered saves the button that was hit and deal with it depending
    * on the response mode.
    *
-   * @param evt   KeyEvent
+   * @param evt KeyEvent
    */
   public void keyPressed(KeyEvent evt) {
     if (evt.isControlDown() && (evt.getKeyChar() + "").toLowerCase().charAt(0) == 'q') {
@@ -253,8 +254,9 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Displays a notification frame with a desired message.
-   * @param parent  Parent JFrame
-   * @param info    Message to be displayed.
+   *
+   * @param parent Parent JFrame
+   * @param info   Message to be displayed.
    */
   public synchronized void displayNotificationFrame(JFrame parent, String info) {
     inputDone = false;
@@ -265,9 +267,10 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Initializes a TimedNumPadResponse.
-   * @param parent              Parent JFrame.
-   * @param info                Message to be displayed.
-   * @param targetFieldFormat   Format to apply to the target.
+   *
+   * @param parent            Parent JFrame.
+   * @param info              Message to be displayed.
+   * @param targetFieldFormat Format to apply to the target.
    */
   public void getTimedNumPadResponse(JFrame parent, String info, String targetFieldFormat) {
     if (loopsPerMs == 0) {
@@ -287,9 +290,10 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Get a timed numberline response.
-   * @param numberLine  NumberLine panel to use.
-   * @param useMouse    If response if based on mouse click
-   * @return            The amount of time it look for the user to click.
+   *
+   * @param numberLine NumberLine panel to use.
+   * @param useMouse   If response if based on mouse click
+   * @return The amount of time it look for the user to click.
    */
   public long getTimedNumberLineResponse(NumberLine numberLine, boolean useMouse) {
     //Only the spacebar will trigger a timer stop, anything else is ignored
@@ -333,138 +337,130 @@ public class Response implements KeyListener, ActionListener {
 
     textInput = new JTextField(columns);
     textInput.setText(null);
-    if(just.equals("center")){
+    if (just.equals("center")) {
       textInput.setHorizontalAlignment(JTextField.CENTER);
     }
 
     AbstractDocument doc = (AbstractDocument) textInput.getDocument();
-    doc.setDocumentFilter(new DocumentFilter(){
-      public String formatString(String s){
-        String format="";
+    doc.setDocumentFilter(new DocumentFilter() {
+      public String formatString(String s) {
+        String format = "";
         Boolean dec = false;
         int dec_loc = 0;
-        for(int i=0;i<s.length();i++){
-          if(Character.toString(s.charAt(i)).equals(".")){
-            dec =true;
-            dec_loc=i;
+        for (int i = 0; i < s.length(); i++) {
+          if (Character.toString(s.charAt(i)).equals(".")) {
+            dec = true;
+            dec_loc = i;
           }
         }
-        if(dec){
-          format=format+".";
-          for(int i=dec_loc+1;i<s.length();i++){
-            if(Character.toString(s.charAt(i)).equals("0")){
-              format=format+"0";
+        if (dec) {
+          format = format + ".";
+          for (int i = dec_loc + 1; i < s.length(); i++) {
+            if (Character.toString(s.charAt(i)).equals("0")) {
+              format = format + "0";
 
-            }
-            else if(Character.toString(s.charAt(i)).matches("[1-9]")){
-              format = format+"0";
+            } else if (Character.toString(s.charAt(i)).matches("[1-9]")) {
+              format = format + "0";
             }
           }
         }
-        else{
 
-        }
         return format;
       }
+
       @Override
-      public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a)throws BadLocationException{
-        if (str.matches("[a-zA-z]")){
-
+      public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a) throws BadLocationException {
+        if (str.matches("[a-zA-z]|\\s")) {
+          return;
         }
-        else{
-          String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-          text = text.substring(0,off)+str+text.substring(off,text.length());
-          //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
-          text = text.replaceAll(",","");
+        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+        text = text.substring(0, off) + str + text.substring(off, text.length());
+        //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
+        text = text.replaceAll(",", "");
 
-          if(text.matches("-?[0-9]*.?[0-9]*")){
-            String f ="#,##0";
-            String signHolder = "";
-            if(text.contains("-")){
-              text.replace("-", "");
-              signHolder ="-";
-            }
-            String formatter = formatString(text);
-            f=f+formatter;
-            DecimalFormat df = new DecimalFormat(f);
-            if(str.equals(".")){
-              if(fb.getDocument().getLength()==0|( fb.getDocument().getLength()==1 && signHolder.equals("-"))){
-                super.replace(fb, off,length, "0"+str, a);
-              }
-              else{
-                BigDecimal t = new BigDecimal(text);
-                text = df.format(t);
-                super.replace(fb, 0,fb.getDocument().getLength(), text, a);
-              }
-            }
-            else if(str.length()+fb.getDocument().getLength() >3){
-              BigDecimal t = new BigDecimal(text);
-              text = df.format(t);
-              super.replace(fb, 0,fb.getDocument().getLength(), text, a);
-            }
-            else{
-              super.replace(fb, off,length, str, a);
-            }
-          }
-
-        }}
-      @Override
-      public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException{
-        if (str.matches("[a-zA-z]")){
-
-        }
-        else{
-          String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-
-          text = text.substring(0,offs)+str+text.substring(offs,text.length());
-          //text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
-          text = text.replaceAll(",","");
-          String f ="#,##0";
+        if (text.matches("-?[0-9]*.?[0-9]*")) {
+          String f = "#,##0";
           String signHolder = "";
-          if(text.contains("-")){
-            System.out.println(text);
-            signHolder ="-";
+          if (text.contains("-")) {
+            text.replace("-", "");
+            signHolder = "-";
           }
           String formatter = formatString(text);
-          f=f+formatter;
+          f = f + formatter;
           DecimalFormat df = new DecimalFormat(f);
-          if(str.length()+fb.getDocument().getLength() >3){
+          if (str.equals(".")) {
+            if (fb.getDocument().getLength() == 0 | (fb.getDocument().getLength() == 1 && signHolder.equals("-"))) {
+              super.replace(fb, off, length, "0" + str, a);
+            } else {
+              BigDecimal t = new BigDecimal(text);
+              text = df.format(t);
+              super.replace(fb, 0, fb.getDocument().getLength(), text, a);
+            }
+          } else if (str.length() + fb.getDocument().getLength() > 3) {
             BigDecimal t = new BigDecimal(text);
             text = df.format(t);
-            super.replace(fb, 0,fb.getDocument().getLength(), text.substring(0, fb.getDocument().getLength()), a);
-            if (str.equals("0")){
-              super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
-            }
-            super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+            super.replace(fb, 0, fb.getDocument().getLength(), text, a);
+          } else {
+            super.replace(fb, off, length, str, a);
           }
-          else{
-            super.replace(fb, offs,offs+str.length(), str, a);
-          }
-        }}
+        }
+      }
+
       @Override
-      public void remove(DocumentFilter.FilterBypass fb, int offset, int length)throws BadLocationException {
-        super.remove(fb, offset, length);
+      public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
+        if (str.matches("[a-zA-z]|\\s")) {
+          return;
+        }
+
         String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-        text = text.replaceAll(",","");
-        String f ="#,##0";
+
+        text = text.substring(0, offs) + str + text.substring(offs, text.length());
+        //text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
+        text = text.replaceAll(",", "");
+        String f = "#,##0";
+        String signHolder = "";
+        if (text.contains("-")) {
+          System.out.println(text);
+          signHolder = "-";
+        }
         String formatter = formatString(text);
-        f=f+formatter;
-        System.out.println(f);
+        f = f + formatter;
         DecimalFormat df = new DecimalFormat(f);
-        if(text.length()>3){
+        if (str.length() + fb.getDocument().getLength() > 3) {
           BigDecimal t = new BigDecimal(text);
           text = df.format(t);
-          super.remove(fb,0,fb.getDocument().getLength());
-          super.insertString(fb, fb.getDocument().getLength(), text, null);
+          super.replace(fb, 0, fb.getDocument().getLength(), text.substring(0, fb.getDocument().getLength()), a);
+          if (str.equals("0")) {
+            super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+          }
+          super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+        } else {
+          super.replace(fb, offs, offs + str.length(), str, a);
         }
-        else{
-          super.remove(fb,0,fb.getDocument().getLength());
+      }
+
+      @Override
+      public void remove(DocumentFilter.FilterBypass fb, int offset, int length) throws BadLocationException {
+        super.remove(fb, offset, length);
+        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+        text = text.replaceAll(",", "");
+        String f = "#,##0";
+        String formatter = formatString(text);
+        f = f + formatter;
+        System.out.println(f);
+        DecimalFormat df = new DecimalFormat(f);
+        if (text.length() > 3) {
+          BigDecimal t = new BigDecimal(text);
+          text = df.format(t);
+          super.remove(fb, 0, fb.getDocument().getLength());
+          super.insertString(fb, fb.getDocument().getLength(), text, null);
+        } else {
+          super.remove(fb, 0, fb.getDocument().getLength());
           super.insertString(fb, 0, text, null);
         }
 
       }
     });
-
 
 
     textOkButton = new JButton("OK");
@@ -500,8 +496,8 @@ public class Response implements KeyListener, ActionListener {
 
     BlankPanel backPanel = new BlankPanel(Color.PINK);
     backPanel.setPreferredSize(d);
-    backPanel.setLayout(new GridLayout(3,3));
-    for (int i=0; i<5;i++){
+    backPanel.setLayout(new GridLayout(3, 3));
+    for (int i = 0; i < 5; i++) {
       BlankPanel b = new BlankPanel(Color.PINK);
       backPanel.add(b);
     }
@@ -536,7 +532,7 @@ public class Response implements KeyListener, ActionListener {
     c.gridwidth = 1;
     c.gridheight = 1;
     inputComponent.setFont(font);
-    gridBag.setConstraints (inputComponent, c);
+    gridBag.setConstraints(inputComponent, c);
     inputPanel.add(blackPanelB);
     c.gridx = 0;
     c.gridy = 2;
@@ -553,7 +549,7 @@ public class Response implements KeyListener, ActionListener {
     respFrame.pack();
     respFrame.validate();
     Dimension trueD = respFrame.getPreferredSize();
-    respFrame.setLocation((d.width - (int)trueD.getWidth()) / 2, (d.height - (int)trueD.getHeight()) / 2);
+    respFrame.setLocation((d.width - (int) trueD.getWidth()) / 2, (d.height - (int) trueD.getHeight()) / 2);
 
     // because this is a modal dialog, the show () command will not return until the frame has been
     // removed from sight
@@ -617,7 +613,8 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Perform an action of the response frame.
-   * @param evt   Action event
+   *
+   * @param evt Action event
    */
   public void actionPerformed(ActionEvent evt) {
     if (respFrame == null) {
@@ -652,11 +649,12 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Create a NotificationFrame with a desired message, button, and dimensions.
-   * @param parent      Parent JFrame
-   * @param labelText   Message to be displayed.
-   * @param okButton    Custom OK Button.
-   * @param width       Width of the frame.
-   * @param height      Height of the frame.
+   *
+   * @param parent    Parent JFrame
+   * @param labelText Message to be displayed.
+   * @param okButton  Custom OK Button.
+   * @param width     Width of the frame.
+   * @param height    Height of the frame.
    */
   private void createNotificationFrame(JFrame parent, String labelText, JButton okButton, int width,
                                        int height) {
@@ -761,9 +759,10 @@ public class Response implements KeyListener, ActionListener {
 
   /**
    * Create a NumpadResponseFrame.
-   * @param parent                Parent frame
-   * @param label                 Label for the frame
-   * @param targetFieldFormat     How the field should be formatted
+   *
+   * @param parent            Parent frame
+   * @param label             Label for the frame
+   * @param targetFieldFormat How the field should be formatted
    */
   private void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
     respFrame = new JDialog(parent);
@@ -838,7 +837,8 @@ public class Response implements KeyListener, ActionListener {
   }
 
   private class DisableMouseListener implements MouseMotionListener {
-    public void mouseDragged(MouseEvent e) { }
+    public void mouseDragged(MouseEvent e) {
+    }
 
     public void mouseMoved(MouseEvent e) {
       resetMouseToCenter(mouseFrame);
