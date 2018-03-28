@@ -258,6 +258,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
+      activeDragHandle = new Handle(endLine,   rightGuide, baseColor);
       linePanel.updateDragLine();
     }
   }
