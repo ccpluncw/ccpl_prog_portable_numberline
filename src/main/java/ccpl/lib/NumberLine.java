@@ -115,6 +115,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final String fontName; // the name of the Font to use
   private final Point2D.Float rightBoundPoint;
 
+  private Handle activeDragHandle = null; // Set to null since it's unknown at this point.
+
+  private Handle leftDragHandle;
+  private Handle rightDragHandle;
+
   private final boolean isEstimateTask;
   private final float widthPercentage; //holds percentage of base width to display
 
@@ -168,6 +173,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     endLine = new Line2D.Float(rightBoundHigh.x, rightBoundHigh.y + lineThickness * 3,
                                extendPoint2D.x,  extendPoint2D.y);
+
+    leftDragHandle  = new Handle(startLine, leftGuide,  baseColor);
+    rightDragHandle = new Handle(endLine,   rightGuide, baseColor);
 
     if (handleAlignment == 'L') {
       handleStartPoint = startPoint;
@@ -457,6 +465,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       return;
     }
 
+    if (activeDragHandle == null) {
+      activeDragHandle = cursorInBoundingBox(leftDragHandle, e.getX(), e.getY()) ?
+          leftDragHandle : rightDragHandle;
+      Point2D activeP2 = activeDragHandle.getP2();
+      currentDragPoint = new Point2D.Float((float) activeP2.getX(), (float) activeP2.getY());
+    }
+
+
     if (keepWithinBounds[0] && keepWithinBounds[1]) {
       //both are true handle is bound by both bounds
       if (e.getX() > extendPoint2D.getX()) {
@@ -510,21 +526,27 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       return;
     }
 
-    if (cursorInBoundingBox(handleLine, e.getX(), e.getY())) {
-      linePanel.setLineColor(handleLine, handleActiveColor);
-      currentHandleColor = handleActiveColor;
-      atDragRegion = true;
-    } else if (handleHigh.getX() == leftBoundHigh.getX()
-        || handleHigh.getX() == rightBoundHigh.getX()) {
-      linePanel.setLineColor(handleLine, baseColor);
-      currentHandleColor = baseColor;
-      atDragRegion = false;
+    atDragRegion = false;
+
+    if (activeDragHandle == null) {
+      checkDragStatus(leftDragHandle,  e.getX(), e.getY());
+      checkDragStatus(rightDragHandle, e.getX(), e.getY());
     } else {
-      linePanel.setLineColor(handleLine, dragColor);
-      linePanel.setLineColor(handleGuideLine, dragColor);
-      currentHandleColor = dragColor;
-      atDragRegion = false;
+      checkDragStatus(activeDragHandle, e.getX(), e.getY());
     }
+
+    linePanel.repaint();
+  }
+
+  private void checkDragStatus(Handle handle, int x, int y) {
+    if (cursorInBoundingBox(handle, x, y)) {
+      atDragRegion = true;
+      handle.setColor(handleActiveColor);
+
+      return;
+    }
+
+    handle.setColor(baseColor);
   }
 
   private Point2D.Float getHighPoint(int d, Point2D.Float p) {
@@ -568,26 +590,24 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   class NumberLinePanel extends JPanel {
     private Line2D currentLine;
-    private Color currentLineColor;
 
     NumberLinePanel() {
       super(null);
       setBackground(Color.BLACK);
     }
 
-    void setLineColor(Line2D line, Color c) {
-      currentLine = line;
-      currentLineColor = c;
-      this.repaint();
-    }
-
     void updateDragLine() {
+      if (activeDragHandle == null) {
+        return;
+      }
+
+      activeDragHandle.setColor(dragColor);
+
       dragLine = new Line2D.Float(extendPoint2D, currentDragPoint);
 
-      handleGuide.setLine(guideHandleLow, guideHandleHigh);
-
-      handleLine.setLine(handleHigh.x,  handleHigh.y + lineThickness * 3,
-                         handleLow.x,   handleLow.y);
+      activeDragHandle.getGuide().setLine(guideHandleLow, guideHandleHigh);
+      activeDragHandle.setLine(handleHigh.x,  handleHigh.y + lineThickness * 3,
+                               handleLow.x,   handleLow.y);
 
       this.repaint();
     }
@@ -598,8 +618,16 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       g.setStroke(stroke);
 
       g.draw(extendLine);
-      g.draw(endLine);
       g.draw(startLine);
+      g.draw(endLine);
+
+      if (activeDragHandle == null) {
+        leftDragHandle.draw(g);
+        rightDragHandle.draw(g);
+        return;
+      }
+
+      activeDragHandle.draw(g);
     }
 
     private void adjustChange(FontMetrics fm, String s, String t) {
