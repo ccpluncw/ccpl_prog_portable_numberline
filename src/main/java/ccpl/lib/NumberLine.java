@@ -111,10 +111,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   private Line2D fixationLine;
 
+  private final int unitSize;
+
   public NumberLine(int width, int height, int thickness, Unit startU, Unit endU, Unit targetU,
                     Color baseColor, Color dragColor, Color handleColor, String font,
                     boolean estimateTask, int m, boolean[] kwb, char handleAlignment,
-                    boolean[] shLabels) {
+                    boolean[] shLabels, int unitSize) {
+
+    this.unitSize = unitSize;
 
     //----- added by Oliver
     keepWithinBounds = kwb;
@@ -359,19 +363,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
    * Return the unit length of the number line.
    */
   public double getUnitLength() {
-    double length;
-    if (startUnit.toDouble() < endUnit.toDouble()) {
-      length = currentDragPoint.getX() - startPoint.getX();
-      length *= getLengthPerUnit();
-
-      return startUnit.toDouble() + length;
-    } else {
-      length = currentDragPoint.getX() - extendPoint2D.getX();
-      length *= getLengthPerUnit();
-      length = -length;
-
-      return endUnit.toDouble() + length;
-    }
+    return unitSize;
   }
 
   public Line2D getFixationLine() {
