@@ -313,6 +313,21 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
             isEstimationTask, leftMargin, keepWithinBounds, leftOrRight,
             showFullBaseScale);
 
+        //Displays Fixation if necessary
+        Fixation fixation = new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
+        fixationPanel.removeAll();
+        //fixationPanel.add(new JLabel()); //Top row of gridpanel is blank
+        fixationPanel.add(fixation, BorderLayout.CENTER); //Middle row has the NumberLine
+        //fixationPanel.add(new JLabel()); //Bottom row of gridPanel is blank
+
+        if (isEstimationTask) {
+          imPanel.add(fixationPanel, BorderLayout.CENTER);
+          frame.setContentPane(imPanel);
+          frame.validate();
+          delay(250);
+          imPanel.remove(fixationPanel);
+        }
+
         //show numline and gather response
         presentTrial();
 

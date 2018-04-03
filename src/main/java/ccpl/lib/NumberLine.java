@@ -109,6 +109,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final boolean isEstimateTask;
   private final float widthPercentage; //holds percentage of base width to display
 
+  private Line2D fixationLine;
+
   public NumberLine(int width, int height, int thickness, Unit startU, Unit endU, Unit targetU,
                     Color baseColor, Color dragColor, Color handleColor, String font,
                     boolean estimateTask, int m, boolean[] kwb, char handleAlignment,
@@ -162,6 +164,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     leftDragHandle  = new Handle(startLine, leftGuide,  baseColor);
     rightDragHandle = new Handle(endLine,   rightGuide, baseColor);
+
+    fixationLine = startLine;
 
     if (handleAlignment == 'L') {
       handleStartPoint = startPoint;
@@ -355,13 +359,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
    * Return the unit length of the number line.
    */
   public double getUnitLength() {
-
-    /* CHANGE THIS TO: a
-     *
-     * pixelLow: pixels between end unit and start unit
-     * pixelHigh:
-     *
-     */
     double length;
     if (startUnit.toDouble() < endUnit.toDouble()) {
       length = currentDragPoint.getX() - startPoint.getX();
@@ -375,6 +372,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
       return endUnit.toDouble() + length;
     }
+  }
+
+  public Line2D getFixationLine() {
+    return fixationLine;
   }
 
   public double getUnitLength(String userResp) {
