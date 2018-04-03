@@ -231,11 +231,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final int leftMarginHigh = dataBundle.getAsInt("left_margin_high");
         final int leftMarginInterval = dataBundle.getAsInt("left_margin_interval");
 
-        final int widthLow  = widthMod * dataBundle.getAsInt("width_low");
-        final int widthHigh = widthMod * dataBundle.getAsInt("width_high")
-                                       * dataBundle.getAsInt("end_unit");
-        final int widthInterval = dataBundle.getAsInt("width_interval");
-
         final int height    = getModifier("height", numberLineSize);
         final int thickness = getModifier("thickness", numberLineSize);
 
