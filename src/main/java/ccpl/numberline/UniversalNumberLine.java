@@ -311,7 +311,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         numLine = new NumberLine(randWidth + thickness, height, thickness, startUnit, endUnit,
             randTarget, baseColor, dragColor, handleActiveColor, myFontName,
             isEstimationTask, leftMargin, keepWithinBounds, leftOrRight,
-            showFullBaseScale);
+            showFullBaseScale, unitSize);
 
         //Displays Fixation if necessary
         Fixation fixation = new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
