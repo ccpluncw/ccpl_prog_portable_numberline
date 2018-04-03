@@ -4,10 +4,8 @@ import ccpl.lib.Bundle
 import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
-import java.awt.BorderLayout
-import java.awt.Component
-import java.awt.Dimension
-import java.awt.GridLayout
+import java.awt.*
+import java.awt.event.ItemEvent
 import java.lang.Math.pow
 import java.text.DecimalFormat
 import javax.swing.*
@@ -118,6 +116,8 @@ class ConfigPanel : JPanel() {
             listOf("true", "false"))
     panel.border = BorderFactory.createEmptyBorder()
 
+
+
     val savePanel = JPanel()
     val saveTxtField = JTextField(20)
     addTrackedTxtField(saveTxtField,"cust_instruct", "Custom Instructions", savePanel, txtMap, false)
@@ -143,6 +143,26 @@ class ConfigPanel : JPanel() {
     finalPanel.add(savePanel, BorderLayout.SOUTH)
 
     finalPanel.border = BorderFactory.createTitledBorder("Custom instructions")
+
+    val btnGrp = btnGrps["use_cust_instruct"]!!
+    val btns = btnGrp.elements.toList()
+
+    btns[0].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        finalPanel.add(savePanel, BorderLayout.SOUTH)
+        finalPanel.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+
+    btns[1].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        finalPanel.remove(savePanel)
+        finalPanel.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+
 
     return finalPanel
   }
