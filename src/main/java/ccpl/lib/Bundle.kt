@@ -8,12 +8,12 @@ class Bundle {
     get() = values.size
 
   fun add(key: String, value: Any) {
-    values.put(key, value)
+    values[key] = value
   }
 
   private fun get(key: String): Any? {
     return if (!values.containsKey(key)) {
-      throw Exception("Bundle does not contain key: " + key)
+      throw Exception("Bundle does not contain key: $key")
     } else {
       values[key]
     }

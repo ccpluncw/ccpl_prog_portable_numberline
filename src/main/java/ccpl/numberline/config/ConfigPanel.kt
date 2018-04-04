@@ -210,7 +210,7 @@ class ConfigPanel : JPanel() {
     btnGrp.add(adultRadBtn)
     btnGrp.add(othRadBtn)
 
-    btnGrps.put("bias", btnGrp)
+    btnGrps["bias"] = btnGrp
 
     panel.add(childRadBtn)
     panel.add(adultRadBtn)
@@ -246,7 +246,7 @@ class ConfigPanel : JPanel() {
 
     val btnGrp = ButtonGroup()
     buts.forEach { btnGrp.add(it) }
-    btnGrps.put(key, btnGrp)
+    btnGrps[key] = btnGrp
 
     val panel = borderTitlePanel(title)
     buts.forEach { panel.add(it) }

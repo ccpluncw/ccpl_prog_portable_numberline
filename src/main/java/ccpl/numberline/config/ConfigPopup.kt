@@ -38,7 +38,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
   private val centerPanel = JPanel()
 
   private val homeDir: String = System.getProperty("user.home")
-  private val defaultConfigLoc = homeDir + "/.port_num/defaults_config_popup"
+  private val defaultConfigLoc = "$homeDir/.port_num/defaults_config_popup"
   private val saveTxtField = JTextField(20)
   private val errorTextField = JLabel("", SwingConstants.CENTER)
 
@@ -96,10 +96,10 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     contentPanel.add(topPanel, contentConstraints)
 
     val textField = JTextField()
-    textFields.put("condition", textField)
+    textFields["condition"] = textField
     expandGridPanel(centerPanel, "Condition", textField)
 
-    textFields.put("condition", textField)
+    textFields["condition"] = textField
 
     textKeys.indices.forEach {
       if (textKeys[it] == "session") {
@@ -119,7 +119,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
         bunAdd("target_label_on", true.toString())
         bunAdd("save_dir", saveTxtField.text)
 
-        writeDbFile(cb.bundle, URL("file://" + defaultConfigLoc))
+        writeDbFile(cb.bundle, URL("file://$defaultConfigLoc"))
 
         this.isVisible = false
         this.dispose()
@@ -218,7 +218,7 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
   private fun bunAdd(key: String, value: Any) = cb.bundle.add(key, value)
 
-  private fun loadDefaults() : Bundle = readDbFile(URL("file://" + defaultConfigLoc))
+  private fun loadDefaults() : Bundle = readDbFile(URL("file://$defaultConfigLoc"))
 
   override fun dispose() {
     configDialog.dispose()

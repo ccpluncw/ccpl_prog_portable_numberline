@@ -1,12 +1,16 @@
 package ccpl.lib.util
 
 import ccpl.lib.Bundle
-import java.io.*
+import java.io.BufferedReader
+import java.io.File
+import java.io.FileOutputStream
+import java.io.InputStreamReader
+import java.io.PrintWriter
 import java.net.URL
 import kotlin.streams.toList
 
-val delimiter = ":"
-val commentCharacter = '#'
+const val delimiter = ":"
+const val commentCharacter = '#'
 
 fun readDbFile(path: URL): Bundle {
   val dbfileValues = Bundle()
