@@ -1,12 +1,31 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
-import ccpl.lib.util.*
-import java.awt.*
+import ccpl.lib.util.addTrackedTxtField
+import ccpl.lib.util.expandGridPanel
+import ccpl.lib.util.readDbFile
+import ccpl.lib.util.writeDbFile
+import java.awt.BorderLayout
+import java.awt.Color
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
+import java.awt.GridLayout
+import java.awt.Point
+import java.awt.Toolkit
 import java.io.File
 import java.net.URL
 import java.text.DecimalFormat
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.JButton
+import javax.swing.JFileChooser
+import javax.swing.JFormattedTextField
+import javax.swing.JFrame
+import javax.swing.JLabel
+import javax.swing.JOptionPane
+import javax.swing.JPanel
+import javax.swing.JTextField
+import javax.swing.SwingConstants
+import javax.swing.WindowConstants
 
 class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
 
@@ -38,7 +57,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
 
     val contentPanel = JPanel()
     contentPanel.border = BorderFactory.createEmptyBorder(10, 10, 10, 10)
-    contentPanel.layout = BorderLayout()
+    contentPanel.layout = GridBagLayout()
+    val contentConstraints = GridBagConstraints()
 
     centerPanel.layout = GridLayout(0, 2, 0, 2)
 
@@ -66,7 +86,9 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     topCenter.add(saveTxtField)
     topCenter.add(saveButton)
     topPanel.add(topCenter, BorderLayout.CENTER)
-    contentPanel.add(topPanel, BorderLayout.NORTH)
+
+    contentConstraints.gridy = 0
+    contentPanel.add(topPanel, contentConstraints)
 
     val textField = JTextField()
     textFields.put("condition", textField)
@@ -111,7 +133,8 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
       configDialog.isVisible = true
     })
 
-    centerPanel.add(configButton)
+    val configButtonPanel = JPanel()
+    configButtonPanel.add(configButton)
 
     val exitButton = JButton("Exit")
     exitButton.addActionListener { System.exit(1) }
@@ -120,8 +143,23 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
     bottomPanel.add(okayButton)
     bottomPanel.add(exitButton)
 
-    contentPanel.add(centerPanel, BorderLayout.CENTER)
-    contentPanel.add(bottomPanel, BorderLayout.SOUTH)
+    val centerPanelWrapper = JPanel()
+    centerPanelWrapper.layout = GridBagLayout()
+    val c = GridBagConstraints()
+
+    c.gridx = 0
+    c.gridy = 0
+    c.fill = GridBagConstraints.BOTH
+    centerPanelWrapper.add(centerPanel, c)
+
+    c.gridy = 1
+    centerPanelWrapper.add(configButtonPanel, c)
+
+    contentConstraints.gridy = 1
+    contentPanel.add(centerPanelWrapper, contentConstraints)
+
+    contentConstraints.gridy = 2
+    contentPanel.add(bottomPanel, contentConstraints)
 
     val screenSize = Toolkit.getDefaultToolkit().screenSize
 
