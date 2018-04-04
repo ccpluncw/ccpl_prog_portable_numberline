@@ -72,6 +72,11 @@ class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title)
       val returnVal = fc.showSaveDialog(this)
 
       if (returnVal == JFileChooser.APPROVE_OPTION) {
+        if (!fc.selectedFile.canWrite()) {
+          JOptionPane.showMessageDialog(this, "Unable to select directory: No write permissions" +
+              "\nPlease select a different directory")
+        }
+
         saveTxtField.text = fc.selectedFile.canonicalPath
       }
     }
