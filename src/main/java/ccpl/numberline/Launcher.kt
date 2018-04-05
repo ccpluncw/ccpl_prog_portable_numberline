@@ -3,6 +3,7 @@ package ccpl.numberline
 import ccpl.numberline.config.ConfigPopup
 import ccpl.numberline.config.PopupCallback
 import javax.swing.UIManager
+import kotlin.system.exitProcess
 
 fun main(args: Array<String>) {
 
@@ -26,5 +27,6 @@ fun main(args: Array<String>) {
     val exp = UniversalNumberLine(expFile, subject, condition, session, bundle)
 
     exp.run()
+    exitProcess(0)
   }
 }

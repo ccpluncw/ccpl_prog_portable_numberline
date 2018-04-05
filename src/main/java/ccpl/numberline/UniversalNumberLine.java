@@ -1,7 +1,5 @@
 package ccpl.numberline;
 
-import static ccpl.lib.util.DatabaseFileReaderKt.readDbFile;
-
 import ccpl.lib.*;
 
 import java.awt.BorderLayout;
@@ -11,21 +9,19 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-
-import java.text.DecimalFormat;
-
-import java.util.Date;
-import java.util.Random;
-
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Date;
+import java.util.Random;
+
+import static ccpl.lib.util.DatabaseFileReaderKt.readDbFile;
 
 /**
  * Number line experiment that displays a number line and asks the user for feedback.
@@ -45,8 +41,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
   private static NumberLine numLine = null;
   private static RandomIntGenerator randGen = new RandomIntGenerator();
-  private static BlankPanel imPanel;
-  private static DrawExpFrame frame;
+  private BlankPanel imPanel;
+  private DrawExpFrame frame;
 
   /**
    * Parameterized constructor allow the specification of an experiment file,
@@ -416,7 +412,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     }
 
     thankYou();
-    System.exit(0);
   }
 
   private int getModifier(String prefix, String key) {
