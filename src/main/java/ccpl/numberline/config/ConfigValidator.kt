@@ -3,6 +3,9 @@ package ccpl.numberline.config
 import ccpl.lib.Bundle
 import ccpl.lib.util.screenWidth
 
+const val startUnitStr  = "Target \"From\""
+const val endUnitStr    = "Target \"To\""
+
 /**
  * Create a StringBuilder containing all the errors with the configuration.
  *
@@ -25,8 +28,6 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
   val leftBound   = bun.getAsString("start_unit").toDouble()
   val rightBound  = bun.getAsString("end_unit").toDouble()
 
-  val endUnit = bun.getAsString("end_unit").toDouble()
-
   val margin = bun.getAsInt("left_margin_low")
   val largestTarget = bun.getAsString("largest_target").toDouble()
 
@@ -37,8 +38,8 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
   }
 
   if (leftBound > targLow) {
-    err.append("Target \"From\" value is less than the left bound.\n" +
-        "Please set the target \"From\" value greater than the left bound.\n")
+    err.append("$startUnitStr value is less than the left bound.\n" +
+        "Please set the $startUnitStr value greater than the left bound.\n")
   }
 
   if (leftBound > rightBound) {
@@ -46,15 +47,20 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
         "Please set the left bound to less than the right bound.\n")
   }
 
+  if (targHigh >= largestTarget) {
+    err.append("$endUnitStr value is equal to or greater than the largest target\n" +
+        "Please set the $endUnitStr value to less than the largest target.")
+  }
+
   if (isBounded) {
     if (targHigh >= rightBound) {
-      err.append("Target \"To\" value is equal to or greater than the right bound.\n" +
-          "Please set the target \"To\" value to less than the right bound.\n")
+      err.append("$endUnitStr value is equal to or greater than the right bound.\n" +
+          "Please set the $endUnitStr value to less than the right bound.\n")
     }
 
-    if (endUnit > screenWidth() - margin * 2) {
-      err.append("End unit cannot fit on screen. Maximum end unit is $largestTarget \n" +
-          "Please set the end unit to at most $largestTarget\n")
+    if (rightBound > screenWidth() - margin * 2) {
+      err.append("$endUnitStr cannot fit on screen. Maximum end unit is $largestTarget \n" +
+          "Please set the $endUnitStr value to at most $largestTarget\n")
     }
   }
 
@@ -65,15 +71,10 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
     }
 
     if (targHigh > largestTarget) {
-      err.append("Target \"To\" value is greater than maximum target.\n" +
-          "Please set the target \"To\" value to less than or equal to the maximum target\n")
-    }
-
-    if (targHigh > largestTarget || largestTarget > screenWidth()) {
-      err.append("Largest target cannot fit on screen\n")
+      err.append("$endUnitStr value is greater than maximum target.\n" +
+          "Please set the $endUnitStr value to less than or equal to the maximum target\n")
     }
   }
-
 
   return err
 }
