@@ -1,6 +1,6 @@
 package ccpl.numberline
 
-import ccpl.numberline.config.ConfigPopup
+import ccpl.numberline.config.ConfigFrame
 import ccpl.numberline.config.PopupCallback
 import javax.swing.UIManager
 import kotlin.system.exitProcess
@@ -10,7 +10,7 @@ fun main(args: Array<String>) {
   UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName())
 
   val listener = PopupCallback()
-  val popup = ConfigPopup(listener, "Configure")
+  val popup = ConfigFrame(listener, "Configure")
 
   while (popup.isVisible) {
     Thread.sleep(1)

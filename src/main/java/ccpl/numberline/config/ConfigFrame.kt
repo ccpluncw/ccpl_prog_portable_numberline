@@ -27,7 +27,7 @@ import javax.swing.JTextField
 import javax.swing.SwingConstants
 import javax.swing.WindowConstants
 
-class ConfigPopup(private val cb: PopupCallback, title: String?) : JFrame(title) {
+class ConfigFrame(private val cb: PopupCallback, title: String?) : JFrame(title) {
 
   private val textKeys = listOf("subject", "session")
 
