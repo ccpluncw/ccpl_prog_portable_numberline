@@ -44,7 +44,7 @@ class ConfigFrame(private val cb: PopupCallback, title: String?) : JFrame(title)
 
   private var baseBundle = Bundle()
 
-  private val configDialog = ConfigDialog()
+  private val configDialog = DetailedConfigDialog()
 
   init {
     val cl = ClassLoader.getSystemClassLoader()

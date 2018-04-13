@@ -15,15 +15,14 @@ import javax.swing.WindowConstants
  *
  * This class does not handle the the actual layout, that is delegated to ConfigPanel
  *
- * @see ConfigPanel
+ * @see DetailedConfigDialog
  */
-class ConfigDialog : JDialog() {
+class DetailedConfigDialog : JDialog() {
 
-  private val panel = ConfigPanel()
+  private val panel = DetailedConfigPanel()
 
   init {
     this.layout = BorderLayout()
-    this.add(panel, BorderLayout.CENTER)
 
     val saveBtn = JButton("Save")
     saveBtn.addActionListener({
@@ -34,6 +33,9 @@ class ConfigDialog : JDialog() {
 
     val botPanel = JPanel()
     botPanel.add(saveBtn)
+
+    // Add panels to the JDialog
+    this.add(panel, BorderLayout.CENTER)
     this.add(botPanel, BorderLayout.SOUTH)
 
     this.pack()

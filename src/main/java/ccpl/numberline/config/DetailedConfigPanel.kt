@@ -4,17 +4,30 @@ import ccpl.lib.Bundle
 import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
-import java.awt.*
+import java.awt.BorderLayout
+import java.awt.Component
+import java.awt.Dialog
+import java.awt.Dimension
+import java.awt.GridLayout
 import java.awt.event.ItemEvent
 import java.lang.Math.pow
 import java.text.DecimalFormat
-import javax.swing.*
+import javax.swing.BorderFactory
+import javax.swing.Box
+import javax.swing.BoxLayout
+import javax.swing.ButtonGroup
+import javax.swing.JButton
+import javax.swing.JFileChooser
+import javax.swing.JFormattedTextField
+import javax.swing.JLabel
+import javax.swing.JPanel
+import javax.swing.JRadioButton
+import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.NumberFormatter
 
-class ConfigPanel : JPanel() {
-
+class DetailedConfigPanel : JPanel() {
 
   private val btnGrps = mutableMapOf<String, ButtonGroup>()
 
