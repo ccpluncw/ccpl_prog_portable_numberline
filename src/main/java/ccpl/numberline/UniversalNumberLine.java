@@ -1,7 +1,20 @@
 package ccpl.numberline;
 
-import ccpl.lib.*;
+import ccpl.lib.BlankPanel;
+import ccpl.lib.Bundle;
+import ccpl.lib.DrawExpFrame;
+import ccpl.lib.Experiment;
+import ccpl.lib.Fixation;
+import ccpl.lib.Fraction;
+import ccpl.lib.NumberLine;
+import ccpl.lib.RandomIntGenerator;
+import ccpl.lib.Specification;
+import ccpl.lib.SpecificationArrayProcess;
+import ccpl.lib.Unit;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,9 +22,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -330,7 +340,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
           frame.remove(imPanel);
           frame.setContentPane(endPanel);
-          userResp = df.format(numLine.getUnitLength());
+          userResp = df.format(numLine.getUserResponse());
           userRespVal = userResp;
         } else {
           if (estimateTime > 0) {

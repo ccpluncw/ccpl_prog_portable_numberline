@@ -1,5 +1,7 @@
 package ccpl.lib;
 
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -17,11 +19,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-
 import java.util.Random;
-
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 
 /*******************
  * Written by Kyle Holt
@@ -364,6 +362,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
    */
   public double getUnitLength() {
     return unitSize;
+  }
+
+  public double getUserResponse() {
+    // TODO: FIX THIS
+    return (currentDragPoint.x - leftGuide.getX1()) / unitSize + startUnit.toInteger();
   }
 
   public Line2D getFixationLine() {
