@@ -54,6 +54,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private BlankPanel imPanel;
   private DrawExpFrame frame;
 
+  private long estStimTime;
+
   /**
    * Parameterized constructor allow the specification of an experiment file,
    * the subject ID, condition, and session number.
@@ -148,6 +150,10 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     } catch (IndexOutOfBoundsException e) {
       System.out.println("useMouse click flag missing, defaulting to spacebar");
       useMouse = false;
+    }
+
+    if (isEstimationTask) {
+      estStimTime = dataBundle.getAsInt("est_stim_time");
     }
 
     dataAp.writeToUrl(getDataFile(), createOutputHeader());
@@ -251,11 +257,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final String endUnitFormat = dataBundle.getAsString("end_unit_format").toUpperCase();
         final String targetUnitFormat = dataBundle.getAsString("target_unit_format").toUpperCase();
 
-        int estimateTime = 0;
-        if (isEstimationTask) {
-          estimateTime = dataBundle.getAsInt("est_stim_time");
-        }
-
         String estTargetFormat = dataBundle.getAsString("est_target_format");
 
         final String start = dataBundle.getAsString("start_label_on");
@@ -343,10 +344,10 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           userResp = df.format(numLine.getUserResponse());
           userRespVal = userResp;
         } else {
-          if (estimateTime > 0) {
+          if (estStimTime > 0) {
             final long startTime = new Date().getTime();
 
-            delay(estimateTime);
+            delay((int) estStimTime);
 
             frame.remove(imPanel);
             frame.setContentPane(endPanel);
@@ -399,8 +400,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(keepWithinBounds[1] ? "Bounded" : "Unbounded").append("\t");
         outString.append(userRespVal).append("\t");
         outString.append(isEstimationTask ? "Estimation" : "Production").append("\t");
-        outString.append(estimateTime).append("\t");
         outString.append(reactTime).append("\t");
+
+        if (estStimTime > 0) {
+          outString.append(estStimTime).append("\t");
+        }
 
         String outStringTmp = outString.toString().replaceAll("true", "TRUE");
         outStringTmp = outStringTmp.replaceAll("false", "FALSE");
@@ -502,7 +506,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * @return String of column headers
    */
   public String createOutputHeader() {
-    return "sn\t"
+    String header = "sn\t"
         + "pract\t"
         + "trial\t"
         + "cond\t"
@@ -515,8 +519,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         + "Bounded\t"
         + "userRespValue\t"
         + "estTask\t"
-        + "estStimTime\t"
         + "numLineRT\t";
+
+    header += (estStimTime > 0) ? "estStimTime" : "";
+
+    return header.trim();
   }
 
   /**

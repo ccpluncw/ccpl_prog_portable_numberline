@@ -31,9 +31,9 @@ class DetailedConfigPanel : JPanel() {
 
   private val btnGrps = mutableMapOf<String, ButtonGroup>()
 
-  private val textKeys = listOf("num_trials", "num_prac_trials", "start_unit", "end_unit")
+  private val textKeys = listOf("num_trials", "num_prac_trials", "start_unit", "end_unit", "est_stim_time")
 
-  private val textLabels = listOf("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound")
+  private val textLabels = listOf("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound", "Estimation Stim Time")
 
   private val txtMap = mutableMapOf<String, JTextField>()
 
