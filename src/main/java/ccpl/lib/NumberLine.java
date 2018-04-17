@@ -287,11 +287,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     double startToTarget;
     Point2D.Float p;
 
+    // TODO: Refactor code
     if (startUnit.toDouble() > endUnit.toDouble()) {
       outsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
 
       startToTarget = targetUnit.toDouble() - endUnit.toDouble();
-      startToTarget /= getLengthPerUnit();
+      startToTarget *= unitSize;
 
 
       p = new Point2D.Float((float) extendPoint2D.getX() - (float) startToTarget,
@@ -300,7 +301,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       outsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
 
       startToTarget = targetUnit.toDouble() - startUnit.toDouble();
-      startToTarget /= getLengthPerUnit();
+      startToTarget *= unitSize;
 
       p = new Point2D.Float((float) startPoint.getX() + (float) startToTarget,
           (float) startPoint.getY());
@@ -345,16 +346,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public double getStartUnit() {
     return startUnit.toDouble();
-  }
-
-  private double getLengthPerUnit() {
-    double lpUnit;
-    double s = startUnit.toDouble();
-    double e = endUnit.toDouble();
-    double diff = Math.abs(s - e);
-
-    lpUnit = diff / baseWidth;
-    return lpUnit;
   }
 
   /**
