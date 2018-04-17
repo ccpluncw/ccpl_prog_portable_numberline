@@ -1,11 +1,40 @@
 
 package ccpl.lib;
 
-import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.image.BufferedImage;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -14,12 +43,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.imageio.ImageIO;
-import javax.swing.*;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.DocumentFilter;
+import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
 
 
 /**
@@ -370,9 +394,11 @@ public class Response implements KeyListener, ActionListener {
 
       @Override
       public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a) throws BadLocationException {
-        if (str.matches("[a-zA-z]|\\s")) {
+        if (!str.matches("(-|[0-9])")
+            || (str.matches("-") && fb.getDocument().getLength() > 0)) {
           return;
         }
+
         String text = fb.getDocument().getText(0, fb.getDocument().getLength());
         text = text.substring(0, off) + str + text.substring(off, text.length());
         //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
@@ -408,7 +434,8 @@ public class Response implements KeyListener, ActionListener {
 
       @Override
       public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
-        if (str.matches("[a-zA-z]|\\s")) {
+        if (!str.matches("(-|[0-9])")
+            || (str.matches("-") && fb.getDocument().getLength() > 0)) {
           return;
         }
 
