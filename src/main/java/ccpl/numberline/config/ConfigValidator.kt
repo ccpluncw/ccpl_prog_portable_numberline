@@ -31,6 +31,9 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
   val margin = bun.getAsInt("left_margin_low")
   val largestTarget = bun.getAsString("largest_target").toDouble()
 
+  val scalarField = bun.getAsInt("scalar_field")
+  val stimOn = !bun.getAsBoolean("stim_time_off")
+
   // Check for potential errors.
   if (numTrials == 0) {
     err.append("Experiment contains no trials.\n" +
@@ -73,6 +76,10 @@ fun generateConfigErrors(bun: Bundle) : StringBuilder {
     if (targHigh > largestTarget) {
       err.append("$endUnitStr value is greater than maximum target.\n" +
           "Please set the $endUnitStr value to less than or equal to the maximum target\n")
+    }
+
+    if (stimOn && scalarField < 1) {
+      err.append("The scaling factor of your refresh rate must be greater than 0.\n")
     }
   }
 

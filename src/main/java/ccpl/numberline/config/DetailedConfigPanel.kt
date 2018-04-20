@@ -1,6 +1,7 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
+import ccpl.lib.IntFilter
 import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
@@ -8,6 +9,10 @@ import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dialog
 import java.awt.Dimension
+import java.awt.DisplayMode
+import java.awt.GraphicsEnvironment
+import java.awt.GridBagConstraints
+import java.awt.GridBagLayout
 import java.awt.GridLayout
 import java.awt.event.ItemEvent
 import java.lang.Math.pow
@@ -26,14 +31,15 @@ import javax.swing.JTextField
 import javax.swing.event.DocumentEvent
 import javax.swing.event.DocumentListener
 import javax.swing.text.NumberFormatter
+import javax.swing.text.PlainDocument
 
 class DetailedConfigPanel : JPanel() {
 
   private val btnGrps = mutableMapOf<String, ButtonGroup>()
 
-  private val textKeys = listOf("num_trials", "num_prac_trials", "start_unit", "end_unit", "est_stim_time")
+  private val textKeys = listOf("num_trials", "num_prac_trials", "start_unit", "end_unit" )
 
-  private val textLabels = listOf("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound", "Estimation Stim Time")
+  private val textLabels = listOf("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound")
 
   private val txtMap = mutableMapOf<String, JTextField>()
 
@@ -115,8 +121,92 @@ class DetailedConfigPanel : JPanel() {
     return panel
   }
 
-  private fun estPanel() : JPanel = buttonPanel("Estimation or Production", "estimation_task",
-                                                listOf("Estimation", "Production"), listOf("true", "false"))
+  private fun estPanel() : JPanel {
+    val wrapper = JPanel()
+    wrapper.layout = BorderLayout()
+
+    val panel = buttonPanel("Estimation or Production", "estimation_task",
+        listOf("Estimation", "Production"), listOf("true", "false"))
+
+    val stimPanel = borderTitlePanel("Estimation Stim Time")
+    val stimSwitches = buttonPanel("", "stim_time_off",listOf("Unlimited", "Limited"), listOf("true", "false"))
+    val stimInfoPanel = JPanel()
+
+    stimPanel.layout = BorderLayout()
+    stimPanel.add(stimSwitches, BorderLayout.NORTH)
+    //stimPanel.add(stimInfoPanel, BorderLayout.SOUTH)
+
+    val btnGrpSwitches = btnGrps["stim_time_off"]!!
+    val btnsSwitches = btnGrpSwitches.elements.toList()
+
+    btnsSwitches[0].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        stimPanel.remove(stimInfoPanel)
+        stimPanel.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+    btnsSwitches[1].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        stimPanel.add(stimInfoPanel, BorderLayout.SOUTH)
+        stimPanel.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+
+    val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    val gs = ge.screenDevices
+
+    val rr = gs[0].displayMode.refreshRate
+    val refreshRate = if (rr == DisplayMode.REFRESH_RATE_UNKNOWN) 60 else rr
+    baseBundle.add("refresh_rate", refreshRate)
+
+    stimInfoPanel.layout = GridBagLayout()
+    val c = GridBagConstraints()
+    c.gridx = 0
+    c.gridy = 0
+    c.gridwidth = 5
+    stimInfoPanel.add(JLabel("Computer screen refresh interval: ${1000 / refreshRate} ms"), c)
+
+    c.gridwidth = 1
+    c.gridy = 1
+    c.anchor = GridBagConstraints.CENTER
+    stimInfoPanel.add(JLabel("Stim scalar: "), c)
+
+    val scalarField = JTextField(4)
+
+    (scalarField.document as PlainDocument).documentFilter = IntFilter()
+
+    addTrackedTxtField(scalarField,"scalar_field", "", stimPanel, txtMap, false)
+    c.gridx = 1
+    stimInfoPanel.add(scalarField, c)
+
+    c.gridx = 2
+    stimInfoPanel.add(JLabel("x${1000 / refreshRate} ms"), c)
+
+    val btnGrp = btnGrps["estimation_task"]!!
+    val btns = btnGrp.elements.toList()
+
+    btns[0].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        wrapper.add(stimPanel, BorderLayout.SOUTH)
+        wrapper.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+    btns[1].addItemListener {
+      if (it.stateChange == ItemEvent.SELECTED) {
+        wrapper.remove(stimPanel)
+        wrapper.revalidate()
+        (this.rootPane.parent as Dialog).pack()
+      }
+    }
+
+    wrapper.add(panel, BorderLayout.NORTH)
+    wrapper.add(stimPanel, BorderLayout.SOUTH)
+
+    return wrapper
+  }
 
   private fun boundedPanel() : JPanel = buttonPanel("Bounded or Unbounded", "bound_exterior",
                                                     listOf("Bounded", "Unbounded"), listOf("true", "false"))
@@ -128,8 +218,6 @@ class DetailedConfigPanel : JPanel() {
     val panel = buttonPanel("Custom Instructions", "use_cust_instruct", listOf("Yes", "No"),
             listOf("true", "false"))
     panel.border = BorderFactory.createEmptyBorder()
-
-
 
     val savePanel = JPanel()
     val saveTxtField = JTextField(20)
@@ -153,7 +241,7 @@ class DetailedConfigPanel : JPanel() {
     val finalPanel = JPanel()
     finalPanel.layout = BorderLayout()
     finalPanel.add(panel, BorderLayout.NORTH)
-    finalPanel.add(savePanel, BorderLayout.SOUTH)
+    //finalPanel.add(savePanel, BorderLayout.SOUTH)
 
     finalPanel.border = BorderFactory.createTitledBorder("Custom instructions")
 
@@ -252,7 +340,7 @@ class DetailedConfigPanel : JPanel() {
     return panel
   }
 
-  private fun buttonPanel(title: String, key: String, butStrs: List<String>, cmds: List<String>) : JPanel {
+  private fun buttonPanel(title: String = "", key: String, butStrs: List<String>, cmds: List<String>) : JPanel {
     val buts = butStrs.map { JRadioButton(it) }
     buts.forEachIndexed {i, it -> it.actionCommand = cmds[i]}
     buts[0].isSelected = true
@@ -261,7 +349,7 @@ class DetailedConfigPanel : JPanel() {
     buts.forEach { btnGrp.add(it) }
     btnGrps[key] = btnGrp
 
-    val panel = borderTitlePanel(title)
+    val panel = if (title.isEmpty()) JPanel() else borderTitlePanel(title)
     buts.forEach { panel.add(it) }
 
     return panel
@@ -275,6 +363,16 @@ class DetailedConfigPanel : JPanel() {
     bundle.add("largest_target", largeLbl.text.split(":")[1])
     bundle.add("line_size", baseBundle.getAsString("width_${bundle.getAsString("line_size_temp")}_mod"))
 
+    val ge = GraphicsEnvironment.getLocalGraphicsEnvironment()
+    val gs = ge.screenDevices
+    val rr = gs[0].displayMode.refreshRate
+    val refreshRate = if (rr == DisplayMode.REFRESH_RATE_UNKNOWN) 60 else rr
+
+    if (baseBundle.getAsBoolean("stim_time_off")) {
+      baseBundle.add("est_stim_time", 0)
+    } else {
+      baseBundle.add("est_stim_time", baseBundle.getAsInt("scalar_field") * (1000 / refreshRate))
+    }
 
     return bundle
   }
