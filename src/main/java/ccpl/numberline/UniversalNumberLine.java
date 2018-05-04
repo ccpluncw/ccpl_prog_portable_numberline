@@ -236,7 +236,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       frame.requestFocus();
 
       for (trialNum = 0; trialNum < tempTrials; trialNum++) {
-        frame.showCursor();
+        frame.hideCursor();
         long reactTime;
 
         final int leftMarginLow = dataBundle.getAsInt("left_margin_low");
@@ -391,7 +391,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(trialNum).append("\t");
         outString.append(condition).append("\t");
         outString.append(session).append("\t");
-        // TODO: Fix this.
         outString.append(numberLineSize).append("\t");
         outString.append(df.format(numLine.getUnitLength())).append("\t");
         outString.append(df.format(numLine.getStartUnit())).append("\t");
