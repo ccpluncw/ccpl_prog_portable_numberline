@@ -14,6 +14,7 @@ import javax.swing.WindowConstants;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -44,6 +45,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
+import static ccpl.lib.util.StringUtilKt.notPartOfNumber;
 
 
 /**
@@ -394,12 +396,13 @@ public class Response implements KeyListener, ActionListener {
 
       @Override
       public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a) throws BadLocationException {
-        if (!str.matches("(-|[0-9])")
-            || (str.matches("-") && fb.getDocument().getLength() > 0)) {
+        Document doc = fb.getDocument();
+        String text = doc.getText(0, doc.getLength());
+
+        if (notPartOfNumber(str, text)) {
           return;
         }
 
-        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
         text = text.substring(0, off) + str + text.substring(off, text.length());
         //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
         text = text.replaceAll(",", "");
@@ -408,14 +411,14 @@ public class Response implements KeyListener, ActionListener {
           String f = "#,##0";
           String signHolder = "";
           if (text.contains("-")) {
-            text.replace("-", "");
             signHolder = "-";
           }
+
           String formatter = formatString(text);
           f = f + formatter;
           DecimalFormat df = new DecimalFormat(f);
           if (str.equals(".")) {
-            if (fb.getDocument().getLength() == 0 | (fb.getDocument().getLength() == 1 && signHolder.equals("-"))) {
+            if (fb.getDocument().getLength() == 0 || (fb.getDocument().getLength() == 1 && signHolder.equals("-"))) {
               super.replace(fb, off, length, "0" + str, a);
             } else {
               BigDecimal t = new BigDecimal(text);
@@ -434,12 +437,12 @@ public class Response implements KeyListener, ActionListener {
 
       @Override
       public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
-        if (!str.matches("(-|[0-9])")
-            || (str.matches("-") && fb.getDocument().getLength() > 0)) {
+        Document doc = fb.getDocument();
+        String text = doc.getText(0, doc.getLength());
+
+        if (notPartOfNumber(str, text)) {
           return;
         }
-
-        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
 
         text = text.substring(0, offs) + str + text.substring(offs, text.length());
         //text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
