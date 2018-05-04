@@ -1,18 +1,5 @@
 package ccpl.lib;
 
-import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
-
-import java.awt.Color;
-import java.awt.Cursor;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
-
-import java.lang.reflect.InvocationTargetException;
-
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -20,6 +7,21 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.KeyStroke;
 import javax.swing.WindowConstants;
+import java.awt.Color;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
 
 
 /**
@@ -59,13 +61,14 @@ public class DrawExpFrame extends JFrame {
     if (System.getProperty("os.name").startsWith("Mac")) {
       // TODO: Figure out how to fix this on non-Mac machines
       // com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
-      Object fsu;
       try {
-        fsu = Class.forName("com.apple.eawt.FullScreenUtilities").newInstance().getClass();
-        fsu.getClass().getMethod("setWindowCanFullScreen").invoke(fsu, this, true);
-      } catch (InstantiationException | NoSuchMethodException | IllegalAccessException
+        Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+        Class params[] = new Class[]{Window.class, Boolean.TYPE};
+        Method method = util.getMethod("setWindowCanFullScreen", params);
+        method.invoke(util, this, true);
+      } catch (NoSuchMethodException | IllegalAccessException
           | InvocationTargetException | ClassNotFoundException e) {
-        e.printStackTrace();
+        Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, e.getMessage());
       }
     } else {
       setUndecorated(true); //Hides minimize and maximize buttons on jframe title bar

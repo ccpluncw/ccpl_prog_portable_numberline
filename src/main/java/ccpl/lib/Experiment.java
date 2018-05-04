@@ -1,11 +1,13 @@
 package ccpl.lib;
 
+import javax.swing.JFrame;
+import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 
 
 public class Experiment implements ExpInterface {
@@ -78,13 +80,17 @@ public class Experiment implements ExpInterface {
     if (System.getProperty("os.name").startsWith("Mac")) {
       // com.apple.eawt.Application.getApplication().requestToggleFullScreen(frame);
       try {
-        Class.forName("com.apple.eawt.Application").newInstance()
-            .getClass()
-            .getMethod("getApplication")
-            .invoke(null);
-      } catch (IllegalAccessException | InvocationTargetException | InstantiationException
-             | NoSuchMethodException | ClassNotFoundException e) {
-        e.printStackTrace();
+        Class appClass = Class.forName("com.apple.eawt.Application");
+        Class params[] = new Class[]{};
+
+        Method getApp = appClass.getMethod("getApplication", params);
+        Object app = getApp.invoke(appClass);
+        Method toggle = app.getClass().getMethod("requestToggleFullScreen", Window.class);
+
+        toggle.invoke(app, frame);
+      } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
+          | ClassNotFoundException e) {
+        Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, e.getLocalizedMessage());
       }
     }
   }
