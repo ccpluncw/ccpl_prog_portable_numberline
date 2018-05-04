@@ -72,14 +72,14 @@ class DetailedConfigPanel : JPanel() {
       override fun changedUpdate(p0: DocumentEvent?) {
         if (txtField.text.isNotEmpty()) updateLargeLbl()
       }
-
       override fun insertUpdate(p0: DocumentEvent?) {
         if (txtField.text.isNotEmpty()) updateLargeLbl()
       }
       override fun removeUpdate(p0: DocumentEvent?) {
         if (txtField.text.isNotEmpty()) updateLargeLbl()
       }
-    }) }
+    })
+    }
     btnGrps.forEach { _, btnGrp -> btnGrp.elements.toList().forEach { it.addActionListener { updateLargeLbl() } } }
   }
 
