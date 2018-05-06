@@ -2,7 +2,6 @@ package ccpl.numberline.config
 
 import ccpl.lib.Bundle
 import ccpl.lib.IntFilter
-import ccpl.lib.IntTextField
 import ccpl.lib.util.addTrackedTxtField
 import ccpl.lib.util.screenWidth
 import java.awt.BorderLayout
