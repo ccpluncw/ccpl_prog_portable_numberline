@@ -2,8 +2,9 @@ package ccpl.numberline.config
 
 import ccpl.lib.Bundle
 import ccpl.lib.IntFilter
-import ccpl.lib.util.addTrackedTxtField
-import ccpl.lib.util.screenWidth
+import ccpl.lib.IntTextField
+import ccpl.lib.util.UiUtil.addTrackedTxtField
+import ccpl.lib.util.UiUtil.screenWidth
 import java.awt.BorderLayout
 import java.awt.Component
 import java.awt.Dialog
@@ -102,7 +103,7 @@ class DetailedConfigPanel : JPanel() {
     formatter.commitsOnValidEdit = true
 
     textKeys.indices.forEach {
-      addTrackedTxtField(IntTextField(), textKeys[it], textLabels[it], panel, txtMap)
+      addTrackedTxtField(IntTextField(), textKeys[it], textLabels[it], panel, txtMap, true)
     }
 
     return panel

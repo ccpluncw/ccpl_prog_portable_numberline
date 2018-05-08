@@ -1,10 +1,10 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
-import ccpl.lib.util.addTrackedTxtField
-import ccpl.lib.util.expandGridPanel
-import ccpl.lib.util.readDbFile
-import ccpl.lib.util.writeDbFile
+import ccpl.lib.util.DatabaseFileReader.readDbFile
+import ccpl.lib.util.DatabaseFileReader.writeDbFile
+import ccpl.lib.util.UiUtil.addTrackedTxtField
+import ccpl.lib.util.UiUtil.expandGridPanel
 import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.GridBagConstraints
@@ -104,9 +104,9 @@ class ConfigFrame(private val cb: PopupCallback, title: String?) : JFrame(title)
     textKeys.indices.forEach {
       if (textKeys[it] == "session") {
         val format = JFormattedTextField(DecimalFormat("###"))
-        addTrackedTxtField(format, textKeys[it], textLabels[it], centerPanel, textFields)
+        addTrackedTxtField(format, textKeys[it], textLabels[it], centerPanel, textFields, true)
       } else {
-        addTrackedTxtField(textKeys[it], textLabels[it], centerPanel, textFields)
+        addTrackedTxtField(textKeys[it], textLabels[it], centerPanel, textFields, true)
       }
     }
 

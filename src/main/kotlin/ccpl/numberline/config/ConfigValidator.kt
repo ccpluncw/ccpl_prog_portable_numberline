@@ -1,7 +1,7 @@
 package ccpl.numberline.config
 
 import ccpl.lib.Bundle
-import ccpl.lib.util.screenWidth
+import ccpl.lib.util.UiUtil.screenWidth
 
 const val startUnitStr  = "Target \"From\""
 const val endUnitStr    = "Target \"To\""

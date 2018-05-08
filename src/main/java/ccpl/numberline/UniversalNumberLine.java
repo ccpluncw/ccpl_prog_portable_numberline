@@ -31,7 +31,7 @@ import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Random;
 
-import static ccpl.lib.util.DatabaseFileReaderKt.readDbFile;
+import static ccpl.lib.util.DatabaseFileReader.readDbFile;
 
 /**
  * Number line experiment that displays a number line and asks the user for feedback.

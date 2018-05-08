@@ -44,8 +44,8 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static ccpl.lib.util.MouseUtilKt.resetMouseToCenter;
-import static ccpl.lib.util.StringUtilKt.notPartOfNumber;
+import static ccpl.lib.util.MouseUtil.resetMouseToCenter;
+import static ccpl.lib.util.StringUtil.notPartOfNumber;
 
 
 /**
