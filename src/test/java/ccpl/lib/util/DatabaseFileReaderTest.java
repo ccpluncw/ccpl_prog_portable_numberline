@@ -16,7 +16,7 @@ public class DatabaseFileReaderTest {
     Bundle bundle = ccpl.lib.util.DatabaseFileReader.readDbFile(url);
 
     assertEquals(14, bundle.getSize());
-    assertEquals(211, bundle.getAsInt("handle_red"));
+    assertEquals(new Integer(211), bundle.getAsInt("handle_red"));
     assertEquals("prac_bounded_prod.txt", bundle.getAsString("prac_trial"));
   }
 }
