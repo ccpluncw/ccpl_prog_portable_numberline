@@ -49,7 +49,7 @@ class ConfigFrame(private val cb: PopupCallback, title: String?) : JFrame(title)
   init {
     val cl = ClassLoader.getSystemClassLoader()
     baseBundle = readDbFile(cl.getResource("exp/infiles/base_exp.txt"))
-    configDialog.baseBundle(baseBundle)
+    configDialog.setBaseBundle(baseBundle)
 
     val defaultConfigExist = File(defaultConfigLoc).exists()
 
