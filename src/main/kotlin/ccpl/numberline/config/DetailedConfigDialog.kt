@@ -3,6 +3,7 @@ package ccpl.numberline.config
 import ccpl.lib.Bundle
 import ccpl.lib.util.UiUtil.screenHeight
 import ccpl.lib.util.UiUtil.screenWidth
+import ccpl.numberline.config.ConfigValidator.generateConfigErrors
 import java.awt.BorderLayout
 import javax.swing.JButton
 import javax.swing.JDialog
