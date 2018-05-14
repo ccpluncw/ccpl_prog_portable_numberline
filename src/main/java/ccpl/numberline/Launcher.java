@@ -38,6 +38,7 @@ public class Launcher {
 
       UniversalNumberLine exp =
           new UniversalNumberLine(expFile, subject, condition, session, bundle);
+      exp.run();
     }
   }
 }
