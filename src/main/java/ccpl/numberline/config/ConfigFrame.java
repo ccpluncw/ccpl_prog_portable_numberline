@@ -99,7 +99,7 @@ public class ConfigFrame extends JFrame {
                 try {
                     saveTxtField.setText(fc.getSelectedFile().getCanonicalPath());
                 } catch (IOException e) {
-                    Logger.getLogger(ConfigFrame.class.getName()).log(Level.WARNING, e.getLocalizedMessage());
+                    log.log(Level.WARNING, e.getLocalizedMessage());
                 }
             }
         });
@@ -145,7 +145,7 @@ public class ConfigFrame extends JFrame {
                 try {
                     writeDbFile(cb.bundle, new URL(String.format("file://%s", defaultConfigExist)));
                 } catch (MalformedURLException e) {
-                    Logger.getLogger(ConfigFrame.class.getName()).log(Level.WARNING, e.getLocalizedMessage());
+                    log.log(Level.WARNING, e.getLocalizedMessage());
                 }
 
                 this.setVisible(false);
