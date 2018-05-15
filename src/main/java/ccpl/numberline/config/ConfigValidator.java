@@ -37,6 +37,8 @@ public class ConfigValidator {
     int scalarField = bun.getAsInt("scalar_field");
     boolean stimOn = !bun.getAsBoolean("stim_time_off");
 
+    int interval = bun.getAsInt("target_unit_interval");
+
     // Check for potential errors.
     if (numTrials == 0) {
       err.append("Experiment contains no trials.\n" +
@@ -51,6 +53,11 @@ public class ConfigValidator {
     if (leftBound > rightBound) {
       err.append("Left bound is greater than the right bound.\n" +
           "Please set the left bound to less than the right bound.\n");
+    }
+
+    if (interval < 1) {
+      err.append("\"By\" value is less than one.\n" +
+          "Please set the \"By\" to greater than or equal to 1");
     }
 
     if (targHigh >= largestTarget) {

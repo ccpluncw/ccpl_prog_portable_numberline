@@ -137,12 +137,16 @@ class DetailedConfigPanel extends JPanel {
     JPanel panel = borderTitlePanel("Target");
     panel.setLayout(new GridLayout(0, 6, 5, 1));
 
-    List<String> txtKey = Arrays.asList("target_unit_low", "target_unit_high", "target_unit_interval");
-    List<String> txtLabel = Arrays.asList("From", "To", "By");
+    List<String> txtKey = Arrays.asList("target_unit_low", "target_unit_high");
+    List<String> txtLabel = Arrays.asList("From", "To");
 
     for (int i = 0; i < txtKey.size(); i++) {
       addTrackedTxtField(new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false) ;
     }
+
+    JFormattedTextField txt = new JFormattedTextField(twoSig);
+    addTrackedTxtField(txt, "target_unit_interval", "By", panel, txtMap, false) ;
+    txt.setText("1");
 
     return panel;
   }
