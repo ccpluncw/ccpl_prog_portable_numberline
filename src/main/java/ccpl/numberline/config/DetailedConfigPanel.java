@@ -378,10 +378,6 @@ class DetailedConfigPanel extends JPanel {
     return panel;
   }
 
-  private JPanel buttonPanel(String key, List<String> butStrs, List<String> cmds) {
-    return buttonPanel("", key, butStrs, cmds);
-  }
-
   private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds) {
     List<JRadioButton> buts = butStrs.stream()
         .map(JRadioButton::new)
