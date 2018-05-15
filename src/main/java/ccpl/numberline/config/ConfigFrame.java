@@ -143,7 +143,7 @@ public class ConfigFrame extends JFrame {
                 bunAdd("save_dir", saveTxtField.getText());
 
                 try {
-                    writeDbFile(cb.bundle, new URL(String.format("file://%s", defaultConfigExist)));
+                    writeDbFile(cb.bundle, new URL(String.format("file://%s", defaultConfigLoc)));
                 } catch (MalformedURLException e) {
                     log.log(Level.WARNING, e.getLocalizedMessage());
                 }
@@ -215,7 +215,7 @@ public class ConfigFrame extends JFrame {
         String session = textFields.get("session").getText();
         StringBuilder sb = new StringBuilder();
 
-        String filePath = String.format("%s/p%s%s.dat", saveTxtField.getText(), subject, session);
+        String filePath = String.format("%s/p%ss%s.dat", saveTxtField.getText(), subject, session);
 
         if (new File(filePath).exists()) {
             pass = false;
