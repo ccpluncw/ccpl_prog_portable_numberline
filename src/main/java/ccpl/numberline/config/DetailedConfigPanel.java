@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.screenWidth;
 import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
 import static java.lang.Math.pow;
 
 class DetailedConfigPanel extends JPanel {
@@ -204,7 +205,6 @@ class DetailedConfigPanel extends JPanel {
     stimInfoPanel.add(new JLabel("Stim scalar: "), c);
 
     JTextField scalarField = new JTextField(4);
-
     ((PlainDocument) scalarField.getDocument()).setDocumentFilter(new IntFilter());
 
     addTrackedTxtField(scalarField,"scalar_field", "", stimPanel, txtMap, false);
@@ -212,7 +212,31 @@ class DetailedConfigPanel extends JPanel {
     stimInfoPanel.add(scalarField, c);
 
     c.gridx = 2;
-    stimInfoPanel.add(new JLabel("x" + 1000 / refreshRate + " ms"), c);
+    JLabel lbl = new JLabel("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
+    stimInfoPanel.add(lbl, c);
+
+    scalarField.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent documentEvent) {
+        if (!scalarField.getText().isEmpty()) {
+          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
+        }
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent documentEvent) {
+        if (!scalarField.getText().isEmpty()) {
+          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
+        }
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent documentEvent) {
+        if (!scalarField.getText().isEmpty()) {
+          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
+        }
+      }
+    });
 
     ButtonGroup btnGrp = btnGrps.get("estimation_task");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
