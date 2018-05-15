@@ -326,7 +326,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           imPanel.add(fixationPanel, BorderLayout.CENTER);
           frame.setContentPane(imPanel);
           frame.validate();
-          delay(250);
+          delay(500);
           imPanel.remove(fixationPanel);
         }
 
