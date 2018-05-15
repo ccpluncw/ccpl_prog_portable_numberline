@@ -264,8 +264,23 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel boundedPanel() {
-    return buttonPanel("Bounded or Unbounded", "bound_exterior",
-        Arrays.asList("Bounded", "Unbounded"), Arrays.asList("true", "false"));
+    JPanel panel = buttonPanel("Bounded or Unbounded", "bound_exterior",
+        Arrays.asList("Bounded", "Unbounded", "Universal"), Arrays.asList("true", "false", "FALSE"));
+
+    ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+    List<AbstractButton> btns = Collections.list(btnGrp.getElements());
+
+    btns.get(1).addItemListener(itemEvent -> {
+      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+        JTextField txt = txtMap.get("end_unit");
+        txt.setText("1");
+        txt.setEnabled(false);
+      } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
+        txtMap.get("end_unit").setEnabled(true);
+      }
+    });
+
+    return panel;
   }
 
   private JPanel sizePanel() {
