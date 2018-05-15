@@ -289,6 +289,8 @@ class DetailedConfigPanel extends JPanel {
     ButtonGroup btnGrp = btnGrps.get("use_cust_instruct");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
+    btns.get(1).setSelected(true);
+
     btns.get(0).addItemListener(itemEvent -> {
       if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
         finalPanel.add(savePanel, BorderLayout.SOUTH);
