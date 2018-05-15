@@ -2,22 +2,16 @@ group 'ccpl'
 version '1.0-SNAPSHOT'
 
 buildscript {
-    ext.kotlin_version = '1.2.30'
-
     repositories {
         mavenCentral()
-    }
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
 apply plugin: 'java'
-apply plugin: 'kotlin'
 apply plugin: 'application'
 
 
-mainClassName = "${project.group}.numberline.LauncherKt"
+mainClassName = "${project.group}.numberline.Launcher"
 
 sourceCompatibility = 1.8
 
@@ -26,26 +20,7 @@ repositories {
 }
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compile group: 'javax.media', name: 'jmf', version: '2.1.1e'
-}
-
-compileKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-compileTestKotlin {
-    kotlinOptions.jvmTarget = "1.8"
-}
-
-jar {
-    manifest {
-        attributes 'Main-Class': 'ccpl.numberline.LauncherKt'
-    }
-
-    // This line of code recursively collects and copies all of a project's files
-    // and adds them to the JAR itself. One can extend this task, to skip certain
-    // files or particular types at will
-    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
 }
