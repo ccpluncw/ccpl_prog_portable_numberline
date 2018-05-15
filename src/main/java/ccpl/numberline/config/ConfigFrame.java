@@ -83,7 +83,6 @@ public class ConfigFrame extends JFrame {
 
         JFileChooser fc = new JFileChooser();
         fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
         JLabel saveLabel = new JLabel("Save: ");
 
         JButton saveButton = new JButton("Save Directory");
@@ -166,9 +165,7 @@ public class ConfigFrame extends JFrame {
         }
 
         JButton configButton = new JButton("Configure");
-        configButton.addActionListener(actionEvent -> {
-            configDialog.setVisible(true);
-        });
+        configButton.addActionListener(actionEvent -> configDialog.setVisible(true));
 
         JPanel configButtonPanel = new JPanel();
         configButtonPanel.add(configButton);
