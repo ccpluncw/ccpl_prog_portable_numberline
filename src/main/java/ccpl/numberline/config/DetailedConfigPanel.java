@@ -65,7 +65,7 @@ class DetailedConfigPanel extends JPanel {
 
   private JFormattedTextField txtFld = new JFormattedTextField(twoSig);
 
-  Bundle baseBundle = new Bundle();
+  private Bundle baseBundle = new Bundle();
 
 
   public DetailedConfigPanel() {
