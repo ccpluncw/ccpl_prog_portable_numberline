@@ -106,6 +106,31 @@ class DetailedConfigPanel extends JPanel {
     );
     btnGrps.forEach((notNeeded, btnGrp) -> Collections.list(btnGrp.getElements())
         .forEach(it -> it.addActionListener(actionEvent -> updateLargeLbl())));
+
+    JTextField txt = txtMap.get("start_unit");
+    txt.getDocument().addDocumentListener(new DocumentListener() {
+      @Override
+      public void insertUpdate(DocumentEvent documentEvent) {
+        if (!txt.getText().isEmpty()) {
+          updateRightBound();
+        }
+      }
+
+      @Override
+      public void removeUpdate(DocumentEvent documentEvent) {
+        if (!txt.getText().isEmpty()) {
+          updateRightBound();
+        }
+      }
+
+      @Override
+      public void changedUpdate(DocumentEvent documentEvent) {
+        if (!txt.getText().isEmpty()) {
+          updateRightBound();
+        }
+
+      }
+    });
   }
 
   /**
@@ -272,15 +297,21 @@ class DetailedConfigPanel extends JPanel {
 
     btns.get(1).addItemListener(itemEvent -> {
       if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        JTextField txt = txtMap.get("end_unit");
-        txt.setText("1");
-        txt.setEnabled(false);
+        updateRightBound();
       } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
         txtMap.get("end_unit").setEnabled(true);
       }
     });
 
     return panel;
+  }
+
+  private void updateRightBound() {
+    JTextField txt     = txtMap.get("end_unit");
+    JTextField leftBnd = txtMap.get("start_unit");
+    txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
+    txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
+    txt.setEnabled(false);
   }
 
   private JPanel sizePanel() {
