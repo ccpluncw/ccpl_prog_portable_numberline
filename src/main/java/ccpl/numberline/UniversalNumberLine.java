@@ -425,6 +425,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     }
 
     thankYou();
+    frame.dispose();
   }
 
   private int getModifier(String prefix, String key) {
