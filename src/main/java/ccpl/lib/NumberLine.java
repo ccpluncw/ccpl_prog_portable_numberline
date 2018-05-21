@@ -287,7 +287,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     double startToTarget;
     Point2D.Float p;
 
-    // TODO: Refactor code
     if (startUnit.toDouble() > endUnit.toDouble()) {
       outsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
 
@@ -703,13 +702,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
           RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
 
-      if (dragLine != null) {
-        graphics.setColor(dragColor);
-        graphics.draw(dragLine);
-      }
-
-      drawBaseCircle(graphics);
-
       if (currentLine != null) {
         graphics.setStroke(stroke);
         graphics.draw(currentLine);
@@ -720,6 +712,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       graphics.setColor(Color.RED);
       graphics.draw(leftGuide);
       graphics.draw(rightGuide);
+
+      drawBaseCircle(graphics);
+      if (dragLine != null) {
+        graphics.setColor(dragColor);
+        graphics.draw(dragLine);
+      }
 
       displayLabels(graphics);
     }
