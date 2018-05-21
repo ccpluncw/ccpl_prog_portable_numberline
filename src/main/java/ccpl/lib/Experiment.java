@@ -109,12 +109,12 @@ public class Experiment implements ExpInterface {
 
   protected void rest() {
     response.displayNotificationFrame(frame,
-        "Please take a break.  Click the OK button to resume the experiment");
+        "Please take a break. Click the OK button to resume the experiment");
   }
 
   protected void thankYou() {
     response.displayNotificationFrame(frame,
-        "THANK YOU for participating!  Click the OK button to end the experiment");
+        "THANK YOU for participating! Click the OK button to end the experiment");
   }
 
 
