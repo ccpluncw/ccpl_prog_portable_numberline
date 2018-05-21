@@ -12,9 +12,13 @@ import ccpl.lib.Specification;
 import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -24,6 +28,7 @@ import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -484,9 +489,17 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     gb.setConstraints(l, c);
     j.add(l);
 
-    JButton okButton = new JButton("OK");
-    okButton.addActionListener(this);
 
+    JButton okButton = new JButton("OK");
+    AbstractAction action = new AbstractAction() {
+      @Override
+      public void actionPerformed(ActionEvent actionEvent) {
+        okButton.doClick();
+      }
+    };
+    okButton.addActionListener(this);
+    okButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "DoClick");
+    okButton.getActionMap().put("DoClick", action);
 
     c.gridx = 0;
     c.gridy = 1;
@@ -494,8 +507,23 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     c.gridheight = 1;
 
     gb.setConstraints(okButton, c);
-
     j.add(okButton);
+    j.addAncestorListener(new AncestorListener() {
+      @Override
+      public void ancestorAdded(AncestorEvent ancestorEvent) {
+        okButton.requestFocus();
+      }
+
+      @Override
+      public void ancestorRemoved(AncestorEvent ancestorEvent) {
+
+      }
+
+      @Override
+      public void ancestorMoved(AncestorEvent ancestorEvent) {
+
+      }
+    });
 
     return j;
   }
