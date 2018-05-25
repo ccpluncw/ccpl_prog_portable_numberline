@@ -90,6 +90,12 @@ public class ConfigFrame extends JFrame {
             int returnVal = fc.showSaveDialog(this);
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
+                if (!fc.getSelectedFile().exists()) {
+                    fc.setSelectedFile(fc.getSelectedFile().getParentFile());
+                    JOptionPane.showMessageDialog(this, "Selected directory does not exist.\n" +
+                        "Falling back to " + fc.getSelectedFile().getAbsolutePath() );
+                }
+
                 if (!fc.getSelectedFile().canWrite()) {
                     JOptionPane.showMessageDialog(this, "Unable to select directory: No write permissions" +
                         "\nPlease select a different directory");
