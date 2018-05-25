@@ -111,7 +111,9 @@ class DetailedConfigPanel extends JPanel {
     txt.getDocument().addDocumentListener(new DocumentListener() {
       @Override
       public void insertUpdate(DocumentEvent documentEvent) {
-        if (!txt.getText().isEmpty()) {
+        ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+        List<AbstractButton> btns = Collections.list(btnGrp.getElements());
+        if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
           updateRightBound();
         }
       }
@@ -299,6 +301,12 @@ class DetailedConfigPanel extends JPanel {
       if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
         updateRightBound();
       } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
+        txtMap.get("end_unit").setEnabled(true);
+      }
+    });
+
+    btns.get(2).addItemListener(itemEvent -> {
+      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
         txtMap.get("end_unit").setEnabled(true);
       }
     });
