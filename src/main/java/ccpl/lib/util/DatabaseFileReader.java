@@ -25,7 +25,7 @@ public class DatabaseFileReader {
   public static Bundle readDbFile(URL path) {
     Bundle dbFileValues = new Bundle();
 
-    BufferedReader br = null;
+    BufferedReader br;
     try {
       br = new BufferedReader(new InputStreamReader(path.openStream()));
 
