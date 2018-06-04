@@ -6,6 +6,7 @@ import ccpl.lib.DrawExpFrame;
 import ccpl.lib.Experiment;
 import ccpl.lib.Fixation;
 import ccpl.lib.Fraction;
+import ccpl.lib.Mask;
 import ccpl.lib.NumberLine;
 import ccpl.lib.RandomIntGenerator;
 import ccpl.lib.Specification;
@@ -60,6 +61,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private DrawExpFrame frame;
 
   private long estStimTime;
+
+  private Mask lineMask;
 
   /**
    * Parameterized constructor allow the specification of an experiment file,
@@ -365,6 +368,21 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
             frame.remove(imPanel); //remove the imPanel
             frame.setContentPane(endPanel);
             frame.validate();
+
+            // The mask is an unstable feature within the portable number line.
+            // The delay is not always a second.
+            if (FeatureSwitch.USE_MASK) {
+              lineMask = new Mask(thickness, Color.BLACK, new Color[]{baseColor});
+
+              frame.setContentPane(lineMask);
+              frame.validate();
+
+              delay(1000);
+
+              frame.remove(lineMask);
+              frame.setContentPane(endPanel);
+              frame.validate();
+            }
           }
 
           frame.showCursor();

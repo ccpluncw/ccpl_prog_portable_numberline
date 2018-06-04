@@ -3,6 +3,7 @@ package ccpl.numberline.config;
 import ccpl.lib.Bundle;
 import ccpl.lib.IntFilter;
 import ccpl.lib.IntTextField;
+import ccpl.numberline.FeatureSwitch;
 
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
@@ -186,6 +187,8 @@ class DetailedConfigPanel extends JPanel {
     JPanel panel = buttonPanel("Estimation or Production", "estimation_task",
         Arrays.asList("Estimation", "Production"), Arrays.asList("true", "false"));
 
+    wrapper.add(panel, BorderLayout.NORTH);
+
     JPanel stimPanel = borderTitlePanel("Estimation Stim Time");
     JPanel stimSwitches = buttonPanel("", "stim_time_off", Arrays.asList("Unlimited", "Limited"), Arrays.asList("true", "false"));
     JPanel stimInfoPanel = new JPanel();
@@ -234,7 +237,7 @@ class DetailedConfigPanel extends JPanel {
     JTextField scalarField = new JTextField(4);
     ((PlainDocument) scalarField.getDocument()).setDocumentFilter(new IntFilter());
 
-    addTrackedTxtField(scalarField,"scalar_field", "", stimPanel, txtMap, false);
+    addTrackedTxtField(scalarField, "scalar_field", "", stimPanel, txtMap, false);
     c.gridx = 1;
     stimInfoPanel.add(scalarField, c);
 
@@ -268,24 +271,27 @@ class DetailedConfigPanel extends JPanel {
     ButtonGroup btnGrp = btnGrps.get("estimation_task");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
-    btns.get(0).addItemListener(it -> {
-      if (it.getStateChange() == ItemEvent.SELECTED) {
-        wrapper.add(stimPanel, BorderLayout.SOUTH);
-        wrapper.revalidate();
-        ((Dialog) this.getRootPane().getParent()).pack();
-      }
-    });
+    if (FeatureSwitch.USE_MASK) {
+      btns.get(0).addItemListener(it -> {
+        if (it.getStateChange() == ItemEvent.SELECTED) {
+          wrapper.add(stimPanel, BorderLayout.SOUTH);
+          wrapper.revalidate();
+          ((Dialog) this.getRootPane().getParent()).pack();
+        }
+      });
 
-    btns.get(1).addItemListener(it -> {
-      if (it.getStateChange() == ItemEvent.SELECTED) {
-        wrapper.remove(stimPanel);
-        wrapper.revalidate();
-        ((Dialog) this.getRootPane().getParent()).pack();
-      }
-    });
+      btns.get(1).addItemListener(it -> {
+        if (it.getStateChange() == ItemEvent.SELECTED) {
+          wrapper.remove(stimPanel);
+          wrapper.revalidate();
+          ((Dialog) this.getRootPane().getParent()).pack();
+        }
+      });
 
-    wrapper.add(panel, BorderLayout.NORTH);
-    wrapper.add(stimPanel, BorderLayout.SOUTH);
+      wrapper.add(stimPanel, BorderLayout.SOUTH);
+    } else {
+      baseBundle.add("stim_time_off", true);
+    }
 
     return wrapper;
   }
@@ -552,6 +558,7 @@ class DetailedConfigPanel extends JPanel {
     Bundle bun = getBundle();
 
     boolean bounded = bun.getAsBoolean("bound_exterior");
+    boolean estimate = bun.getAsBoolean("estimation_task");
 
     double bias = parseDouble(bun.getAsString("bias"));
     int margin = baseBundle.getAsInt("left_margin_high");
@@ -564,7 +571,7 @@ class DetailedConfigPanel extends JPanel {
 
     baseBundle.add("width_interval", (int) unitPix);
 
-    Double max = bounded ? maxPix / unitPix : pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias);
+    Double max = bounded || estimate ? maxPix / unitPix : pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias);
 
     if (max > maxPix/unitPix) {
       max = maxPix / unitPix;
