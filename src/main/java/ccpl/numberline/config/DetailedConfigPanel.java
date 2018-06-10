@@ -1,26 +1,16 @@
 package ccpl.numberline.config;
 
+import static ccpl.lib.util.UiUtil.addTrackedTxtField;
+import static ccpl.lib.util.UiUtil.screenWidth;
+import static java.lang.Double.parseDouble;
+import static java.lang.Integer.parseInt;
+import static java.lang.Math.pow;
+
 import ccpl.lib.Bundle;
 import ccpl.lib.IntFilter;
 import ccpl.lib.IntTextField;
+import ccpl.lib.util.DatabaseFileReader;
 import ccpl.numberline.FeatureSwitch;
-
-import javax.swing.AbstractButton;
-import javax.swing.BorderFactory;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFormattedTextField;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JTextField;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
-import javax.swing.text.NumberFormatter;
-import javax.swing.text.PlainDocument;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dialog;
@@ -32,7 +22,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ItemEvent;
+import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,14 +36,27 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-
-import static ccpl.lib.util.UiUtil.addTrackedTxtField;
-import static ccpl.lib.util.UiUtil.screenWidth;
-import static java.lang.Double.parseDouble;
-import static java.lang.Integer.parseInt;
-import static java.lang.Math.pow;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
+import javax.swing.text.NumberFormatter;
+import javax.swing.text.PlainDocument;
 
 class DetailedConfigPanel extends JPanel {
+
+  private Logger log = Logger.getLogger(DetailedConfigPanel.class.getName());
 
   private Map<String, ButtonGroup> btnGrps = new HashMap<>();
 
@@ -81,6 +87,7 @@ class DetailedConfigPanel extends JPanel {
     this.add(sizePanel());
     this.add(biasPanel());
     this.add(customInstruction());
+    this.add(saveConfig());
 
     txtMap.forEach((notNeeded, txtField) -> txtField.getDocument().addDocumentListener(new DocumentListener() {
           @Override
@@ -170,11 +177,11 @@ class DetailedConfigPanel extends JPanel {
     List<String> txtLabel = Arrays.asList("From", "To");
 
     for (int i = 0; i < txtKey.size(); i++) {
-      addTrackedTxtField(new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false) ;
+      addTrackedTxtField(new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false);
     }
 
     JFormattedTextField txt = new JFormattedTextField(twoSig);
-    addTrackedTxtField(txt, "target_unit_interval", "By", panel, txtMap, false) ;
+    addTrackedTxtField(txt, "target_unit_interval", "By", panel, txtMap, false);
     txt.setText("1");
 
     return panel;
@@ -489,6 +496,43 @@ class DetailedConfigPanel extends JPanel {
     return panel;
   }
 
+  private JPanel saveConfig() {
+    JButton save = new JButton("Save Configuration");
+    save.addActionListener(actionEvent -> {
+      JFileChooser saveFileChooser = new JFileChooser();
+      int ret = saveFileChooser.showSaveDialog(this);
+
+      if (ret == JFileChooser.CANCEL_OPTION) {
+        return;
+      }
+
+      try {
+        File saveFile = saveFileChooser.getSelectedFile();
+
+        if (saveFile.exists()) {
+          int confirmRet = JOptionPane.showConfirmDialog(this,
+              "File already exists. Do you want to overwrite?");
+
+          if (confirmRet == JOptionPane.CANCEL_OPTION || confirmRet == JOptionPane.NO_OPTION) {
+            JOptionPane.showMessageDialog(this, "File NOT overwritten.");
+            return;
+          }
+        }
+
+        URL path = saveFile.toURI().toURL();
+        DatabaseFileReader.writeDbFile(getBundle(), path);
+        JOptionPane.showMessageDialog(this, "File saved successfully.");
+      } catch (MalformedURLException e) {
+        log.log(Level.WARNING, "Unable to save configuration file.", e);
+      }
+    });
+
+    JPanel panel = new JPanel();
+    panel.add(save);
+
+    return panel;
+  }
+
   Bundle getBundle() {
     Bundle bundle = baseBundle;
 
@@ -573,7 +617,7 @@ class DetailedConfigPanel extends JPanel {
 
     Double max = bounded || estimate ? maxPix / unitPix : pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias);
 
-    if (max > maxPix/unitPix) {
+    if (max > maxPix / unitPix) {
       max = maxPix / unitPix;
     }
 
