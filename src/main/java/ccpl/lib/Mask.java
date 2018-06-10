@@ -8,7 +8,6 @@ import java.awt.Graphics2D;
 import java.awt.GraphicsConfiguration;
 import java.awt.Image;
 import java.awt.Transparency;
-
 import javax.swing.JPanel;
 
 public class Mask extends JPanel {
@@ -21,9 +20,10 @@ public class Mask extends JPanel {
 
   /**
    * Initialize a mask to disturb visual after images.
-   * @param lineThick   Thickness of the line
-   * @param bkgColor    Background color
-   * @param col         Colors for the lines
+   *
+   * @param lineThick Thickness of the line
+   * @param bkgColor Background color
+   * @param col Colors for the lines
    */
   public Mask(int lineThick, Color bkgColor, Color[] col) {
     super();
@@ -56,7 +56,7 @@ public class Mask extends JPanel {
       y1 = randY.draw();
       x2 = randX.draw();
       y2 = randY.draw();
-      //in pixels
+      // in pixels
       int minLength = 50;
       if (java.awt.Point.distance(x1, y1, x2, y2) < minLength) {
         x2 += minLength;
@@ -69,7 +69,6 @@ public class Mask extends JPanel {
       g2.drawLine(x1, y1, x2, y2);
     }
   }
-
 
   private static int clamp(int coord, int maxCoord) {
     if (coord < 0) {
@@ -86,8 +85,9 @@ public class Mask extends JPanel {
     if (intermediateImage == null) {
       GraphicsConfiguration gc = getGraphicsConfiguration();
 
-      intermediateImage = gc.createCompatibleImage(this.getParent().getWidth(),
-          this.getParent().getHeight(), Transparency.BITMASK);
+      intermediateImage =
+          gc.createCompatibleImage(
+              this.getParent().getWidth(), this.getParent().getHeight(), Transparency.BITMASK);
 
       Graphics2D graphicsImg = (Graphics2D) intermediateImage.getGraphics();
       graphicsImg.setComposite(AlphaComposite.Src);

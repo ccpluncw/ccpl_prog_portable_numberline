@@ -1,7 +1,5 @@
 package ccpl.lib;
 
-import javax.swing.JLabel;
-import javax.swing.JPanel;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,23 +18,23 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
-/*******************
- * Written by Kyle Holt
- * lkh3273@uncw.edu
- * October-November 2009
- *******************/
+/**
+ * ***************** Written by Kyle Holt lkh3273@uncw.edu October-November 2009 *****************
+ */
 public class NumberLine implements MouseMotionListener, MouseListener {
 
   final NumberLinePanel linePanel;
-  //---Pixel members-------
-  private final int baseHeight; //Default overall baseHeight
+  // ---Pixel members-------
+  private final int baseHeight; // Default overall baseHeight
   private final int lineThickness;
   private int baseWidth;
-  private final int handlePadding;  //Padding size of region around the handle
+  private final int handlePadding; // Padding size of region around the handle
   private int basePaddingLeft; // Amount of padding applied to experiment within the panel
 
-  //---Color members-----
+  // ---Color members-----
   private final Color baseColor;
   private final Color dragColor;
   private final Color handleActiveColor;
@@ -49,13 +47,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final int endUnitLabelW;
   private final int endUnitLabelH;
 
-  //----Control members-----
+  // ----Control members-----
   private boolean atDragRegion; // Flag to note if mouse is moved to drag region
-  private boolean isHandleDragged; //Flag to determine if handle was dragged
+  private boolean isHandleDragged; // Flag to determine if handle was dragged
 
-
-  //-----New Data Added By Oliver
-  //flag which determines if the handle can be dragged outside the bounds of the numberline
+  // -----New Data Added By Oliver
+  // flag which determines if the handle can be dragged outside the bounds of the numberline
   private boolean[] keepWithinBounds;
   private boolean[] showHideLabels;
   private final Point2D.Float startPoint;
@@ -92,9 +89,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final Line2D extendLine;
   private final Line2D endLine;
   private final Line2D startLine;
-  private final int startX;  //startX is x coord where numberline is visually drawn
+  private final int startX; // startX is x coord where numberline is visually drawn
   private int currentDragX; // Holds x coord of the drag handle
-  private final Point extendPoint;  // (x, y) coord of point on base where the drag line appears
+  private final Point extendPoint; // (x, y) coord of point on base where the drag line appears
   private final Stroke stroke; // the stroke to show line thickness
   private final String fontName; // the name of the Font to use
   private final Point2D.Float rightBoundPoint;
@@ -105,20 +102,53 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private Handle rightDragHandle;
 
   private final boolean isEstimateTask;
-  private final float widthPercentage; //holds percentage of base width to display
+  private final float widthPercentage; // holds percentage of base width to display
 
   private Line2D fixationLine;
 
   private final int unitSize;
 
-  public NumberLine(int width, int height, int thickness, Unit startU, Unit endU, Unit targetU,
-                    Color baseColor, Color dragColor, Color handleColor, String font,
-                    boolean estimateTask, int m, boolean[] kwb, char handleAlignment,
-                    boolean[] shLabels, int unitSize) {
+  /**
+   * Create a number line.
+   *
+   * @param width Width of the panel
+   * @param height Height of the panel
+   * @param thickness Thickness of the line
+   * @param startU Start unit
+   * @param endU End unit
+   * @param targetU Target unit
+   * @param baseColor Number line's base color
+   * @param dragColor Color of the number line when dragged
+   * @param handleColor Color of the handle
+   * @param font Font for the labels
+   * @param estimateTask Is it an estimation task?
+   * @param m Message
+   * @param kwb Keep with bounds?
+   * @param handleAlignment Handle alignment
+   * @param shLabels Show labels?
+   * @param unitSize Unit size
+   */
+  public NumberLine(
+      int width,
+      int height,
+      int thickness,
+      Unit startU,
+      Unit endU,
+      Unit targetU,
+      Color baseColor,
+      Color dragColor,
+      Color handleColor,
+      String font,
+      boolean estimateTask,
+      int m,
+      boolean[] kwb,
+      char handleAlignment,
+      boolean[] shLabels,
+      int unitSize) {
 
     this.unitSize = unitSize;
 
-    //----- added by Oliver
+    // ----- added by Oliver
     keepWithinBounds = kwb;
     showHideLabels = shLabels;
     baseWidth = width;
@@ -131,8 +161,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     screen = tk.getScreenSize();
     centerScreen = new Point2D.Float(screen.width / 2, screen.height / 2);
 
-    screen.height -= (m * 2); //take margins out of either side
-    screen.width -= (m * 2); //take margins out of either side
+    screen.height -= (m * 2); // take margins out of either side
+    screen.width -= (m * 2); // take margins out of either side
 
     startPoint = getStartPoint();
     rightBoundPoint = getRightBound();
@@ -150,22 +180,31 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     Point2D.Float guideRightLow = getLowPoint(baseHeight / 2, extendPoint2D);
     Point2D.Float guideRightHigh = getHighPoint(baseHeight + lineThickness, extendPoint2D);
 
-    leftGuide = new Line2D.Float(guideLeftLow.x,  guideLeftLow.y,
-                                 guideLeftHigh.x, guideLeftHigh.y);
+    leftGuide =
+        new Line2D.Float(
+            guideLeftLow.x, guideLeftLow.y,
+            guideLeftHigh.x, guideLeftHigh.y);
 
-    rightGuide = new Line2D.Float(guideRightLow.x,  guideRightLow.y,
-                                  guideRightHigh.x, guideLeftHigh.y);
+    rightGuide =
+        new Line2D.Float(
+            guideRightLow.x, guideRightLow.y,
+            guideRightHigh.x, guideLeftHigh.y);
 
     extendLine = new Line2D.Float(startPoint, extendPoint2D);
 
-    startLine = new Line2D.Float(leftBoundHigh.x, leftBoundHigh.y + lineThickness * 3,
-                                 startPoint.x,    startPoint.y);
+    startLine =
+        new Line2D.Float(
+            leftBoundHigh.x, leftBoundHigh.y + lineThickness * 3, startPoint.x, startPoint.y);
 
-    endLine = new Line2D.Float(rightBoundHigh.x, rightBoundHigh.y + lineThickness * 3,
-                               extendPoint2D.x,  extendPoint2D.y);
+    endLine =
+        new Line2D.Float(
+            rightBoundHigh.x,
+            rightBoundHigh.y + lineThickness * 3,
+            extendPoint2D.x,
+            extendPoint2D.y);
 
-    leftDragHandle  = new Handle(startLine, leftGuide,  baseColor);
-    rightDragHandle = new Handle(endLine,   rightGuide, baseColor);
+    leftDragHandle = new Handle(startLine, leftGuide, baseColor);
+    rightDragHandle = new Handle(endLine, rightGuide, baseColor);
 
     fixationLine = startLine;
 
@@ -174,14 +213,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     } else if (handleAlignment == 'R') {
       handleStartPoint = extendPoint2D;
     } else if (handleAlignment == 'X') {
-      //randomly choose a side for the handle to start on
+      // randomly choose a side for the handle to start on
       Random gen = new Random();
       int temp = gen.nextInt(10);
-      //the random number was less than five the handle starts under the startPoint
+      // the random number was less than five the handle starts under the startPoint
       if (temp <= 5) {
         handleStartPoint = startPoint;
       } else {
-        //random number greater than five handle starts under extendPoint
+        // random number greater than five handle starts under extendPoint
         handleStartPoint = extendPoint2D;
       }
     }
@@ -202,11 +241,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     endLoc.x = (float) guideRightLow.getX();
     endLoc.y = (float) guideRightLow.getY();
 
-    startLoc = new Point2D.Float(); //holds the position for the label under startPoint
+    startLoc = new Point2D.Float(); // holds the position for the label under startPoint
     startLoc.x = (float) guideLeftLow.getX();
     startLoc.y = (float) guideLeftLow.getY();
 
-    targetLoc = new Point2D.Float(); //holds the position for the label of the target
+    targetLoc = new Point2D.Float(); // holds the position for the label of the target
     targetLoc.x = startLoc.x;
     targetLoc.y = startLoc.y;
 
@@ -219,9 +258,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     endUnit = endU;
     targetUnit = targetU;
 
-
-    stroke = new BasicStroke(lineThickness);  //create a stroke object from the line thickness
-    handlePadding = lineThickness + 15;        //Padding size of region around the handle
+    stroke = new BasicStroke(lineThickness); // create a stroke object from the line thickness
+    handlePadding = lineThickness + 15; // Padding size of region around the handle
 
     atDragRegion = false;
 
@@ -237,7 +275,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     startX = basePaddingLeft;
 
     if (isEstimateTask) {
-      isHandleDragged = true; //handle not used in estimation
+      isHandleDragged = true; // handle not used in estimation
       currentDragPoint = getTargetPoint();
 
       handleHigh = getHighPoint(baseHeight / 2, currentDragPoint);
@@ -249,7 +287,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       isHandleDragged = false;
     }
 
-    handleLoc = new Point2D.Float(); //holds the position for the label under the handle
+    handleLoc = new Point2D.Float(); // holds the position for the label under the handle
     handleLoc.x = (float) guideHandleLow.getX();
     handleLoc.y = (float) guideHandleLow.getY();
 
@@ -264,14 +302,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
-      activeDragHandle = new Handle(endLine,   rightGuide, baseColor);
+      activeDragHandle = new Handle(endLine, rightGuide, baseColor);
       linePanel.updateDragLine();
     }
   }
 
   private void setExtendPoint() {
-    extendPoint2D = new Point2D.Float((float) startPoint.getX() + baseWidth,
-        (float) (startPoint.getY()));
+    extendPoint2D =
+        new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
   }
 
   private boolean checkBounds(Unit unit1, Unit unit2) {
@@ -293,17 +331,18 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       startToTarget = targetUnit.toDouble() - endUnit.toDouble();
       startToTarget *= unitSize;
 
-
-      p = new Point2D.Float((float) extendPoint2D.getX() - (float) startToTarget,
-          (float) extendPoint2D.getY());
+      p =
+          new Point2D.Float(
+              (float) extendPoint2D.getX() - (float) startToTarget, (float) extendPoint2D.getY());
     } else {
       outsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
 
       startToTarget = targetUnit.toDouble() - startUnit.toDouble();
       startToTarget *= unitSize;
 
-      p = new Point2D.Float((float) startPoint.getX() + (float) startToTarget,
-          (float) startPoint.getY());
+      p =
+          new Point2D.Float(
+              (float) startPoint.getX() + (float) startToTarget, (float) startPoint.getY());
     }
 
     if (outsideBounds) {
@@ -313,9 +352,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return p;
   }
 
-  /**
-   * Return the number line panel.
-   */
+  /** Return the number line panel. */
   public JPanel getPanel() {
     if (isEstimateTask) {
       int w = startX + startUnitLabelW + endUnitLabelW + lineThickness * 2 + 10;
@@ -338,7 +375,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return targetUnit.toDouble();
   }
 
-
   public double getEndUnit() {
     return endUnit.toDouble();
   }
@@ -347,11 +383,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return startUnit.toDouble();
   }
 
-  /**
-   * Return the unit length of the number line.
-   */
+  /** Return the unit length of the number line. */
   public double getUnitLength() {
     return unitSize;
+  }
+
+  public double getUnitLength(String userResp) {
+    return parseUnitString(userResp);
   }
 
   public double getUserResponse() {
@@ -361,10 +399,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public Line2D getFixationLine() {
     return fixationLine;
-  }
-
-  public double getUnitLength(String userResp) {
-    return parseUnitString(userResp);
   }
 
   private double parseUnitString(String unitLength) {
@@ -401,27 +435,29 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
     Rectangle2D box = handle.getBounds2D();
 
-    box.setRect((int) (box.getMinX()   - (handlePadding / 2)),
-                (int) (box.getMinY()   - (handlePadding / 2)),
-                (int) (box.getWidth()  + handlePadding),
-                (int) (box.getHeight() + handlePadding));
+    box.setRect(
+        (int) (box.getMinX() - (handlePadding / 2)),
+        (int) (box.getMinY() - (handlePadding / 2)),
+        (int) (box.getWidth() + handlePadding),
+        (int) (box.getHeight() + handlePadding));
 
     return box.contains(cursorX, cursorY);
   }
 
-  public void mouseClicked(MouseEvent e) { }
+  public void mouseClicked(MouseEvent e) {}
 
-  public void mousePressed(MouseEvent e) { }
+  public void mousePressed(MouseEvent e) {}
 
-  public void mouseReleased(MouseEvent e) { }
+  public void mouseReleased(MouseEvent e) {}
 
-  public void mouseEntered(MouseEvent e) { }
+  public void mouseEntered(MouseEvent e) {}
 
-  public void mouseExited(MouseEvent e) { }
+  public void mouseExited(MouseEvent e) {}
 
   /**
    * Update the location of the drag handle when the mouse is moved if it is a production task.
-   * @param e   MouseEvent
+   *
+   * @param e MouseEvent
    */
   public void mouseDragged(MouseEvent e) {
     if (isEstimateTask || !atDragRegion) {
@@ -429,41 +465,40 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     if (activeDragHandle == null) {
-      activeDragHandle = cursorInBoundingBox(leftDragHandle, e.getX(), e.getY()) ?
-          leftDragHandle : rightDragHandle;
+      activeDragHandle =
+          cursorInBoundingBox(leftDragHandle, e.getX(), e.getY())
+              ? leftDragHandle
+              : rightDragHandle;
       Point2D activeP2 = activeDragHandle.getP2();
       currentDragPoint = new Point2D.Float((float) activeP2.getX(), (float) activeP2.getY());
     }
 
-
     if (keepWithinBounds[0] && keepWithinBounds[1]) {
-      //both are true handle is bound by both bounds
+      // both are true handle is bound by both bounds
       if (e.getX() > extendPoint2D.getX()) {
-        currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
-            (float) extendPoint2D.getY());
+        currentDragPoint =
+            new Point2D.Float((float) extendPoint2D.getX(), (float) extendPoint2D.getY());
       } else if (e.getX() < startPoint.getX()) {
-        currentDragPoint = new Point2D.Float((float) startPoint.getX(),
-            (float) startPoint.getY());
+        currentDragPoint = new Point2D.Float((float) startPoint.getX(), (float) startPoint.getY());
       } else {
         currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
       }
     } else if (keepWithinBounds[0]) {
       if (e.getX() < startPoint.getX()) {
-        currentDragPoint = new Point2D.Float((float) startPoint.getX(),
-            (float) startPoint.getY());
+        currentDragPoint = new Point2D.Float((float) startPoint.getX(), (float) startPoint.getY());
       } else {
         currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
       }
     } else {
       if (e.getX() > extendPoint2D.getX()) {
-        currentDragPoint = new Point2D.Float((float) extendPoint2D.getX(),
-            (float) extendPoint2D.getY());
+        currentDragPoint =
+            new Point2D.Float((float) extendPoint2D.getX(), (float) extendPoint2D.getY());
       } else {
         currentDragPoint = new Point2D.Float(e.getX(), getCorrespondingY(e.getX()));
       }
     }
 
-    //check to make sure line does not extend past right bound
+    // check to make sure line does not extend past right bound
     if (currentDragPoint.getX() > rightBoundPoint.getX()) {
       currentDragPoint = rightBoundPoint;
     }
@@ -479,10 +514,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     linePanel.updateDragLine();
   }
 
-
   /**
    * Update the number line is the mouse has been moved and it is a production task.
-   * @param e   Mouse Event.
+   *
+   * @param e Mouse Event.
    */
   public void mouseMoved(MouseEvent e) {
     if (isEstimateTask) {
@@ -492,7 +527,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     atDragRegion = false;
 
     if (activeDragHandle == null) {
-      checkDragStatus(leftDragHandle,  e.getX(), e.getY());
+      checkDragStatus(leftDragHandle, e.getX(), e.getY());
       checkDragStatus(rightDragHandle, e.getX(), e.getY());
     } else {
       checkDragStatus(activeDragHandle, e.getX(), e.getY());
@@ -532,8 +567,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     // TODO: Fix this to avoid hardcoded degrees.
     double r = Math.toRadians(180);
 
-    float x = (float) (centerScreen.x + ((screen.width / 2) * Math.cos(r))); //x = h + a * cos(t)
-    float y = (float) (centerScreen.y + ((screen.height / 2) * Math.sin(r))); //y = k + b * sin(t)
+    float x = (float) (centerScreen.x + ((screen.width / 2) * Math.cos(r))); // x = h + a * cos(t)
+    float y = (float) (centerScreen.y + ((screen.height / 2) * Math.sin(r))); // y = k + b * sin(t)
 
     return new Point2D.Float(x, y);
   }
@@ -546,8 +581,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     double r = 360;
     r = Math.toRadians(r);
 
-    x = (float) (centerScreen.x + ((screen.width / 2) * Math.cos(r))); //x = h + a * cos(t)
-    y = (float) (centerScreen.y + ((screen.height / 2) * Math.sin(r))); //y = k + b * sin(t)
+    x = (float) (centerScreen.x + ((screen.width / 2) * Math.cos(r))); // x = h + a * cos(t)
+    y = (float) (centerScreen.y + ((screen.height / 2) * Math.sin(r))); // y = k + b * sin(t)
     return new Point2D.Float(x, y);
   }
 
@@ -569,13 +604,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       dragLine = new Line2D.Float(extendPoint2D, currentDragPoint);
 
       activeDragHandle.getGuide().setLine(guideHandleLow, guideHandleHigh);
-      activeDragHandle.setLine(handleHigh.x,  handleHigh.y + lineThickness * 3,
-                               handleLow.x,   handleLow.y);
+      activeDragHandle.setLine(
+          handleHigh.x, handleHigh.y + lineThickness * 3, handleLow.x, handleLow.y);
 
       this.repaint();
     }
 
-    //method that draws the base for the numberline that is drawn along a ellispe
+    // method that draws the base for the numberline that is drawn along a ellispe
     private void drawBaseCircle(Graphics2D g) {
       g.setColor(baseColor);
       g.setStroke(stroke);
@@ -598,11 +633,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       int targetUnitLength = fm.stringWidth(t);
       int fontHeight = fm.getHeight();
 
-      startLoc.x  = startLoc.x  - startUnitLength;
+      startLoc.x = startLoc.x - startUnitLength;
       targetLoc.x = targetLoc.x - targetUnitLength;
-      startLoc.y  = startLoc.y  + fontHeight;
+      startLoc.y = startLoc.y + fontHeight;
       targetLoc.y = targetLoc.y + (fontHeight * 2);
-      endLoc.y    = endLoc.y    + fontHeight;
+      endLoc.y = endLoc.y + fontHeight;
     }
 
     private void displayLabels(Graphics2D g) {
@@ -687,10 +722,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
 
     /**
-     * Overrides this panel's paintComponent method.
-     * NOTE: The class is a subclass of JPanel
-     * Necessary to ensure current graphics are
-     * redrawn on panel when panel is refreshed
+     * Overrides this panel's paintComponent method. NOTE: The class is a subclass of JPanel
+     * Necessary to ensure current graphics are redrawn on panel when panel is refreshed
      */
     @Override
     public void paintComponent(Graphics g) {
@@ -698,9 +731,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       Graphics2D graphics = (Graphics2D) g;
       graphics.setStroke(stroke);
       graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-
+      graphics.setRenderingHint(
+          RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
       if (currentLine != null) {
         graphics.setStroke(stroke);

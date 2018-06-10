@@ -1,4 +1,3 @@
-
 package ccpl.lib;
 
 import java.awt.Color;
@@ -9,7 +8,10 @@ import javax.swing.JLabel;
 public class Unit {
 
   public enum UnitType {
-    INT, DECI, FRACT, ODDS
+    INT,
+    DECI,
+    FRACT,
+    ODDS
   }
 
   private final UnitType type;
@@ -18,7 +20,8 @@ public class Unit {
 
   /**
    * Unit class.
-   * @param unit  Unit stored in String format.
+   *
+   * @param unit Unit stored in String format.
    */
   public Unit(String unit) {
     value = unit;
@@ -66,10 +69,11 @@ public class Unit {
 
   /**
    * Get a random unit given a minimum, maximum, and interval.
-   * @param low         Minimum
-   * @param high        Maximum
-   * @param interval    Interval
-   * @return            Randomized number.
+   *
+   * @param low Minimum
+   * @param high Maximum
+   * @param interval Interval
+   * @return Randomized number.
    */
   public static Unit getRandomUnit(Unit low, Unit high, Unit interval) {
     RandomIntGenerator randGen = new RandomIntGenerator();
@@ -84,12 +88,16 @@ public class Unit {
     }
 
     if (unitLowType == UnitType.INT) {
-      randGen.setIntervalRange(Integer.parseInt(low.getValue()), Integer.parseInt(high.getValue()),
+      randGen.setIntervalRange(
+          Integer.parseInt(low.getValue()),
+          Integer.parseInt(high.getValue()),
           Integer.parseInt(interval.getValue()));
       targetUnit = Integer.toString(randGen.drawWithInterval());
     } else if (unitLowType == UnitType.DECI) {
-      randGen.setDoubleIntervalRange(Double.parseDouble(low.getValue()),
-          Double.parseDouble(high.getValue()), Double.parseDouble(interval.getValue()));
+      randGen.setDoubleIntervalRange(
+          Double.parseDouble(low.getValue()),
+          Double.parseDouble(high.getValue()),
+          Double.parseDouble(interval.getValue()));
       targetUnit = Double.toString(randGen.drawDoubleWithInterval());
     } else if (unitLowType == UnitType.FRACT || unitLowType == UnitType.ODDS) {
       String[] fract = {"", ""};
@@ -111,8 +119,8 @@ public class Unit {
 
         if (matched) {
           try {
-            targetFracts[i] = new Fraction(Integer.parseInt(fract[0].trim()),
-                Integer.parseInt(fract[1].trim()));
+            targetFracts[i] =
+                new Fraction(Integer.parseInt(fract[0].trim()), Integer.parseInt(fract[1].trim()));
           } catch (NumberFormatException e) {
             System.err.println("Could not parse target value " + parseUnits[i]);
             System.exit(1);
@@ -136,7 +144,9 @@ public class Unit {
         System.exit(1);
       }
 
-      randGen.setIntervalRange(targetFracts[0].getNumerator(), targetFracts[1].getNumerator(),
+      randGen.setIntervalRange(
+          targetFracts[0].getNumerator(),
+          targetFracts[1].getNumerator(),
           targetFracts[2].getNumerator());
       int randTargetNum = randGen.drawWithInterval();
 
@@ -145,7 +155,6 @@ public class Unit {
       } else {
         targetUnit = Integer.toString(randTargetNum) + " in " + commonDenom;
       }
-
     }
     return new Unit(targetUnit);
   }
@@ -164,7 +173,7 @@ public class Unit {
     int w = metrics.stringWidth(val);
     int h = metrics.getHeight();
     unitLabel.setSize(w, h);
-    //setSize(getPreferredSize());
+    // setSize(getPreferredSize());
     return unitLabel;
   }
 

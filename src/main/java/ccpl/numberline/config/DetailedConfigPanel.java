@@ -60,9 +60,11 @@ class DetailedConfigPanel extends JPanel {
 
   private Map<String, ButtonGroup> btnGrps = new HashMap<>();
 
-  private List<String> textKeys = Arrays.asList("num_trials", "num_prac_trials", "start_unit", "end_unit");
+  private List<String> textKeys =
+      Arrays.asList("num_trials", "num_prac_trials", "start_unit", "end_unit");
 
-  private List<String> textLabels = Arrays.asList("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound");
+  private List<String> textLabels =
+      Arrays.asList("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound");
 
   private Map<String, JTextField> txtMap = new HashMap<>();
 
@@ -73,7 +75,6 @@ class DetailedConfigPanel extends JPanel {
   private JFormattedTextField txtFld = new JFormattedTextField(twoSig);
 
   private Bundle baseBundle = new Bundle();
-
 
   public DetailedConfigPanel() {
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
@@ -89,66 +90,75 @@ class DetailedConfigPanel extends JPanel {
     this.add(customInstruction());
     this.add(saveConfig());
 
-    txtMap.forEach((notNeeded, txtField) -> txtField.getDocument().addDocumentListener(new DocumentListener() {
-          @Override
-          public void insertUpdate(DocumentEvent documentEvent) {
-            if (!txtField.getText().isEmpty()) {
-              updateLargeLbl();
-            }
-          }
+    txtMap.forEach(
+        (notNeeded, txtField) ->
+            txtField
+                .getDocument()
+                .addDocumentListener(
+                    new DocumentListener() {
+                      @Override
+                      public void insertUpdate(DocumentEvent documentEvent) {
+                        if (!txtField.getText().isEmpty()) {
+                          updateLargeLbl();
+                        }
+                      }
 
-          @Override
-          public void removeUpdate(DocumentEvent documentEvent) {
-            if (!txtField.getText().isEmpty()) {
-              updateLargeLbl();
-            }
-          }
+                      @Override
+                      public void removeUpdate(DocumentEvent documentEvent) {
+                        if (!txtField.getText().isEmpty()) {
+                          updateLargeLbl();
+                        }
+                      }
 
-          @Override
-          public void changedUpdate(DocumentEvent documentEvent) {
-            if (!txtField.getText().isEmpty()) {
-              updateLargeLbl();
-            }
-          }
-        })
-    );
-    btnGrps.forEach((notNeeded, btnGrp) -> Collections.list(btnGrp.getElements())
-        .forEach(it -> it.addActionListener(actionEvent -> updateLargeLbl())));
+                      @Override
+                      public void changedUpdate(DocumentEvent documentEvent) {
+                        if (!txtField.getText().isEmpty()) {
+                          updateLargeLbl();
+                        }
+                      }
+                    }));
+    btnGrps.forEach(
+        (notNeeded, btnGrp) ->
+            Collections.list(btnGrp.getElements())
+                .forEach(it -> it.addActionListener(actionEvent -> updateLargeLbl())));
 
     JTextField txt = txtMap.get("start_unit");
-    txt.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent documentEvent) {
-        ButtonGroup btnGrp = btnGrps.get("bound_exterior");
-        List<AbstractButton> btns = Collections.list(btnGrp.getElements());
-        if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
-          updateRightBound();
-        }
-      }
+    txt.getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              @Override
+              public void insertUpdate(DocumentEvent documentEvent) {
+                ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+                List<AbstractButton> btns = Collections.list(btnGrp.getElements());
+                if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
+                  updateRightBound();
+                }
+              }
 
-      @Override
-      public void removeUpdate(DocumentEvent documentEvent) {
-        if (!txt.getText().isEmpty()) {
-          updateRightBound();
-        }
-      }
+              @Override
+              public void removeUpdate(DocumentEvent documentEvent) {
+                if (!txt.getText().isEmpty()) {
+                  updateRightBound();
+                }
+              }
 
-      @Override
-      public void changedUpdate(DocumentEvent documentEvent) {
-        if (!txt.getText().isEmpty()) {
-          updateRightBound();
-        }
-
-      }
-    });
+              @Override
+              public void changedUpdate(DocumentEvent documentEvent) {
+                if (!txt.getText().isEmpty()) {
+                  updateRightBound();
+                }
+              }
+            });
   }
 
   /**
    * Overridden add method to add rigid space between each section.
-   * @param p0  Component being added to JPanel
-   * @return    Component added
+   *
+   * @param p0 Component being added to JPanel
+   * @return Component added
    */
-  @Override public Component add(Component p0) {
+  @Override
+  public Component add(Component p0) {
     super.add(p0);
     return super.add(Box.createRigidArea(new Dimension(0, 10)));
   }
@@ -163,7 +173,8 @@ class DetailedConfigPanel extends JPanel {
     formatter.setCommitsOnValidEdit(true);
 
     for (int i = 0; i < textKeys.size(); i++) {
-      addTrackedTxtField(new IntTextField(), textKeys.get(i), textLabels.get(i), panel, txtMap, true);
+      addTrackedTxtField(
+          new IntTextField(), textKeys.get(i), textLabels.get(i), panel, txtMap, true);
     }
 
     return panel;
@@ -177,7 +188,8 @@ class DetailedConfigPanel extends JPanel {
     List<String> txtLabel = Arrays.asList("From", "To");
 
     for (int i = 0; i < txtKey.size(); i++) {
-      addTrackedTxtField(new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false);
+      addTrackedTxtField(
+          new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false);
     }
 
     JFormattedTextField txt = new JFormattedTextField(twoSig);
@@ -191,13 +203,22 @@ class DetailedConfigPanel extends JPanel {
     JPanel wrapper = new JPanel();
     wrapper.setLayout(new BorderLayout());
 
-    JPanel panel = buttonPanel("Estimation or Production", "estimation_task",
-        Arrays.asList("Estimation", "Production"), Arrays.asList("true", "false"));
+    JPanel panel =
+        buttonPanel(
+            "Estimation or Production",
+            "estimation_task",
+            Arrays.asList("Estimation", "Production"),
+            Arrays.asList("true", "false"));
 
     wrapper.add(panel, BorderLayout.NORTH);
 
     JPanel stimPanel = borderTitlePanel("Estimation Stim Time");
-    JPanel stimSwitches = buttonPanel("", "stim_time_off", Arrays.asList("Unlimited", "Limited"), Arrays.asList("true", "false"));
+    JPanel stimSwitches =
+        buttonPanel(
+            "",
+            "stim_time_off",
+            Arrays.asList("Unlimited", "Limited"),
+            Arrays.asList("true", "false"));
     JPanel stimInfoPanel = new JPanel();
 
     stimPanel.setLayout(new BorderLayout());
@@ -206,21 +227,27 @@ class DetailedConfigPanel extends JPanel {
     ButtonGroup btnGrpSwitches = btnGrps.get("stim_time_off");
     List<AbstractButton> btnsSwitches = Collections.list(btnGrpSwitches.getElements());
 
-    btnsSwitches.get(0).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        stimPanel.remove(stimInfoPanel);
-        stimPanel.revalidate();
-        ((Dialog) getRootPane().getParent()).pack();
-      }
-    });
+    btnsSwitches
+        .get(0)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                stimPanel.remove(stimInfoPanel);
+                stimPanel.revalidate();
+                ((Dialog) getRootPane().getParent()).pack();
+              }
+            });
 
-    btnsSwitches.get(1).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        stimPanel.add(stimInfoPanel, BorderLayout.SOUTH);
-        stimPanel.revalidate();
-        ((Dialog) this.getRootPane().getParent()).pack();
-      }
-    });
+    btnsSwitches
+        .get(1)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                stimPanel.add(stimInfoPanel, BorderLayout.SOUTH);
+                stimPanel.revalidate();
+                ((Dialog) this.getRootPane().getParent()).pack();
+              }
+            });
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gs = ge.getScreenDevices();
@@ -234,7 +261,8 @@ class DetailedConfigPanel extends JPanel {
     c.gridx = 0;
     c.gridy = 0;
     c.gridwidth = 5;
-    stimInfoPanel.add(new JLabel("Computer screen refresh interval: " + 1000 / refreshRate + " ms"), c);
+    stimInfoPanel.add(
+        new JLabel("Computer screen refresh interval: " + 1000 / refreshRate + " ms"), c);
 
     c.gridwidth = 1;
     c.gridy = 1;
@@ -249,51 +277,79 @@ class DetailedConfigPanel extends JPanel {
     stimInfoPanel.add(scalarField, c);
 
     c.gridx = 2;
-    JLabel lbl = new JLabel("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
+    JLabel lbl =
+        new JLabel(
+            "x"
+                + 1000 / refreshRate
+                + " ms: "
+                + (parseInt(scalarField.getText()) * (1000 / refreshRate))
+                + "ms.");
     stimInfoPanel.add(lbl, c);
 
-    scalarField.getDocument().addDocumentListener(new DocumentListener() {
-      @Override
-      public void insertUpdate(DocumentEvent documentEvent) {
-        if (!scalarField.getText().isEmpty()) {
-          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
-        }
-      }
+    scalarField
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              @Override
+              public void insertUpdate(DocumentEvent documentEvent) {
+                if (!scalarField.getText().isEmpty()) {
+                  lbl.setText(
+                      "x"
+                          + 1000 / refreshRate
+                          + " ms: "
+                          + (parseInt(scalarField.getText()) * (1000 / refreshRate))
+                          + "ms.");
+                }
+              }
 
-      @Override
-      public void removeUpdate(DocumentEvent documentEvent) {
-        if (!scalarField.getText().isEmpty()) {
-          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
-        }
-      }
+              @Override
+              public void removeUpdate(DocumentEvent documentEvent) {
+                if (!scalarField.getText().isEmpty()) {
+                  lbl.setText(
+                      "x"
+                          + 1000 / refreshRate
+                          + " ms: "
+                          + (parseInt(scalarField.getText()) * (1000 / refreshRate))
+                          + "ms.");
+                }
+              }
 
-      @Override
-      public void changedUpdate(DocumentEvent documentEvent) {
-        if (!scalarField.getText().isEmpty()) {
-          lbl.setText("x" + 1000 / refreshRate + " ms: " + (parseInt(scalarField.getText()) * (1000 / refreshRate)) + "ms.");
-        }
-      }
-    });
+              @Override
+              public void changedUpdate(DocumentEvent documentEvent) {
+                if (!scalarField.getText().isEmpty()) {
+                  lbl.setText(
+                      "x"
+                          + 1000 / refreshRate
+                          + " ms: "
+                          + (parseInt(scalarField.getText()) * (1000 / refreshRate))
+                          + "ms.");
+                }
+              }
+            });
 
     ButtonGroup btnGrp = btnGrps.get("estimation_task");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
     if (FeatureSwitch.USE_MASK) {
-      btns.get(0).addItemListener(it -> {
-        if (it.getStateChange() == ItemEvent.SELECTED) {
-          wrapper.add(stimPanel, BorderLayout.SOUTH);
-          wrapper.revalidate();
-          ((Dialog) this.getRootPane().getParent()).pack();
-        }
-      });
+      btns.get(0)
+          .addItemListener(
+              it -> {
+                if (it.getStateChange() == ItemEvent.SELECTED) {
+                  wrapper.add(stimPanel, BorderLayout.SOUTH);
+                  wrapper.revalidate();
+                  ((Dialog) this.getRootPane().getParent()).pack();
+                }
+              });
 
-      btns.get(1).addItemListener(it -> {
-        if (it.getStateChange() == ItemEvent.SELECTED) {
-          wrapper.remove(stimPanel);
-          wrapper.revalidate();
-          ((Dialog) this.getRootPane().getParent()).pack();
-        }
-      });
+      btns.get(1)
+          .addItemListener(
+              it -> {
+                if (it.getStateChange() == ItemEvent.SELECTED) {
+                  wrapper.remove(stimPanel);
+                  wrapper.revalidate();
+                  ((Dialog) this.getRootPane().getParent()).pack();
+                }
+              });
 
       wrapper.add(stimPanel, BorderLayout.SOUTH);
     } else {
@@ -304,31 +360,39 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel boundedPanel() {
-    JPanel panel = buttonPanel("Bounded or Unbounded", "bound_exterior",
-        Arrays.asList("Bounded", "Unbounded", "Universal"), Arrays.asList("true", "false", "FALSE"));
+    JPanel panel =
+        buttonPanel(
+            "Bounded or Unbounded",
+            "bound_exterior",
+            Arrays.asList("Bounded", "Unbounded", "Universal"),
+            Arrays.asList("true", "false", "FALSE"));
 
     ButtonGroup btnGrp = btnGrps.get("bound_exterior");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
-    btns.get(1).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        updateRightBound();
-      } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
-        txtMap.get("end_unit").setEnabled(true);
-      }
-    });
+    btns.get(1)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                updateRightBound();
+              } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
+                txtMap.get("end_unit").setEnabled(true);
+              }
+            });
 
-    btns.get(2).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        txtMap.get("end_unit").setEnabled(true);
-      }
-    });
+    btns.get(2)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                txtMap.get("end_unit").setEnabled(true);
+              }
+            });
 
     return panel;
   }
 
   private void updateRightBound() {
-    JTextField txt     = txtMap.get("end_unit");
+    JTextField txt = txtMap.get("end_unit");
     JTextField leftBnd = txtMap.get("start_unit");
     txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
     txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
@@ -336,44 +400,53 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel sizePanel() {
-    return buttonPanel("Number Line Size", "line_size_temp", Arrays.asList("Small", "Medium", "Large"),
+    return buttonPanel(
+        "Number Line Size",
+        "line_size_temp",
+        Arrays.asList("Small", "Medium", "Large"),
         Arrays.asList("small", "medium", "large"));
   }
 
   private JPanel customInstruction() {
-    JPanel panel = buttonPanel("Custom Instructions", "use_cust_instruct",
-        Arrays.asList("Yes", "No"),
-        Arrays.asList("true", "false"));
+    JPanel panel =
+        buttonPanel(
+            "Custom Instructions",
+            "use_cust_instruct",
+            Arrays.asList("Yes", "No"),
+            Arrays.asList("true", "false"));
 
     panel.setBorder(BorderFactory.createEmptyBorder());
 
     JPanel savePanel = new JPanel();
     JTextField saveTxtField = new JTextField(20);
-    addTrackedTxtField(saveTxtField,"cust_instruct", "Custom Instructions", savePanel, txtMap, false);
+    addTrackedTxtField(
+        saveTxtField, "cust_instruct", "Custom Instructions", savePanel, txtMap, false);
     saveTxtField.setText("");
 
     JFileChooser fc = new JFileChooser();
     fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
     JButton saveButton = new JButton("Select File");
-    saveButton.addActionListener(actionEvent ->  {
-      int returnVal = fc.showSaveDialog(this);
+    saveButton.addActionListener(
+        actionEvent -> {
+          int returnVal = fc.showSaveDialog(this);
 
-      if (returnVal == JFileChooser.APPROVE_OPTION) {
-        try {
-          saveTxtField.setText(fc.getSelectedFile().getCanonicalPath());
-        } catch (IOException e) {
-          Logger.getLogger(DetailedConfigPanel.class.getName()).log(Level.SEVERE, e.getLocalizedMessage());
-        }
-      }
-    });
+          if (returnVal == JFileChooser.APPROVE_OPTION) {
+            try {
+              saveTxtField.setText(fc.getSelectedFile().getCanonicalPath());
+            } catch (IOException e) {
+              Logger.getLogger(DetailedConfigPanel.class.getName())
+                  .log(Level.SEVERE, e.getLocalizedMessage());
+            }
+          }
+        });
 
     savePanel.add(saveButton);
 
     JPanel finalPanel = new JPanel();
     finalPanel.setLayout(new BorderLayout());
     finalPanel.add(panel, BorderLayout.NORTH);
-    //finalPanel.add(savePanel, BorderLayout.SOUTH)
+    // finalPanel.add(savePanel, BorderLayout.SOUTH)
 
     finalPanel.setBorder(BorderFactory.createTitledBorder("Custom instructions"));
 
@@ -382,22 +455,25 @@ class DetailedConfigPanel extends JPanel {
 
     btns.get(1).setSelected(true);
 
-    btns.get(0).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        finalPanel.add(savePanel, BorderLayout.SOUTH);
-        finalPanel.revalidate();
-        ((Dialog) this.getRootPane().getParent()).pack();
-      }
-    });
+    btns.get(0)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                finalPanel.add(savePanel, BorderLayout.SOUTH);
+                finalPanel.revalidate();
+                ((Dialog) this.getRootPane().getParent()).pack();
+              }
+            });
 
-    btns.get(1).addItemListener(itemEvent -> {
-      if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-        finalPanel.remove(savePanel);
-        finalPanel.revalidate();
-        ((Dialog) this.getRootPane().getParent()).pack();
-      }
-    });
-
+    btns.get(1)
+        .addItemListener(
+            itemEvent -> {
+              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
+                finalPanel.remove(savePanel);
+                finalPanel.revalidate();
+                ((Dialog) this.getRootPane().getParent()).pack();
+              }
+            });
 
     return finalPanel;
   }
@@ -415,28 +491,34 @@ class DetailedConfigPanel extends JPanel {
 
     JRadioButton othRadBtn = new JRadioButton("Other");
     txtFld.setText("0.0");
-    txtFld.getDocument().addDocumentListener(new DocumentListener() {
-      @Override public void removeUpdate(DocumentEvent p0) {
-        if (!txtFld.getText().isEmpty()) {
-          othRadBtn.setActionCommand(txtFld.getText());
-          updateLargeLbl();
-        }
-      }
+    txtFld
+        .getDocument()
+        .addDocumentListener(
+            new DocumentListener() {
+              @Override
+              public void removeUpdate(DocumentEvent p0) {
+                if (!txtFld.getText().isEmpty()) {
+                  othRadBtn.setActionCommand(txtFld.getText());
+                  updateLargeLbl();
+                }
+              }
 
-      @Override public void insertUpdate(DocumentEvent p0) {
-        if (!txtFld.getText().isEmpty()) {
-          othRadBtn.setActionCommand(txtFld.getText());
-          updateLargeLbl();
-        }
-      }
+              @Override
+              public void insertUpdate(DocumentEvent p0) {
+                if (!txtFld.getText().isEmpty()) {
+                  othRadBtn.setActionCommand(txtFld.getText());
+                  updateLargeLbl();
+                }
+              }
 
-      @Override public void changedUpdate(DocumentEvent p0) {
-        if (!txtFld.getText().isEmpty()) {
-          othRadBtn.setActionCommand(txtFld.getText());
-          updateLargeLbl();
-        }
-      }
-    });
+              @Override
+              public void changedUpdate(DocumentEvent p0) {
+                if (!txtFld.getText().isEmpty()) {
+                  othRadBtn.setActionCommand(txtFld.getText());
+                  updateLargeLbl();
+                }
+              }
+            });
 
     othRadBtn.addActionListener(actionEvent -> othRadBtn.setActionCommand(txtFld.getText()));
     othRadBtn.setActionCommand(txtFld.getText());
@@ -476,9 +558,8 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds) {
-    List<JRadioButton> buts = butStrs.stream()
-        .map(JRadioButton::new)
-        .collect(Collectors.toCollection(ArrayList::new));
+    List<JRadioButton> buts =
+        butStrs.stream().map(JRadioButton::new).collect(Collectors.toCollection(ArrayList::new));
 
     for (int i = 0; i < buts.size(); i++) {
       buts.get(i).setActionCommand(cmds.get(i));
@@ -498,34 +579,36 @@ class DetailedConfigPanel extends JPanel {
 
   private JPanel saveConfig() {
     JButton save = new JButton("Save Configuration");
-    save.addActionListener(actionEvent -> {
-      JFileChooser saveFileChooser = new JFileChooser();
-      int ret = saveFileChooser.showSaveDialog(this);
+    save.addActionListener(
+        actionEvent -> {
+          JFileChooser saveFileChooser = new JFileChooser();
+          int ret = saveFileChooser.showSaveDialog(this);
 
-      if (ret == JFileChooser.CANCEL_OPTION) {
-        return;
-      }
-
-      try {
-        File saveFile = saveFileChooser.getSelectedFile();
-
-        if (saveFile.exists()) {
-          int confirmRet = JOptionPane.showConfirmDialog(this,
-              "File already exists. Do you want to overwrite?");
-
-          if (confirmRet == JOptionPane.CANCEL_OPTION || confirmRet == JOptionPane.NO_OPTION) {
-            JOptionPane.showMessageDialog(this, "File NOT overwritten.");
+          if (ret == JFileChooser.CANCEL_OPTION) {
             return;
           }
-        }
 
-        URL path = saveFile.toURI().toURL();
-        DatabaseFileReader.writeDbFile(getBundle(), path);
-        JOptionPane.showMessageDialog(this, "File saved successfully.");
-      } catch (MalformedURLException e) {
-        log.log(Level.WARNING, "Unable to save configuration file.", e);
-      }
-    });
+          try {
+            File saveFile = saveFileChooser.getSelectedFile();
+
+            if (saveFile.exists()) {
+              int confirmRet =
+                  JOptionPane.showConfirmDialog(
+                      this, "File already exists. Do you want to overwrite?");
+
+              if (confirmRet == JOptionPane.CANCEL_OPTION || confirmRet == JOptionPane.NO_OPTION) {
+                JOptionPane.showMessageDialog(this, "File NOT overwritten.");
+                return;
+              }
+            }
+
+            URL path = saveFile.toURI().toURL();
+            DatabaseFileReader.writeDbFile(getBundle(), path);
+            JOptionPane.showMessageDialog(this, "File saved successfully.");
+          } catch (MalformedURLException e) {
+            log.log(Level.WARNING, "Unable to save configuration file.", e);
+          }
+        });
 
     JPanel panel = new JPanel();
     panel.add(save);
@@ -539,7 +622,9 @@ class DetailedConfigPanel extends JPanel {
     txtMap.forEach((k, txt) -> bundle.add(k, txt.getText()));
     btnGrps.forEach((s, btnGrp) -> bundle.add(s, btnGrp.getSelection().getActionCommand()));
     bundle.add("largest_target", largeLbl.getText().split(":")[1]);
-    bundle.add("line_size", baseBundle.getAsString("width_" + bundle.getAsString("line_size_temp") + "_mod"));
+    bundle.add(
+        "line_size",
+        baseBundle.getAsString("width_" + bundle.getAsString("line_size_temp") + "_mod"));
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gs = ge.getScreenDevices();
@@ -556,34 +641,40 @@ class DetailedConfigPanel extends JPanel {
   }
 
   public void applyDefaults(Bundle defs) {
-    Map<String, JTextField> txtMatches = txtMap.entrySet()
-        .stream()
-        .filter(it -> defs.contains(it.getKey()))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    Map<String, JTextField> txtMatches =
+        txtMap
+            .entrySet()
+            .stream()
+            .filter(it -> defs.contains(it.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-    Map<String, ButtonGroup> btnMatches = btnGrps.entrySet()
-        .stream()
-        .filter(it -> defs.contains(it.getKey()))
-        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+    Map<String, ButtonGroup> btnMatches =
+        btnGrps
+            .entrySet()
+            .stream()
+            .filter(it -> defs.contains(it.getKey()))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
     txtMatches.forEach((key, value) -> value.setText(defs.getAsString(key)));
 
-    btnMatches.forEach((key, value) -> Collections.list(value.getElements())
-        .stream()
-        .filter(it -> it.getActionCommand().equals(defs.getAsString(key)))
-        .findFirst()
-        .ifPresent(it -> it.setSelected(true))
-    );
-
+    btnMatches.forEach(
+        (key, value) ->
+            Collections.list(value.getElements())
+                .stream()
+                .filter(it -> it.getActionCommand().equals(defs.getAsString(key)))
+                .findFirst()
+                .ifPresent(it -> it.setSelected(true)));
 
     // Handle the case where the other bias was selected.
     double bias = parseDouble(defs.getAsString("bias"));
     if (bias != 1.2 && bias != 1.4) {
-      JButton btn = (JButton) Collections.list(btnMatches.get("bias").getElements())
-          .stream()
-          .filter(it -> it.getActionCommand().equals("0.0"))
-          .findFirst()
-          .get();
+      JButton btn =
+          (JButton)
+              Collections.list(btnMatches.get("bias").getElements())
+                  .stream()
+                  .filter(it -> it.getActionCommand().equals("0.0"))
+                  .findFirst()
+                  .get();
 
       btn.setSelected(true);
       btn.setActionCommand(Double.toString(bias));
@@ -615,7 +706,10 @@ class DetailedConfigPanel extends JPanel {
 
     baseBundle.add("width_interval", (int) unitPix);
 
-    Double max = bounded || estimate ? maxPix / unitPix : pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias);
+    Double max =
+        bounded || estimate
+            ? maxPix / unitPix
+            : pow(5.0 / 6.0, (1.0 / bias)) * pow(maxPix / unitPix, 1.0 / bias);
 
     if (max > maxPix / unitPix) {
       max = maxPix / unitPix;
@@ -625,7 +719,8 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private void updateLargeLbl() {
-    largeLbl.setText(String.format("Largest target value or right bound allowed: %s", calculateMaxTarget()));
+    largeLbl.setText(
+        String.format("Largest target value or right bound allowed: %s", calculateMaxTarget()));
   }
 
   public void setBaseBundle(Bundle value) {

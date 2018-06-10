@@ -6,9 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Line2D;
 import javax.swing.JPanel;
 
-/**
- * The Fixation line shown before a trial so the subject will focus on it.
- */
+/** The Fixation line shown before a trial so the subject will focus on it. */
 public class Fixation extends JPanel {
 
   private static final Color DEFAULT_COLOR = Color.GRAY;
@@ -26,10 +24,10 @@ public class Fixation extends JPanel {
   /**
    * Create a Fixation panel with a background color, line color, stroke width, and line.
    *
-   * @param bkgColor      Background color
-   * @param fixLineColor  Line color
-   * @param stroke        Stroke width in pixels
-   * @param line          Line object being drawn
+   * @param bkgColor Background color
+   * @param fixLineColor Line color
+   * @param stroke Stroke width in pixels
+   * @param line Line object being drawn
    */
   public Fixation(Color bkgColor, Color fixLineColor, int stroke, Line2D line) {
     super();

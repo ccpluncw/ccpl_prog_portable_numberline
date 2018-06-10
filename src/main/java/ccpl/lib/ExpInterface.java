@@ -1,6 +1,4 @@
-
 package ccpl.lib;
-
 
 interface ExpInterface {
   // method signatures

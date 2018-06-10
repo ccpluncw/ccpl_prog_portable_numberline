@@ -1,15 +1,16 @@
 package ccpl.lib;
 
+import static java.lang.Integer.parseInt;
+
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-import static java.lang.Integer.parseInt;
-
 public class IntFilter extends DocumentFilter {
   @Override
-  public void remove(FilterBypass filterBypass, int offset, int length) throws BadLocationException {
+  public void remove(FilterBypass filterBypass, int offset, int length)
+      throws BadLocationException {
     Document doc = filterBypass.getDocument();
     StringBuilder sb = new StringBuilder();
 
@@ -22,7 +23,9 @@ public class IntFilter extends DocumentFilter {
   }
 
   @Override
-  public void insertString(FilterBypass filterBypass, int offset, String s, AttributeSet attributeSet) throws BadLocationException {
+  public void insertString(
+      FilterBypass filterBypass, int offset, String s, AttributeSet attributeSet)
+      throws BadLocationException {
     Document doc = filterBypass.getDocument();
     StringBuilder sb = new StringBuilder();
 
@@ -34,9 +37,10 @@ public class IntFilter extends DocumentFilter {
     }
   }
 
-
   @Override
-  public void replace(FilterBypass filterBypass, int offset, int length, String s, AttributeSet attributeSet) throws BadLocationException {
+  public void replace(
+      FilterBypass filterBypass, int offset, int length, String s, AttributeSet attributeSet)
+      throws BadLocationException {
     Document doc = filterBypass.getDocument();
     StringBuilder sb = new StringBuilder();
     sb.append(doc.getText(0, doc.getLength()));
@@ -45,7 +49,6 @@ public class IntFilter extends DocumentFilter {
     if (test(sb.toString())) {
       super.replace(filterBypass, offset, length, s, attributeSet);
     }
-
   }
 
   private boolean test(String text) {
