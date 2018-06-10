@@ -1,5 +1,7 @@
 package ccpl.numberline;
 
+import static ccpl.lib.util.DatabaseFileReader.readDbFile;
+
 import ccpl.lib.BlankPanel;
 import ccpl.lib.Bundle;
 import ccpl.lib.DrawExpFrame;
@@ -12,14 +14,6 @@ import ccpl.lib.RandomIntGenerator;
 import ccpl.lib.Specification;
 import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.KeyStroke;
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -36,13 +30,17 @@ import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Date;
 import java.util.Random;
-
-import static ccpl.lib.util.DatabaseFileReader.readDbFile;
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.KeyStroke;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
- * Number line experiment that displays a number line and asks the user for feedback.
- * Modified by Kyle Holt.
- * November, 2010.
+ * Number line experiment that displays a number line and asks the user for feedback. Modified by
+ * Kyle Holt. November, 2010.
  *
  * @author dalecohen
  */
@@ -65,16 +63,16 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private Mask lineMask;
 
   /**
-   * Parameterized constructor allow the specification of an experiment file,
-   * the subject ID, condition, and session number.
+   * Parameterized constructor allow the specification of an experiment file, the subject ID,
+   * condition, and session number.
    *
    * @param expFile Experiment file
-   * @param sub     Subject ID
-   * @param cond    Condition
-   * @param sess    Session number
+   * @param sub Subject ID
+   * @param cond Condition
+   * @param sess Session number
    */
-  public UniversalNumberLine(String expFile, String sub, String cond, String sess,
-                             Bundle dataBundle) {
+  public UniversalNumberLine(
+      String expFile, String sub, String cond, String sess, Bundle dataBundle) {
     super(expFile, sub, cond, sess, dataBundle.getAsString("save_dir"));
 
     this.dataBundle = dataBundle;
@@ -88,9 +86,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     this.isEstimationTask = dataBundle.getAsBoolean("estimation_task");
   }
 
-  /**
-   * Runs the UniversalNumberLine experiment with the specified database file.
-   */
+  /** Runs the UniversalNumberLine experiment with the specified database file. */
   public void run() {
     ClassLoader cl = this.getClass().getClassLoader();
     URL newLayoutPath = cl.getResource(experiment + "/infiles/dbfile_new_layout.txt");
@@ -111,11 +107,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     if (dataBundle.getAsBoolean("use_cust_instruct")) {
       dbBundle.add("instructions", dataBundle.getAsString("cust_instruct"));
     } else {
-      boolean isEst   = dataBundle.getAsBoolean("estimation_task");
+      boolean isEst = dataBundle.getAsBoolean("estimation_task");
       boolean isBound = dataBundle.getAsBoolean("bound_exterior");
 
-      String instruction = String.format("%s_%s_instruct",
-          isEst? "est" : "prod", isBound? "bound" : "unbound");
+      String instruction =
+          String.format("%s_%s_instruct", isEst ? "est" : "prod", isBound ? "bound" : "unbound");
       dbBundle.add("instructions", dbBundle.getAsString(instruction));
     }
 
@@ -166,7 +162,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
     dataAp.writeToUrl(getDataFile(), createOutputHeader());
 
-    //----prepare frame---------
+    // ----prepare frame---------
     Color imColor = Color.BLACK;
     final BlankPanel startPanel = new BlankPanel(imColor);
     imPanel = new BlankPanel(imColor);
@@ -174,7 +170,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     // BlankPanel rightMarginPanel = new BlankPanel(imColor);
     BlankPanel gridPanel = new BlankPanel(imColor);
     BlankPanel fixationPanel = new BlankPanel(imColor);
-    //fixationPanel.setLayout(new GridLayout(3,1));
+    // fixationPanel.setLayout(new GridLayout(3,1));
     fixationPanel.setLayout(new BorderLayout());
 
     imPanel.setLayout(new BorderLayout());
@@ -204,12 +200,13 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
     if (dataBundle.getAsBoolean("use_cust_instruct")) {
       try {
-        instructionPanel = getInstructionPanel(new URL("file://" + dbBundle.getAsString("instructions")));
+        instructionPanel =
+            getInstructionPanel(new URL("file://" + dbBundle.getAsString("instructions")));
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
     } else {
-       instructionPanel = getInstructionPanel(getInstructionFile());
+      instructionPanel = getInstructionPanel(getInstructionFile());
     }
 
     frame.setContentPane(instructionPanel);
@@ -219,7 +216,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       synchronized (this) {
         wait();
       }
-    } catch (InterruptedException ignored) { /* IGNORE */ }
+    } catch (InterruptedException ignored) {
+      /* IGNORE */
+    }
 
     frame.remove(instructionPanel);
     frame.validate();
@@ -251,7 +250,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final int leftMarginHigh = dataBundle.getAsInt("left_margin_high");
         final int leftMarginInterval = dataBundle.getAsInt("left_margin_interval");
 
-        final int height    = getModifier("height", numberLineSize);
+        final int height = getModifier("height", numberLineSize);
         final int thickness = getModifier("thickness", numberLineSize);
 
         final Unit defaultStartUnit = new Unit(dataBundle.getAsString("start_unit"));
@@ -284,7 +283,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         keepWithinBounds[0] = dataBundle.getAsBoolean("bound_interior");
         keepWithinBounds[1] = dataBundle.getAsBoolean("bound_exterior");
 
-        //Update the leftMarginPanel in each trial
+        // Update the leftMarginPanel in each trial
         int leftMargin = getRandomLeftMargin(leftMarginLow, leftMarginHigh, leftMarginInterval);
 
         paneld = imPanel.getSize();
@@ -295,11 +294,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         // unitSize = widthMod * random(width_low, width_high);
         // number of units = high - low
-        final int startUnitInt   = dataBundle.getAsInt("start_unit");
-        final int endUnitInt     = dataBundle.getAsInt("end_unit");
+        final int startUnitInt = dataBundle.getAsInt("start_unit");
+        final int endUnitInt = dataBundle.getAsInt("end_unit");
 
-        final int low            = dataBundle.getAsInt("width_low");
-        final int high           = dataBundle.getAsInt("width_high");
+        final int low = dataBundle.getAsInt("width_low");
+        final int high = dataBundle.getAsInt("width_high");
 
         final int units = endUnitInt - startUnitInt;
 
@@ -318,17 +317,32 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         char leftOrRight = dataBundle.getAsString("handle_start_point").charAt(0);
 
-        numLine = new NumberLine(randWidth + thickness, height, thickness, startUnit, endUnit,
-            randTarget, baseColor, dragColor, handleActiveColor, myFontName,
-            isEstimationTask, leftMargin, keepWithinBounds, leftOrRight,
-            showFullBaseScale, unitSize);
+        numLine =
+            new NumberLine(
+                randWidth + thickness,
+                height,
+                thickness,
+                startUnit,
+                endUnit,
+                randTarget,
+                baseColor,
+                dragColor,
+                handleActiveColor,
+                myFontName,
+                isEstimationTask,
+                leftMargin,
+                keepWithinBounds,
+                leftOrRight,
+                showFullBaseScale,
+                unitSize);
 
-        //Displays Fixation if necessary
-        Fixation fixation = new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
+        // Displays Fixation if necessary
+        Fixation fixation =
+            new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
         fixationPanel.removeAll();
-        //fixationPanel.add(new JLabel()); //Top row of gridpanel is blank
-        fixationPanel.add(fixation, BorderLayout.CENTER); //Middle row has the NumberLine
-        //fixationPanel.add(new JLabel()); //Bottom row of gridPanel is blank
+        // fixationPanel.add(new JLabel()); //Top row of gridpanel is blank
+        fixationPanel.add(fixation, BorderLayout.CENTER); // Middle row has the NumberLine
+        // fixationPanel.add(new JLabel()); //Bottom row of gridPanel is blank
 
         if (isEstimationTask) {
           imPanel.add(fixationPanel, BorderLayout.CENTER);
@@ -338,13 +352,13 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           imPanel.remove(fixationPanel);
         }
 
-        //show numline and gather response
+        // show numline and gather response
         presentTrial();
 
         if (!isEstimationTask) {
           frame.showCursor();
 
-          //Idle here until user has hit the space bar
+          // Idle here until user has hit the space bar
           reactTime = response.getTimedNumberLineResponse(numLine, useMouse);
 
           frame.remove(imPanel);
@@ -365,14 +379,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           } else {
             reactTime = response.getTimedNumberLineResponse(numLine, useMouse);
 
-            frame.remove(imPanel); //remove the imPanel
+            frame.remove(imPanel); // remove the imPanel
             frame.setContentPane(endPanel);
             frame.validate();
 
             // The mask is an unstable feature within the portable number line.
             // The delay is not always a second.
             if (FeatureSwitch.USE_MASK) {
-              lineMask = new Mask(thickness, Color.BLACK, new Color[]{baseColor});
+              lineMask = new Mask(thickness, Color.BLACK, new Color[] {baseColor});
 
               frame.setContentPane(lineMask);
               frame.validate();
@@ -388,12 +402,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           frame.showCursor();
           frame.setContentPane(startPanel);
           frame.validate();
-          //response.getTimedNumPadResponse(frame, "What is the target of this number line?",
+          // response.getTimedNumPadResponse(frame, "What is the target of this number line?",
           //    estTargetFormat);
           try {
-            response.getTimedTextResponseJustified(frame, "",
-                "What is the target of this number line?",
-                30,"center", false);
+            response.getTimedTextResponseJustified(
+                frame, "", "What is the target of this number line?", 30, "center", false);
           } catch (IOException e) {
             e.printStackTrace();
           }
@@ -507,14 +520,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     gb.setConstraints(l, c);
     j.add(l);
 
-
     JButton okButton = new JButton("OK");
-    AbstractAction action = new AbstractAction() {
-      @Override
-      public void actionPerformed(ActionEvent actionEvent) {
-        okButton.doClick();
-      }
-    };
+    AbstractAction action =
+        new AbstractAction() {
+          @Override
+          public void actionPerformed(ActionEvent actionEvent) {
+            okButton.doClick();
+          }
+        };
     okButton.addActionListener(this);
     okButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "DoClick");
     okButton.getActionMap().put("DoClick", action);
@@ -526,22 +539,19 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
     gb.setConstraints(okButton, c);
     j.add(okButton);
-    j.addAncestorListener(new AncestorListener() {
-      @Override
-      public void ancestorAdded(AncestorEvent ancestorEvent) {
-        okButton.requestFocus();
-      }
+    j.addAncestorListener(
+        new AncestorListener() {
+          @Override
+          public void ancestorAdded(AncestorEvent ancestorEvent) {
+            okButton.requestFocus();
+          }
 
-      @Override
-      public void ancestorRemoved(AncestorEvent ancestorEvent) {
+          @Override
+          public void ancestorRemoved(AncestorEvent ancestorEvent) {}
 
-      }
-
-      @Override
-      public void ancestorMoved(AncestorEvent ancestorEvent) {
-
-      }
-    });
+          @Override
+          public void ancestorMoved(AncestorEvent ancestorEvent) {}
+        });
 
     return j;
   }
@@ -552,20 +562,21 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * @return String of column headers
    */
   public String createOutputHeader() {
-    String header = "sn\t"
-        + "pract\t"
-        + "trial\t"
-        + "cond\t"
-        + "session\t"
-        + "numberlineSize\t"
-        + "unitWidth\t"
-        + "startUnit\t"
-        + "endUnit\t"
-        + "target\t"
-        + "Bounded\t"
-        + "userRespValue\t"
-        + "estTask\t"
-        + "numLineRT\t";
+    String header =
+        "sn\t"
+            + "pract\t"
+            + "trial\t"
+            + "cond\t"
+            + "session\t"
+            + "numberlineSize\t"
+            + "unitWidth\t"
+            + "startUnit\t"
+            + "endUnit\t"
+            + "target\t"
+            + "Bounded\t"
+            + "userRespValue\t"
+            + "estTask\t"
+            + "numLineRT\t";
 
     header += (estStimTime > 0) ? "estStimTime" : "";
 
@@ -575,8 +586,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   /**
    * Randomly generates a value for the left margin based on parameters.
    *
-   * @param low      Low value for the range
-   * @param high     High value for the range
+   * @param low Low value for the range
+   * @param high High value for the range
    * @param interval Interval
    * @return Random value
    */
@@ -585,16 +596,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     return randGen.drawWithInterval();
   }
 
-  /**
-   * Present the experiment trial.
-   */
+  /** Present the experiment trial. */
   private void presentTrial() {
-    //gridPanel.removeAll(); //Clears out all JComponents in panel before adding any new ones
-    //gridPanel.validate();
-    //gridPanel.add(new JLabel()); //Top row of gridpanel is blank
-    //gridPanel.add(numLine.getPanel()); //Middle row has the NumberLine
-    //gridPanel.add(new JLabel()); //Bottom row of gridPanel is blank
-    //gridPanel.validate();
+    // gridPanel.removeAll(); //Clears out all JComponents in panel before adding any new ones
+    // gridPanel.validate();
+    // gridPanel.add(new JLabel()); //Top row of gridpanel is blank
+    // gridPanel.add(numLine.getPanel()); //Middle row has the NumberLine
+    // gridPanel.add(new JLabel()); //Bottom row of gridPanel is blank
+    // gridPanel.validate();
     imPanel.add(numLine.getPanel(), BorderLayout.CENTER);
     frame.setContentPane(imPanel);
     frame.validate();
@@ -604,7 +613,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * Converts a Unit object into its reduced form.
    *
    * @param unitFormat Format for the unit
-   * @param unit       Unit value
+   * @param unit Unit value
    * @return New unit object in the reduced form
    */
   private Unit reduceUnit(String unitFormat, Unit unit) {
@@ -617,8 +626,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       } else if (unit.getType() == Unit.UnitType.ODDS) {
         fractStr = unit.getValue().split("in");
       }
-      fract = new Fraction(Integer.parseInt(fractStr[0].trim()),
-          Integer.parseInt(fractStr[1].trim()));
+      fract =
+          new Fraction(Integer.parseInt(fractStr[0].trim()), Integer.parseInt(fractStr[1].trim()));
 
       String reducedFractStr = Fraction.reduceFract(fract).toString();
       if (unit.getType() == Unit.UnitType.FRACT) {
@@ -632,9 +641,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   }
 
   /**
-   * Implemented method from ActionListener.
-   * Whenever an action is performed, display a blank screen and notify the
-   * experiment of the action
+   * Implemented method from ActionListener. Whenever an action is performed, display a blank screen
+   * and notify the experiment of the action
    *
    * @param e ActionEvent object used to get information about the action
    */

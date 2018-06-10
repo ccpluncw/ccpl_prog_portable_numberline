@@ -1,6 +1,5 @@
 package ccpl.lib;
 
-import javax.swing.JFrame;
 import java.awt.Window;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -8,7 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import javax.swing.JFrame;
 
 public class Experiment implements ExpInterface {
 
@@ -80,15 +79,17 @@ public class Experiment implements ExpInterface {
     if (System.getProperty("os.name").startsWith("Mac")) {
       // com.apple.eawt.Application.getApplication().requestToggleFullScreen(frame);
       try {
-        Class appClass = Class.forName("com.apple.eawt.Application");
-        Class params[] = new Class[]{};
+        Class<?> appClass = Class.forName("com.apple.eawt.Application");
+        Class[] params = new Class[] {};
 
         Method getApp = appClass.getMethod("getApplication", params);
         Object app = getApp.invoke(appClass);
         Method toggle = app.getClass().getMethod("requestToggleFullScreen", Window.class);
 
         toggle.invoke(app, frame);
-      } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException
+      } catch (IllegalAccessException
+          | InvocationTargetException
+          | NoSuchMethodException
           | ClassNotFoundException e) {
         Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, e.getLocalizedMessage());
       }
@@ -108,15 +109,14 @@ public class Experiment implements ExpInterface {
   }
 
   protected void rest() {
-    response.displayNotificationFrame(frame,
-        "Please take a break. Click the OK button to resume the experiment");
+    response.displayNotificationFrame(
+        frame, "Please take a break. Click the OK button to resume the experiment");
   }
 
   protected void thankYou() {
-    response.displayNotificationFrame(frame,
-        "THANK YOU for participating! Click the OK button to end the experiment");
+    response.displayNotificationFrame(
+        frame, "THANK YOU for participating! Click the OK button to end the experiment");
   }
-
 
   protected void prepareToStartExperiment(JFrame parent) {
     delay(200);
@@ -143,7 +143,6 @@ public class Experiment implements ExpInterface {
   public void readTrial() {
     throw new UnsupportedOperationException("Not supported yet.");
   }
-
 
   protected void presentBlankScreen(int blankDelay) {
     setExpFrame();

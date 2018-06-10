@@ -16,7 +16,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 class NumPadResponse {
 
   private static final String APP_IMG_DIR = "images/";
@@ -28,8 +27,9 @@ class NumPadResponse {
 
   /**
    * Create a NumPadResponse given a fieldFormat and parent to attach to.
-   * @param fieldFormat     Format for the response.
-   * @param parent          Parent Dialog that number pad will attach to.
+   *
+   * @param fieldFormat Format for the response.
+   * @param parent Parent Dialog that number pad will attach to.
    */
   NumPadResponse(String fieldFormat, JDialog parent) {
     estTaskRespPanel = new JPanel(new BorderLayout());
@@ -114,24 +114,24 @@ class NumPadResponse {
     }
 
     private void setKeyboardHandler() {
-      keyBoardHandler = ae -> {
-        String command = ae.getActionCommand();
-        switch (command) {
-          case "N":
-            fields.setNextFieldAsActive();
-            break;
-          case "P":
-            fields.setPrevFieldAsActive();
-            break;
-          default:
-            fields.setActiveFieldIdx(command);
-            fields.setNextFieldAsActive();
-            keyboardPanel.requestFocus();
-            break;
-        }
-      };
+      keyBoardHandler =
+          ae -> {
+            String command = ae.getActionCommand();
+            switch (command) {
+              case "N":
+                fields.setNextFieldAsActive();
+                break;
+              case "P":
+                fields.setPrevFieldAsActive();
+                break;
+              default:
+                fields.setActiveFieldIdx(command);
+                fields.setNextFieldAsActive();
+                keyboardPanel.requestFocus();
+                break;
+            }
+          };
     }
-
   }
 
   private class ResponseFields {
@@ -328,8 +328,8 @@ class NumPadResponse {
         case ODD:
           fract = response.split("in");
           try {
-            Fraction f = new Fraction(Integer.parseInt(fract[0].trim()),
-                Integer.parseInt(fract[1].trim()));
+            Fraction f =
+                new Fraction(Integer.parseInt(fract[0].trim()), Integer.parseInt(fract[1].trim()));
             if (f.toDouble() <= 0.0) {
               isGreaterZero = false;
             }
@@ -345,12 +345,11 @@ class NumPadResponse {
       if (!isGreaterZero) {
         JOptionPane.showMessageDialog(parentDialog, "Your response must be greater than zero.");
       } else if (!isValidFraction) {
-        JOptionPane.showMessageDialog(parentDialog, "The second field of the response must be "
-                                                     + "greater than zero.");
+        JOptionPane.showMessageDialog(
+            parentDialog, "The second field of the response must be " + "greater than zero.");
       }
       return (isGreaterZero && isValidFraction);
     }
-
 
     private void setNextFieldAsActive() {
       removeActiveFieldFocus();
@@ -395,10 +394,14 @@ class NumPadResponse {
         g.drawLine(0, heightPosition, getWidth(), heightPosition);
       }
     }
-
   }
 
-  private enum FieldType { INT, DECI, FRACT, ODD }
+  private enum FieldType {
+    INT,
+    DECI,
+    FRACT,
+    ODD
+  }
 
   private static FieldType findType(String formatStr) {
     FieldType type = FieldType.INT;
@@ -477,6 +480,5 @@ class NumPadResponse {
       }
       return isValid;
     }
-
   }
 }

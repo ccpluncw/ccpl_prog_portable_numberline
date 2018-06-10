@@ -62,6 +62,12 @@ public class ConfigFrame extends JFrame {
 
   private PopupCallback cb;
 
+  /**
+   * Frame that holds configuration for subject, session, and condition.
+   *
+   * @param cb Callback
+   * @param title Title of frame
+   */
   public ConfigFrame(PopupCallback cb, String title) {
     super(title);
     this.cb = cb;
@@ -70,20 +76,19 @@ public class ConfigFrame extends JFrame {
     baseBundle = readDbFile(cl.getResource("exp/infiles/base_exp.txt"));
     configDialog.setBaseBundle(baseBundle);
 
-    boolean defaultConfigExist = new File(defaultConfigLoc).exists();
+    final boolean defaultConfigExist = new File(defaultConfigLoc).exists();
 
     this.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
 
     JPanel contentPanel = new JPanel();
     contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     contentPanel.setLayout(new GridBagLayout());
-    GridBagConstraints contentConstraints = new GridBagConstraints();
 
     centerPanel.setLayout(new GridLayout(0, 2, 0, 2));
 
     JFileChooser fc = new JFileChooser();
     fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-    JLabel saveLabel = new JLabel("Save: ");
+    final JLabel saveLabel = new JLabel("Save: ");
 
     JButton saveButton = new JButton("Save Directory");
     saveButton.addActionListener(
@@ -126,6 +131,7 @@ public class ConfigFrame extends JFrame {
     topCenter.add(saveButton);
     topPanel.add(topCenter, BorderLayout.CENTER);
 
+    GridBagConstraints contentConstraints = new GridBagConstraints();
     contentConstraints.gridy = 0;
     contentPanel.add(topPanel, contentConstraints);
 
@@ -185,22 +191,22 @@ public class ConfigFrame extends JFrame {
     configButton.addActionListener(actionEvent -> configDialog.setVisible(true));
 
     JButton loadConfigButton = new JButton("Load Configuration");
-    loadConfigButton.addActionListener(actionEvent -> {
-      JFileChooser loadFileChooser = new JFileChooser();
-      int ret = loadFileChooser.showOpenDialog(this);
+    loadConfigButton.addActionListener(
+        actionEvent -> {
+          JFileChooser loadFileChooser = new JFileChooser();
+          int ret = loadFileChooser.showOpenDialog(this);
 
-      if (ret == JFileChooser.CANCEL_OPTION) {
-        return;
-      }
+          if (ret == JFileChooser.CANCEL_OPTION) {
+            return;
+          }
 
-
-      try {
-        URL path = loadFileChooser.getSelectedFile().toURI().toURL();
-        configDialog.setDefaults(DatabaseFileReader.readDbFile(path));
-      } catch (MalformedURLException e) {
-        log.log(Level.WARNING, "Unable to load configuration file", e);
-      }
-    });
+          try {
+            URL path = loadFileChooser.getSelectedFile().toURI().toURL();
+            configDialog.setDefaults(DatabaseFileReader.readDbFile(path));
+          } catch (MalformedURLException e) {
+            log.log(Level.WARNING, "Unable to load configuration file", e);
+          }
+        });
 
     JPanel configButtonPanel = new JPanel();
     configButtonPanel.add(loadConfigButton);

@@ -1,21 +1,8 @@
-
 package ccpl.lib;
 
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.WindowConstants;
-import javax.swing.text.AbstractDocument;
-import javax.swing.text.AttributeSet;
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Document;
-import javax.swing.text.DocumentFilter;
+import static ccpl.lib.util.MouseUtil.resetMouseToCenter;
+import static ccpl.lib.util.StringUtil.notPartOfNumber;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -43,17 +30,27 @@ import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import static ccpl.lib.util.MouseUtil.resetMouseToCenter;
-import static ccpl.lib.util.StringUtil.notPartOfNumber;
-
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.WindowConstants;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.DocumentFilter;
 
 /**
- * The RESPONSE class is very important.  It specifies methods for collecting
- * and checking responses.  It implements KEYLISTENER so that keyboard responses
- * can be collected.  The class must be added to the panel as the keyListener
- * (i.e., addKeyListener (Response)
- * Before any timing routine is run, testTimer () must be run once
+ * The RESPONSE class is very important. It specifies methods for collecting and checking responses.
+ * It implements KEYLISTENER so that keyboard responses can be collected. The class must be added to
+ * the panel as the keyListener (i.e., addKeyListener (Response) Before any timing routine is run,
+ * testTimer () must be run once
  */
 public class Response implements KeyListener, ActionListener {
 
@@ -95,8 +92,7 @@ public class Response implements KeyListener, ActionListener {
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) {
-  }
+  public void keyTyped(KeyEvent keyEvent) {}
 
   /**
    * When a button is hit this is triggered saves the button that was hit and deal with it depending
@@ -113,18 +109,15 @@ public class Response implements KeyListener, ActionListener {
   }
 
   @Override
-  public void keyReleased(KeyEvent keyEvent) {
-
-  }
+  public void keyReleased(KeyEvent keyEvent) {}
 
   /**
-   * Calibrates timing to ensure accuracy.
-   * YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK.
+   * Calibrates timing to ensure accuracy. YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK.
    *
    * @param inputPanel panel this method will draw in (its just going to indicate the timer is being
-   *                   calibrated.
-   * @param textColor  text color for the panel
-   * @param reps       how many reps the timing calibrator will iterate through (normally 1000)
+   *     calibrated.
+   * @param textColor text color for the panel
+   * @param reps how many reps the timing calibrator will iterate through (normally 1000)
    */
   public synchronized void testTimer(BlankPanel inputPanel, Color textColor, int reps) {
     long timeA;
@@ -145,7 +138,8 @@ public class Response implements KeyListener, ActionListener {
     timerLabel.setForeground(textColor);
     timerLabel.setFont(myFont);
     timerLabel.setSize(timerLabel.getPreferredSize());
-    timerLabel.setLocation(dotAreaWidth / 2 - (timerLabel.getWidth() / 2),
+    timerLabel.setLocation(
+        dotAreaWidth / 2 - (timerLabel.getWidth() / 2),
         dotAreaHeight / 2 - (timerLabel.getHeight() / 2));
     inputPanel.add(timerLabel);
     inputPanel.revalidate();
@@ -175,7 +169,6 @@ public class Response implements KeyListener, ActionListener {
 
     inputPanel.remove(timerLabel);
     inputPanel.validate();
-
   }
 
   private long pollForKeyResponse(char c) {
@@ -210,28 +203,25 @@ public class Response implements KeyListener, ActionListener {
     // Try NOT to do this, it may have unintended side effects!
     final boolean[] flag = {true};
 
-    MouseListener tempListener = new MouseListener() {
-      @Override
-      public void mouseClicked(MouseEvent e) {
-        flag[0] = false;
-      }
+    MouseListener tempListener =
+        new MouseListener() {
+          @Override
+          public void mouseClicked(MouseEvent e) {
+            flag[0] = false;
+          }
 
-      @Override
-      public void mousePressed(MouseEvent e) {
-      }
+          @Override
+          public void mousePressed(MouseEvent e) {}
 
-      @Override
-      public void mouseReleased(MouseEvent e) {
-      }
+          @Override
+          public void mouseReleased(MouseEvent e) {}
 
-      @Override
-      public void mouseEntered(MouseEvent e) {
-      }
+          @Override
+          public void mouseEntered(MouseEvent e) {}
 
-      @Override
-      public void mouseExited(MouseEvent e) {
-      }
-    };
+          @Override
+          public void mouseExited(MouseEvent e) {}
+        };
 
     numLine.linePanel.addMouseListener(tempListener);
 
@@ -259,11 +249,9 @@ public class Response implements KeyListener, ActionListener {
   private long pollForResponse() {
     long overRun = 0;
 
-
     long timeA = new Date().getTime();
     long timeB = new Date().getTime();
     long tmpTime = timeA;
-
 
     while (isInputRunning()) {
       timeB = new Date().getTime();
@@ -282,7 +270,7 @@ public class Response implements KeyListener, ActionListener {
    * Displays a notification frame with a desired message.
    *
    * @param parent Parent JFrame
-   * @param info   Message to be displayed.
+   * @param info Message to be displayed.
    */
   public synchronized void displayNotificationFrame(JFrame parent, String info) {
     inputDone = false;
@@ -290,18 +278,17 @@ public class Response implements KeyListener, ActionListener {
     createNotificationFrame(parent, info, textOkButton, 500, 250);
   }
 
-
   /**
    * Initializes a TimedNumPadResponse.
    *
-   * @param parent            Parent JFrame.
-   * @param info              Message to be displayed.
+   * @param parent Parent JFrame.
+   * @param info Message to be displayed.
    * @param targetFieldFormat Format to apply to the target.
    */
   public void getTimedNumPadResponse(JFrame parent, String info, String targetFieldFormat) {
     if (loopsPerMs == 0) {
-      JOptionPane.showMessageDialog(null,
-          "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
       System.exit(1);
     }
 
@@ -313,28 +300,27 @@ public class Response implements KeyListener, ActionListener {
     textValue = numPadResponse.getResponse();
   }
 
-
   /**
    * Get a timed numberline response.
    *
    * @param numberLine NumberLine panel to use.
-   * @param useMouse   If response if based on mouse click
+   * @param useMouse If response if based on mouse click
    * @return The amount of time it look for the user to click.
    */
   public long getTimedNumberLineResponse(NumberLine numberLine, boolean useMouse) {
-    //Only the spacebar will trigger a timer stop, anything else is ignored
+    // Only the spacebar will trigger a timer stop, anything else is ignored
     char submitKey = ' ';
 
     if (loopsPerMs == 0) {
-      JOptionPane.showMessageDialog(null, "Must run the testTimer first.  Fatal Error",
-          "alert", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
       System.exit(1);
     }
 
     // reset the user choice so that the polling call below will work.
     resetUserChoice();
 
-    //Idle here until user has dragged the handle
+    // Idle here until user has dragged the handle
     while (!numberLine.isHandleDragged()) {
       try {
         Thread.sleep(20);
@@ -346,7 +332,7 @@ public class Response implements KeyListener, ActionListener {
     // Reset choice because spacebar may have been pressed already.
     resetUserChoice();
 
-    //User has moved handle so respond to the space bar
+    // User has moved handle so respond to the space bar
     long rt;
     if (!useMouse) {
       rt = pollForKeyResponse(submitKey);
@@ -357,9 +343,22 @@ public class Response implements KeyListener, ActionListener {
     return rt;
   }
 
-  public synchronized void getTimedTextResponseJustified(JFrame parent, String info, String info2, int columns, String just, boolean mouseVisible) throws IOException {
+  /**
+   * Get a timed text response.
+   *
+   * @param parent Parent JFrame
+   * @param info First string
+   * @param info2 Second string
+   * @param columns Column width of the response
+   * @param just Justification
+   * @param mouseVisible Should the mouse be displayed
+   * @throws IOException IOException
+   */
+  public synchronized void getTimedTextResponseJustified(
+      JFrame parent, String info, String info2, int columns, String just, boolean mouseVisible)
+      throws IOException {
     inputDone = false;
-    boolean fullScreen = false;
+    final boolean fullScreen = false;
 
     textInput = new JTextField(columns);
     textInput.setText(null);
@@ -368,158 +367,196 @@ public class Response implements KeyListener, ActionListener {
     }
 
     AbstractDocument doc = (AbstractDocument) textInput.getDocument();
-    doc.setDocumentFilter(new DocumentFilter() {
-      public String formatString(String s) {
-        String format = "";
-        Boolean dec = false;
-        int dec_loc = 0;
-        for (int i = 0; i < s.length(); i++) {
-          if (Character.toString(s.charAt(i)).equals(".")) {
-            dec = true;
-            dec_loc = i;
-          }
-        }
-        if (dec) {
-          format = format + ".";
-          for (int i = dec_loc + 1; i < s.length(); i++) {
-            if (Character.toString(s.charAt(i)).equals("0")) {
-              format = format + "0";
+    doc.setDocumentFilter(
+        new DocumentFilter() {
+          public String formatString(String s) {
+            String format = "";
+            Boolean dec = false;
+            int decimalLocation = 0;
+            for (int i = 0; i < s.length(); i++) {
+              if (Character.toString(s.charAt(i)).equals(".")) {
+                dec = true;
+                decimalLocation = i;
+              }
+            }
+            if (dec) {
+              format = format + ".";
+              for (int i = decimalLocation + 1; i < s.length(); i++) {
+                if (Character.toString(s.charAt(i)).equals("0")) {
+                  format = format + "0";
 
-            } else if (Character.toString(s.charAt(i)).matches("[1-9]")) {
-              format = format + "0";
+                } else if (Character.toString(s.charAt(i)).matches("[1-9]")) {
+                  format = format + "0";
+                }
+              }
+            }
+
+            return format;
+          }
+
+          @Override
+          public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a)
+              throws BadLocationException {
+            Document doc = fb.getDocument();
+            String text = doc.getText(0, doc.getLength());
+
+            if (notPartOfNumber(str, text)) {
+              return;
+            }
+
+            text = text.substring(0, off) + str + text.substring(off, text.length());
+            // text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
+            text = text.replaceAll(",", "");
+
+            if (text.matches("-?[0-9]*.?[0-9]*")) {
+              String f = "#,##0";
+              String signHolder = "";
+              if (text.contains("-")) {
+                signHolder = "-";
+              }
+
+              String formatter = formatString(text);
+              f = f + formatter;
+              DecimalFormat df = new DecimalFormat(f);
+              if (str.equals(".")) {
+                if (fb.getDocument().getLength() == 0
+                    || (fb.getDocument().getLength() == 1 && signHolder.equals("-"))) {
+                  super.replace(fb, off, length, "0" + str, a);
+                } else {
+                  BigDecimal t = new BigDecimal(text);
+                  text = df.format(t);
+                  super.replace(fb, 0, fb.getDocument().getLength(), text, a);
+                }
+              } else if (str.length() + fb.getDocument().getLength() > 3) {
+                BigDecimal t = new BigDecimal(text);
+                text = df.format(t);
+                super.replace(fb, 0, fb.getDocument().getLength(), text, a);
+              } else {
+                super.replace(fb, off, length, str, a);
+              }
             }
           }
-        }
 
-        return format;
-      }
+          @Override
+          public void insertString(FilterBypass fb, int offs, String str, AttributeSet a)
+              throws BadLocationException {
+            Document doc = fb.getDocument();
+            String text = doc.getText(0, doc.getLength());
 
-      @Override
-      public void replace(FilterBypass fb, int off, int length, String str, AttributeSet a) throws BadLocationException {
-        Document doc = fb.getDocument();
-        String text = doc.getText(0, doc.getLength());
+            if (notPartOfNumber(str, text)) {
+              return;
+            }
 
-        if (notPartOfNumber(str, text)) {
-          return;
-        }
-
-        text = text.substring(0, off) + str + text.substring(off, text.length());
-        //text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
-        text = text.replaceAll(",", "");
-
-        if (text.matches("-?[0-9]*.?[0-9]*")) {
-          String f = "#,##0";
-          String signHolder = "";
-          if (text.contains("-")) {
-            signHolder = "-";
-          }
-
-          String formatter = formatString(text);
-          f = f + formatter;
-          DecimalFormat df = new DecimalFormat(f);
-          if (str.equals(".")) {
-            if (fb.getDocument().getLength() == 0 || (fb.getDocument().getLength() == 1 && signHolder.equals("-"))) {
-              super.replace(fb, off, length, "0" + str, a);
-            } else {
+            text = text.substring(0, offs) + str + text.substring(offs, text.length());
+            // text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
+            text = text.replaceAll(",", "");
+            String f = "#,##0";
+            String signHolder = "";
+            if (text.contains("-")) {
+              System.out.println(text);
+              signHolder = "-";
+            }
+            String formatter = formatString(text);
+            f = f + formatter;
+            DecimalFormat df = new DecimalFormat(f);
+            if (str.length() + fb.getDocument().getLength() > 3) {
               BigDecimal t = new BigDecimal(text);
               text = df.format(t);
-              super.replace(fb, 0, fb.getDocument().getLength(), text, a);
+              super.replace(
+                  fb,
+                  0,
+                  fb.getDocument().getLength(),
+                  text.substring(0, fb.getDocument().getLength()),
+                  a);
+              if (str.equals("0")) {
+                super.insertString(
+                    fb,
+                    fb.getDocument().getLength(),
+                    text.substring(fb.getDocument().getLength()),
+                    a);
+              }
+              super.insertString(
+                  fb,
+                  fb.getDocument().getLength(),
+                  text.substring(fb.getDocument().getLength()),
+                  a);
+            } else {
+              super.replace(fb, offs, offs + str.length(), str, a);
             }
-          } else if (str.length() + fb.getDocument().getLength() > 3) {
-            BigDecimal t = new BigDecimal(text);
-            text = df.format(t);
-            super.replace(fb, 0, fb.getDocument().getLength(), text, a);
-          } else {
-            super.replace(fb, off, length, str, a);
           }
-        }
-      }
 
-      @Override
-      public void insertString(FilterBypass fb, int offs, String str, AttributeSet a) throws BadLocationException {
-        Document doc = fb.getDocument();
-        String text = doc.getText(0, doc.getLength());
-
-        if (notPartOfNumber(str, text)) {
-          return;
-        }
-
-        text = text.substring(0, offs) + str + text.substring(offs, text.length());
-        //text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
-        text = text.replaceAll(",", "");
-        String f = "#,##0";
-        String signHolder = "";
-        if (text.contains("-")) {
-          System.out.println(text);
-          signHolder = "-";
-        }
-        String formatter = formatString(text);
-        f = f + formatter;
-        DecimalFormat df = new DecimalFormat(f);
-        if (str.length() + fb.getDocument().getLength() > 3) {
-          BigDecimal t = new BigDecimal(text);
-          text = df.format(t);
-          super.replace(fb, 0, fb.getDocument().getLength(), text.substring(0, fb.getDocument().getLength()), a);
-          if (str.equals("0")) {
-            super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
+          @Override
+          public void remove(DocumentFilter.FilterBypass fb, int offset, int length)
+              throws BadLocationException {
+            super.remove(fb, offset, length);
+            String text = fb.getDocument().getText(0, fb.getDocument().getLength());
+            text = text.replaceAll(",", "");
+            String f = "#,##0";
+            String formatter = formatString(text);
+            f = f + formatter;
+            System.out.println(f);
+            DecimalFormat df = new DecimalFormat(f);
+            if (text.length() > 3) {
+              BigDecimal t = new BigDecimal(text);
+              text = df.format(t);
+              super.remove(fb, 0, fb.getDocument().getLength());
+              super.insertString(fb, fb.getDocument().getLength(), text, null);
+            } else {
+              super.remove(fb, 0, fb.getDocument().getLength());
+              super.insertString(fb, 0, text, null);
+            }
           }
-          super.insertString(fb, fb.getDocument().getLength(), text.substring(fb.getDocument().getLength()), a);
-        } else {
-          super.replace(fb, offs, offs + str.length(), str, a);
-        }
-      }
-
-      @Override
-      public void remove(DocumentFilter.FilterBypass fb, int offset, int length) throws BadLocationException {
-        super.remove(fb, offset, length);
-        String text = fb.getDocument().getText(0, fb.getDocument().getLength());
-        text = text.replaceAll(",", "");
-        String f = "#,##0";
-        String formatter = formatString(text);
-        f = f + formatter;
-        System.out.println(f);
-        DecimalFormat df = new DecimalFormat(f);
-        if (text.length() > 3) {
-          BigDecimal t = new BigDecimal(text);
-          text = df.format(t);
-          super.remove(fb, 0, fb.getDocument().getLength());
-          super.insertString(fb, fb.getDocument().getLength(), text, null);
-        } else {
-          super.remove(fb, 0, fb.getDocument().getLength());
-          super.insertString(fb, 0, text, null);
-        }
-
-      }
-    });
-
+        });
 
     textOkButton = new JButton("OK");
 
-    createResponseFrameMouseSwitch(parent, textInput, textOkButton, info, info2, false, mouseVisible, fullScreen);
+    createResponseFrameMouseSwitch(
+        parent, textInput, textOkButton, info, info2, false, mouseVisible, fullScreen);
   }
 
-  public synchronized void createResponseFrameMouseSwitch(JFrame parent, JComponent inputComponent, JButton okButton, String stdlabel, String probelabel, boolean isFrameModal, boolean mouseVisible, boolean fullScreen) throws IOException {
+  /**
+   * Create a Response Frame with a mouse switch.
+   *
+   * @param parent Parent JFrame
+   * @param inputComponent InputComponent
+   * @param okButton Ok button
+   * @param stdlabel Standard label
+   * @param probelabel Label for the probe
+   * @param isFrameModal Use modality
+   * @param mouseVisible Show mouse?
+   * @param fullScreen Fullscreen?
+   * @throws IOException IOException
+   */
+  public synchronized void createResponseFrameMouseSwitch(
+      JFrame parent,
+      JComponent inputComponent,
+      JButton okButton,
+      String stdlabel,
+      String probelabel,
+      boolean isFrameModal,
+      boolean mouseVisible,
+      boolean fullScreen)
+      throws IOException {
     respFrame = new JDialog(parent, isFrameModal);
     respFrame.setTitle("Response");
     respFrame.addKeyListener(this);
     respFrame.setResizable(false);
     respFrame.setUndecorated(true);
 
-
     // dont let people close out
     respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
     closedProperly = true;
-    respFrame.addWindowListener(new WindowAdapter() {
+    respFrame.addWindowListener(
+        new WindowAdapter() {
 
-      public synchronized void windowClosed(WindowEvent e) {
-      }
+          public synchronized void windowClosed(WindowEvent e) {}
 
-      public synchronized void windowClosing(WindowEvent e) {
-        //inputDone = true;
-        //closedProperly = false;
-      }
-    });
+          public synchronized void windowClosing(WindowEvent e) {
+            // inputDone = true;
+            // closedProperly = false;
+          }
+        });
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     Dimension d = tk.getScreenSize();
@@ -532,31 +569,31 @@ public class Response implements KeyListener, ActionListener {
       backPanel.add(b);
     }
     BlankPanel inputPanel = new BlankPanel(Color.lightGray);
-    BlankPanel buttonPanel = new BlankPanel(Color.lightGray);
     BlankPanel blackPanelB = new BlankPanel(Color.lightGray);
 
-
     Font font = new Font("Arial", Font.PLAIN, 18);
-    JLabel pLabel = new JLabel(probelabel);
-    pLabel.setFont(font);
-    blackPanelB.add(pLabel);
+    JLabel label = new JLabel(probelabel);
+    label.setFont(font);
+    blackPanelB.add(label);
 
-    Insets cInset = new Insets(10, 10, 10, 10);
+    Insets inset = new Insets(10, 10, 10, 10);
     GridBagLayout gridBag = new GridBagLayout();
     inputPanel.setLayout(gridBag);
     GridBagConstraints c = new GridBagConstraints();
-    c.insets = cInset;
+    c.insets = inset;
     c.weightx = 1.0;
     c.weighty = 1.0;
     c.fill = GridBagConstraints.BOTH;
 
-    BlankPanel bp = new BlankPanel(Color.LIGHT_GRAY);
     c.gridx = 0;
     c.gridy = 1;
     c.gridheight = 1;
     c.gridwidth = 2;
+
+    BlankPanel bp = new BlankPanel(Color.LIGHT_GRAY);
     gridBag.setConstraints(bp, c);
     inputPanel.add(bp);
+
     c.gridx = 0;
     c.gridy = 3;
     c.gridwidth = 1;
@@ -570,6 +607,7 @@ public class Response implements KeyListener, ActionListener {
     c.gridheight = 1;
     gridBag.setConstraints(blackPanelB, c);
     inputPanel.add(inputComponent);
+    BlankPanel buttonPanel = new BlankPanel(Color.lightGray);
     buttonPanel.add(okButton);
     okButton.addActionListener(this);
     respFrame.getContentPane().setLayout(new BorderLayout());
@@ -579,54 +617,12 @@ public class Response implements KeyListener, ActionListener {
     respFrame.pack();
     respFrame.validate();
     Dimension trueD = respFrame.getPreferredSize();
-    respFrame.setLocation((d.width - (int) trueD.getWidth()) / 2, (d.height - (int) trueD.getHeight()) / 2);
+    respFrame.setLocation(
+        (d.width - (int) trueD.getWidth()) / 2, (d.height - (int) trueD.getHeight()) / 2);
 
     // because this is a modal dialog, the show () command will not return until the frame has been
     // removed from sight
     respFrame.getRootPane().setDefaultButton(okButton);
-
-//    if(!mouseVisible){
-//      BufferedImage blankCursor = null;
-//      try {
-//        blankCursor = ImageIO.read(getClass().getResource("/app_imgs/blank1.gif"));
-//      }catch (IOException ex){
-//        Logger.getLogger(DrawExpFrame.class.getName()).log(Level.SEVERE, null, ex);}
-//      parent.setCursor(tk.createCustomCursor(blankCursor, new Point(0,0), "blank"));
-//      respFrame.setCursor(tk.createCustomCursor(blankCursor, new Point(0,0), "blank"));
-//      respFrame.addMouseListener(new MouseListener(){
-//
-//        public void mouseDragged(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//        public void mouseExited(MouseEvent e){
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//        public void mouseMoved(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//
-//        public void mouseClicked(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//
-//        public void mousePressed(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//
-//        public void mouseReleased(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//
-//        public void mouseEntered(MouseEvent e) {
-//          Experiment.resetMouseToCenterScreen();
-//        }
-//
-//      });
-
-//    }
-    //dont need this anymore since we are setting mouse to move back to center. this causes mouse to be visible between trials but it also ensures that the dialog box
-    //doesn't become unfocused.
-    //respFrame.setModal(true);
 
     respFrame.setVisible(true);
 
@@ -636,10 +632,13 @@ public class Response implements KeyListener, ActionListener {
     }
     if (!closedProperly) {
       okButton.doClick();
-      JOptionPane.showMessageDialog(null, "You must choose an option.  Do NOT use the Close Box", "alert", JOptionPane.ERROR_MESSAGE);
+      JOptionPane.showMessageDialog(
+          null,
+          "You must choose an option.  Do NOT use the Close Box",
+          "alert",
+          JOptionPane.ERROR_MESSAGE);
     }
   }
-
 
   /**
    * Perform an action of the response frame.
@@ -680,14 +679,14 @@ public class Response implements KeyListener, ActionListener {
   /**
    * Create a NotificationFrame with a desired message, button, and dimensions.
    *
-   * @param parent    Parent JFrame
+   * @param parent Parent JFrame
    * @param labelText Message to be displayed.
-   * @param okButton  Custom OK Button.
-   * @param width     Width of the frame.
-   * @param height    Height of the frame.
+   * @param okButton Custom OK Button.
+   * @param width Width of the frame.
+   * @param height Height of the frame.
    */
-  private void createNotificationFrame(JFrame parent, String labelText, JButton okButton, int width,
-                                       int height) {
+  private void createNotificationFrame(
+      JFrame parent, String labelText, JButton okButton, int width, int height) {
     respFrame = new JDialog(parent, false);
     respFrame.setTitle("Notification");
 
@@ -767,7 +766,6 @@ public class Response implements KeyListener, ActionListener {
     gridBag.setConstraints(blackPanelC, c);
     inputPanel.add(blackPanelC);
 
-
     buttonPanel.add(okButton);
     okButton.addActionListener(this);
 
@@ -790,8 +788,8 @@ public class Response implements KeyListener, ActionListener {
   /**
    * Create a NumpadResponseFrame.
    *
-   * @param parent            Parent frame
-   * @param label             Label for the frame
+   * @param parent Parent frame
+   * @param label Label for the frame
    * @param targetFieldFormat How the field should be formatted
    */
   private void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
@@ -820,15 +818,14 @@ public class Response implements KeyListener, ActionListener {
     final int respFrameWidth = respFrameDim.width + 150;
     final int respFrameHeight = respFrameDim.height + 75;
     respFrame.setSize(respFrameWidth, respFrameHeight);
-    respFrame.setLocation((parent.getWidth() - respFrameWidth) / 2,
-        (parent.getHeight() - respFrameHeight) / 2);
+    respFrame.setLocation(
+        (parent.getWidth() - respFrameWidth) / 2, (parent.getHeight() - respFrameHeight) / 2);
     respFrame.setResizable(false);
 
     textOkButton.addActionListener(this);
     respFrame.getRootPane().setDefaultButton(textOkButton);
     respFrame.addKeyListener(this);
     respFrame.setVisible(true);
-
   }
 
   private char getUserChoice() {
@@ -867,8 +864,7 @@ public class Response implements KeyListener, ActionListener {
   }
 
   private class DisableMouseListener implements MouseMotionListener {
-    public void mouseDragged(MouseEvent e) {
-    }
+    public void mouseDragged(MouseEvent e) {}
 
     public void mouseMoved(MouseEvent e) {
       resetMouseToCenter(mouseFrame);

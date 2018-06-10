@@ -2,6 +2,7 @@ package ccpl.lib;
 
 /**
  * Fraction class.
+ *
  * @author Kyle
  */
 public class Fraction {
@@ -16,8 +17,9 @@ public class Fraction {
 
   /**
    * Initialize a Fraction with a numerator and denominator.
-   * @param num     Numerator
-   * @param denom   Denominator
+   *
+   * @param num Numerator
+   * @param denom Denominator
    */
   public Fraction(int num, int denom) {
     if (denom == 0) {
@@ -29,7 +31,8 @@ public class Fraction {
 
   /**
    * Initialize a fraction based on a string.
-   * @param frac    Fraction stored as a String
+   *
+   * @param frac Fraction stored as a String
    */
   public Fraction(String frac) {
     String[] fraction = frac.split("/");
@@ -37,16 +40,12 @@ public class Fraction {
     denominator = Integer.parseInt(fraction[1]);
   }
 
-  /**
-   * Return the numerator of the Fraction.
-   */
+  /** Return the numerator of the Fraction. */
   public int getNumerator() {
     return numerator;
   }
 
-  /**
-   * Return the denominator of the fraction.
-   */
+  /** Return the denominator of the fraction. */
   public int getDenominator() {
     return denominator;
   }
@@ -72,8 +71,9 @@ public class Fraction {
 
   /**
    * Determine the common denomination of an array of fractions.
-   * @param fractions   Input fractions.
-   * @return            Common denominator
+   *
+   * @param fractions Input fractions.
+   * @return Common denominator
    */
   static int getCommonDenom(Fraction[] fractions) {
     Fraction currFract = new Fraction();
@@ -93,8 +93,9 @@ public class Fraction {
 
   /**
    * Reduce a fraction if possible.
-   * @param f   Fraction to be reduced.
-   * @return    Reduced fraction.
+   *
+   * @param f Fraction to be reduced.
+   * @return Reduced fraction.
    */
   public static Fraction reduceFract(Fraction f) {
     int gcd = gcd(f.numerator, f.denominator);
@@ -102,5 +103,4 @@ public class Fraction {
     int denom = f.denominator / gcd;
     return new Fraction(num, denom);
   }
-
 }

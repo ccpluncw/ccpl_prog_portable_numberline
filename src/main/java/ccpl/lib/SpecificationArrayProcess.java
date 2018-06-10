@@ -10,8 +10,8 @@ import java.net.URL;
 import java.util.ArrayList;
 
 /**
- * Use the following class to work with arrays of the SPECIFICATION objects.
- * The methods read data in, write data, and randomize data.
+ * Use the following class to work with arrays of the SPECIFICATION objects. The methods read data
+ * in, write data, and randomize data.
  */
 public class SpecificationArrayProcess {
 
@@ -50,7 +50,7 @@ public class SpecificationArrayProcess {
       }
     }
     if (stims.size() >= 1) {
-      stims.remove(i - 1); //Remove last Specification because it holds no input
+      stims.remove(i - 1); // Remove last Specification because it holds no input
     }
 
     // Convert ArrayList of Specification Objects into Specification Array to return
@@ -77,7 +77,7 @@ public class SpecificationArrayProcess {
     } catch (IOException e) {
       System.out.println("Error: " + e);
       System.out.println("File: " + fileUrl.getFile());
-      //System.exit(1);
+      // System.exit(1);
     } catch (Exception e) {
       System.out.print("Error: " + e);
     }

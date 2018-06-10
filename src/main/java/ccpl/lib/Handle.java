@@ -1,12 +1,16 @@
 package ccpl.lib;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Stroke;
 import java.awt.geom.Line2D;
 
 /**
  * Helper class to abstract the concept of a NumberLine handle.
  *
- * This manages the physical handle as well as the guide line.
+ * <p>This manages the physical handle as well as the guide line.
  */
 public class Handle extends Line2D.Double {
 
@@ -15,9 +19,10 @@ public class Handle extends Line2D.Double {
 
   /**
    * Create a new Handle with a given Handle line, guide, and color.
-   * @param line    Line that will be the handle.
-   * @param guide   Guide line to the specific value.
-   * @param color   Color of the handle and guide line.
+   *
+   * @param line Line that will be the handle.
+   * @param guide Guide line to the specific value.
+   * @param color Color of the handle and guide line.
    */
   public Handle(Line2D line, Line2D guide, Color color) {
     super(line.getP1(), line.getP2());
@@ -32,10 +37,10 @@ public class Handle extends Line2D.Double {
   /**
    * Draw the handle in guide line in a desired color.
    *
-   * The guide line in this implementation is 1px in size when drawn
-   * so the stroke is saved at the beginning and restored afterwards.
+   * <p>The guide line in this implementation is 1px in size when drawn so the stroke is saved at
+   * the beginning and restored afterwards.
    *
-   * @param g   Graphics used for drawing.
+   * @param g Graphics used for drawing.
    */
   public void draw(Graphics g) {
     Graphics2D g2 = (Graphics2D) g;

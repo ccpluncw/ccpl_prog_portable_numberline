@@ -4,10 +4,9 @@ import java.security.SecureRandom;
 import java.util.Random;
 
 /**
- * An improved random number generator based on Algorithm B
- * in Knuth Vol 2 p32.
- * Gives a set of random integers that does not exhibit
- * as much correlation as the method used by the Java random number generator.
+ * An improved random number generator based on Algorithm B in Knuth Vol 2 p32. Gives a set of
+ * random integers that does not exhibit as much correlation as the method used by the Java random
+ * number generator.
  *
  * @author Cay Horstmann
  * @version 1.01 15 Feb 1996
@@ -23,9 +22,7 @@ public class RandomIntGenerator {
 
   private static final Random randomObj = new SecureRandom();
 
-  /**
-   * Constructs an object that generates random integers in a given range.
-   */
+  /** Constructs an object that generates random integers in a given range. */
   public RandomIntGenerator() {
     low = 0;
     high = 1;
@@ -38,9 +35,9 @@ public class RandomIntGenerator {
   /**
    * Initialize a RandomIntGenerator with a minimum, maximum, and interval.
    *
-   * @param low         Minimum value
-   * @param high        Maximum value
-   * @param interval    Interval
+   * @param low Minimum value
+   * @param high Maximum value
+   * @param interval Interval
    */
   public RandomIntGenerator(int low, int high, int interval) {
     this.low = low;
@@ -50,9 +47,10 @@ public class RandomIntGenerator {
 
   /**
    * Set the interval range.
-   * @param low         Minimum value
-   * @param high        Maximum value
-   * @param interval    Interval
+   *
+   * @param low Minimum value
+   * @param high Maximum value
+   * @param interval Interval
    */
   public void setIntervalRange(int low, int high, int interval) {
     this.low = low;
@@ -62,9 +60,10 @@ public class RandomIntGenerator {
 
   /**
    * Set the interval for a floating point number.
-   * @param low         Minimum value
-   * @param high        Maximum value
-   * @param interval    Interval in the range
+   *
+   * @param low Minimum value
+   * @param high Maximum value
+   * @param interval Interval in the range
    */
   void setDoubleIntervalRange(double low, double high, double interval) {
     doubleLow = low;
@@ -74,6 +73,7 @@ public class RandomIntGenerator {
 
   /**
    * Generates a random integer in a range of integers.
+   *
    * @return a random integer
    */
   int draw() {
@@ -82,7 +82,8 @@ public class RandomIntGenerator {
 
   /**
    * Select a random value in the interval with a set interval distance.
-   * @return    Random value between minimum and maximum.
+   *
+   * @return Random value between minimum and maximum.
    */
   public int drawWithInterval() {
     int r1 = (high - low + interval) / interval;
@@ -94,7 +95,8 @@ public class RandomIntGenerator {
 
   /**
    * Randomize a double value within the interval.
-   * @return    Randomized double value
+   *
+   * @return Randomized double value
    */
   double drawDoubleWithInterval() {
     double r = doubleLow;
@@ -104,12 +106,10 @@ public class RandomIntGenerator {
     return r;
   }
 
-
   private static double nextRandom() {
     double random = randomObj.nextDouble();
 
-    int pos =
-        (int) (random * BUFFER_SIZE);
+    int pos = (int) (random * BUFFER_SIZE);
     if (pos == BUFFER_SIZE) {
       pos = BUFFER_SIZE - 1;
     }

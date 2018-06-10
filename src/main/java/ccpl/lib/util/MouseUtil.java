@@ -1,15 +1,16 @@
 package ccpl.lib.util;
 
-import javax.swing.JFrame;
 import java.awt.AWTException;
 import java.awt.Robot;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JFrame;
 
 public class MouseUtil {
   /**
    * Resets the mouse to the center of a JFrame.
-   * @param frame   JFrame to move the mouse in.
+   *
+   * @param frame JFrame to move the mouse in.
    */
   public static void resetMouseToCenter(JFrame frame) {
     try {

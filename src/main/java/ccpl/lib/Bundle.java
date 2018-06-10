@@ -1,13 +1,13 @@
 package ccpl.lib;
 
+import static java.lang.Boolean.parseBoolean;
+import static java.lang.Integer.parseInt;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static java.lang.Boolean.parseBoolean;
-import static java.lang.Integer.parseInt;
 
 public class Bundle {
   private Map<String, Object> values = new HashMap<>();
@@ -32,6 +32,14 @@ public class Bundle {
     return parseBoolean(getAsString(key));
   }
 
+  /**
+   * Merges two Bundle together, destructively.
+   *
+   * <p>This function favors values found in the first Bundle.
+   *
+   * @param secondBundle Second bundle
+   * @return New merged Bundle.
+   */
   public Bundle merge(Bundle secondBundle) {
     Bundle newBundle = new Bundle();
 
@@ -51,10 +59,12 @@ public class Bundle {
 
   @Override
   public String toString() {
-    List<String> vals = values.entrySet()
-        .stream()
-        .map(it -> it.getKey() + ": " + it.getValue())
-        .collect(Collectors.toCollection(ArrayList::new));
+    List<String> vals =
+        values
+            .entrySet()
+            .stream()
+            .map(it -> it.getKey() + ": " + it.getValue())
+            .collect(Collectors.toCollection(ArrayList::new));
 
     return String.join("\n", vals);
   }
