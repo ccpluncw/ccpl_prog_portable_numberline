@@ -16,6 +16,7 @@ buildscript {
 apply plugin: 'java'
 apply plugin: 'com.github.johnrengelman.shadow'
 apply plugin: 'application'
+apply plugin: 'checkstyle'
 
 
 mainClassName = "${project.group}.numberline.Launcher"
@@ -30,4 +31,9 @@ dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
 
     compile group: 'javax.media', name: 'jmf', version: '2.1.1e'
+}
+
+checkstyle {
+    toolVersion = '8.5'
+    configFile rootProject.file('code_quality/checkstyle/checkstyle.xml')
 }

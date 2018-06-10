@@ -1,11 +1,10 @@
 package ccpl.lib.util;
 
-import ccpl.lib.Bundle;
-import org.junit.Test;
-
-import java.net.URL;
-
 import static org.junit.Assert.assertEquals;
+
+import ccpl.lib.Bundle;
+import java.net.URL;
+import org.junit.Test;
 
 public class DatabaseFileReaderTest {
 

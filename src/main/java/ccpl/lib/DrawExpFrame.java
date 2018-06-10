@@ -60,7 +60,7 @@ public class DrawExpFrame extends JFrame {
       // TODO: Figure out how to fix this on non-Mac machines
       // com.apple.eawt.FullScreenUtilities.setWindowCanFullScreen(this, true);
       try {
-        Class util = Class.forName("com.apple.eawt.FullScreenUtilities");
+        Class<?> util = Class.forName("com.apple.eawt.FullScreenUtilities");
         Class[] params = new Class[] {Window.class, Boolean.TYPE};
         Method method = util.getMethod("setWindowCanFullScreen", params);
         method.invoke(util, this, true);

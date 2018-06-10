@@ -1,8 +1,8 @@
 package ccpl.lib;
 
-import org.junit.Test;
+import static junit.framework.TestCase.assertTrue;
 
-import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class BundleTest {
 
