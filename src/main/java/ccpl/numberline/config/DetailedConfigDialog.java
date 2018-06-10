@@ -28,7 +28,7 @@ public class DetailedConfigDialog extends JDialog {
     super();
     this.setLayout(new BorderLayout());
 
-    JButton saveBtn = new JButton("Save");
+    JButton saveBtn = new JButton("OK");
     saveBtn.addActionListener(
         actionEvent -> {
           if (isValidConfig()) {
