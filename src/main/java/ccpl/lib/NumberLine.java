@@ -393,7 +393,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   public double getUserResponse() {
-    // TODO: FIX THIS
     return (currentDragPoint.x - leftGuide.getX1()) / unitSize + startUnit.toInteger();
   }
 
