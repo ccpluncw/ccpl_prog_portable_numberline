@@ -3,6 +3,7 @@ package ccpl.lib.util;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
 import java.util.Map;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +18,20 @@ public class UiUtil {
 
   public static int screenHeight() {
     return tk.getScreenSize().height;
+  }
+
+
+  /**
+   * Return a JPanel that has a border and title.
+   * @param title     Title for panel
+   * @return          JPanel with a titled border.
+   */
+  public static JPanel createPanelWithBorderTitle(String title) {
+    JPanel panel = new JPanel();
+
+    panel.setBorder(BorderFactory.createTitledBorder(title));
+
+    return panel;
   }
 
   /**

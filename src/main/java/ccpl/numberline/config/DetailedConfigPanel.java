@@ -1,6 +1,7 @@
 package ccpl.numberline.config;
 
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
+import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.screenWidth;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
@@ -10,6 +11,7 @@ import ccpl.lib.Bundle;
 import ccpl.lib.IntFilter;
 import ccpl.lib.IntTextField;
 import ccpl.lib.util.DatabaseFileReader;
+import ccpl.lib.util.UiUtil;
 import ccpl.numberline.FeatureSwitch;
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -181,7 +183,7 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel targetPanel() {
-    JPanel panel = borderTitlePanel("Target");
+    JPanel panel = createPanelWithBorderTitle("Target");
     panel.setLayout(new GridLayout(0, 6, 5, 1));
 
     List<String> txtKey = Arrays.asList("target_unit_low", "target_unit_high");
@@ -212,7 +214,7 @@ class DetailedConfigPanel extends JPanel {
 
     wrapper.add(panel, BorderLayout.NORTH);
 
-    JPanel stimPanel = borderTitlePanel("Estimation Stim Time");
+    JPanel stimPanel = createPanelWithBorderTitle("Estimation Stim Time");
     JPanel stimSwitches =
         buttonPanel(
             "",
@@ -479,7 +481,7 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel biasPanel() {
-    JPanel panel = borderTitlePanel("Estimated Largest Bias");
+    JPanel panel = createPanelWithBorderTitle("Estimated Largest Bias");
     panel.setLayout(new GridLayout(2, 3));
 
     JRadioButton childRadBtn = new JRadioButton("Child");
@@ -542,17 +544,9 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel largestTarget() {
-    JPanel panel = borderTitlePanel("Largest Estimation Target or Right Bound");
+    JPanel panel = createPanelWithBorderTitle("Largest Estimation Target or Right Bound");
 
     panel.add(largeLbl);
-
-    return panel;
-  }
-
-  private JPanel borderTitlePanel(String title) {
-    JPanel panel = new JPanel();
-
-    panel.setBorder(BorderFactory.createTitledBorder(title));
 
     return panel;
   }
@@ -571,7 +565,7 @@ class DetailedConfigPanel extends JPanel {
     buts.forEach(btnGrp::add);
     btnGrps.put(key, btnGrp);
 
-    JPanel panel = title.isEmpty() ? new JPanel() : borderTitlePanel(title);
+    JPanel panel = title.isEmpty() ? new JPanel() : createPanelWithBorderTitle(title);
     buts.forEach(panel::add);
 
     return panel;
