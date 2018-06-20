@@ -3,12 +3,15 @@ package ccpl.numberline.config;
 import static ccpl.lib.util.DatabaseFileReader.readDbFile;
 import static ccpl.lib.util.DatabaseFileReader.writeDbFile;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
+import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.expandGridPanel;
 
 import ccpl.lib.Bundle;
 import ccpl.lib.util.DatabaseFileReader;
+import ccpl.lib.util.UiUtil;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -27,6 +30,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -35,6 +39,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
@@ -187,6 +192,22 @@ public class ConfigFrame extends JFrame {
               : "");
     }
 
+    JPanel ageGradeContent = new JPanel();
+    ageGradeContent.setLayout(new GridLayout(1, 1));
+    addTrackedTxtField("subj_age", "Subject Age", ageGradeContent, textFields, true);
+    addTrackedTxtField("subj_grade", "Subject Grade", ageGradeContent, textFields, true);
+
+    AbstractButton noButton = new JRadioButton("No");
+    noButton.setSelected(true);
+
+    Component ageGradePanel =
+        UiUtil.createToggleablePanel(
+            this,
+            createPanelWithBorderTitle("Include age and grade?"),
+            ageGradeContent,
+            new JRadioButton("Yes"),
+            noButton);
+
     JButton configButton = new JButton("Configure");
     configButton.addActionListener(actionEvent -> configDialog.setVisible(true));
 
@@ -228,7 +249,10 @@ public class ConfigFrame extends JFrame {
     c.fill = GridBagConstraints.BOTH;
     centerPanelWrapper.add(centerPanel, c);
 
-    c.gridy = 1;
+    c.gridy++;
+    centerPanelWrapper.add(ageGradePanel, c);
+
+    c.gridy++;
     centerPanelWrapper.add(configButtonPanel, c);
 
     contentConstraints.gridy = 1;
