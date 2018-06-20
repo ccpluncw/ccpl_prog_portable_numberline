@@ -23,6 +23,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ItemEvent;
 import java.io.File;
 import java.io.IOException;
@@ -78,7 +79,10 @@ class DetailedConfigPanel extends JPanel {
 
   private Bundle baseBundle = new Bundle();
 
-  public DetailedConfigPanel() {
+  private Window parent;
+
+  public DetailedConfigPanel(Window parent) {
+    this.parent = parent;
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
@@ -454,30 +458,10 @@ class DetailedConfigPanel extends JPanel {
 
     ButtonGroup btnGrp = btnGrps.get("use_cust_instruct");
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
-
     btns.get(1).setSelected(true);
 
-    btns.get(0)
-        .addItemListener(
-            itemEvent -> {
-              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                finalPanel.add(savePanel, BorderLayout.SOUTH);
-                finalPanel.revalidate();
-                ((Dialog) this.getRootPane().getParent()).pack();
-              }
-            });
-
-    btns.get(1)
-        .addItemListener(
-            itemEvent -> {
-              if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                finalPanel.remove(savePanel);
-                finalPanel.revalidate();
-                ((Dialog) this.getRootPane().getParent()).pack();
-              }
-            });
-
-    return finalPanel;
+    return (JPanel)
+        UiUtil.createToggleablePanel(parent, finalPanel, savePanel, btns.get(0), btns.get(1));
   }
 
   private JPanel biasPanel() {
