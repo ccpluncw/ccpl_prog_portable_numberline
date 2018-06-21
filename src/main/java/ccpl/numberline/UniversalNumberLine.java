@@ -62,6 +62,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
   private Mask lineMask;
 
+  private String subjAge;
+  private String subjGrade;
+
   /**
    * Parameterized constructor allow the specification of an experiment file, the subject ID,
    * condition, and session number.
@@ -84,6 +87,12 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     this.numOfPracTrials = dataBundle.getAsInt("num_prac_trials");
 
     this.isEstimationTask = dataBundle.getAsBoolean("estimation_task");
+
+    final String subjAgeVal = dataBundle.getAsString("subj_age");
+    final String subjGradeVal = dataBundle.getAsString("subj_grade");
+
+    this.subjAge = subjAgeVal.equalsIgnoreCase("0") ? "N/A" : subjAgeVal;
+    this.subjGrade = subjGradeVal.equalsIgnoreCase("0") ? "N/A" : subjGradeVal;
   }
 
   /** Runs the UniversalNumberLine experiment with the specified database file. */
@@ -423,6 +432,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         // Format as decimal output.
         outString.append(subject).append("\t");
+        outString.append(subjAge).append("\t");
+        outString.append(subjGrade).append("\t");
         outString.append(trialType).append("\t");
         outString.append(trialNum).append("\t");
         outString.append(condition).append("\t");
@@ -564,6 +575,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   public String createOutputHeader() {
     String header =
         "sn\t"
+            + "snAge\t"
+            + "snGrade\t"
             + "pract\t"
             + "trial\t"
             + "cond\t"
