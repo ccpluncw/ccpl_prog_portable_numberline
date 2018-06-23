@@ -1,8 +1,16 @@
 package ccpl.lib.util;
 
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridLayout;
 import java.awt.Toolkit;
+import java.awt.Window;
+import java.awt.event.ItemEvent;
 import java.util.Map;
+import javax.swing.AbstractButton;
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -17,6 +25,70 @@ public class UiUtil {
 
   public static int screenHeight() {
     return tk.getScreenSize().height;
+  }
+
+  /**
+   * Create a Panel, which has buttons to toggle the display a content container.
+   *
+   * @param parent Parent window
+   * @param wrapper Wrapper container for adding the buttons and content
+   * @param content Content that may or may not be hidden
+   * @param showBtn Button for the show action
+   * @param hideBtn Button for the hide action
+   * @return Container with display toggles
+   */
+  public static Container createToggleablePanel(
+      Window parent,
+      Container wrapper,
+      Component content,
+      AbstractButton showBtn,
+      AbstractButton hideBtn) {
+    wrapper.setLayout(new BorderLayout());
+
+    JPanel buttonPanel = new JPanel();
+
+    showBtn.addItemListener(
+        event -> {
+          if (event.getStateChange() == ItemEvent.SELECTED) {
+            wrapper.add(content, BorderLayout.CENTER);
+            wrapper.revalidate();
+            parent.pack();
+          }
+        });
+
+    hideBtn.addItemListener(
+        event -> {
+          if (event.getStateChange() == ItemEvent.SELECTED) {
+            wrapper.remove(content);
+            wrapper.revalidate();
+            parent.pack();
+          }
+        });
+
+    ButtonGroup radioBtns = new ButtonGroup();
+    radioBtns.add(showBtn);
+    radioBtns.add(hideBtn);
+
+    buttonPanel.add(showBtn);
+    buttonPanel.add(hideBtn);
+
+    wrapper.add(buttonPanel, BorderLayout.NORTH);
+
+    return wrapper;
+  }
+
+  /**
+   * Return a JPanel that has a border and title.
+   *
+   * @param title Title for panel
+   * @return JPanel with a titled border.
+   */
+  public static JPanel createPanelWithBorderTitle(String title) {
+    JPanel panel = new JPanel();
+
+    panel.setBorder(BorderFactory.createTitledBorder(title));
+
+    return panel;
   }
 
   /**
