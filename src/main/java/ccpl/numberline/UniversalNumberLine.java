@@ -328,7 +328,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         numLine =
             new NumberLine(
-                randWidth + thickness,
+                randWidth,
                 height,
                 thickness,
                 startUnit,
