@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 import javax.swing.JLabel;
@@ -169,7 +170,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     slope = getNumLineSlope();
 
     setRandBaseWidth(); // Set base width as the older version of numberline did
-    setExtendPoint();
+    extendPoint2D =
+        new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
 
     leftBoundHigh = getHighPoint(baseHeight, startPoint);
     rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
@@ -305,11 +307,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       activeDragHandle = new Handle(endLine, rightGuide, baseColor);
       linePanel.updateDragLine();
     }
-  }
-
-  private void setExtendPoint() {
-    extendPoint2D =
-        new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
   }
 
   private boolean checkBounds(Unit unit1, Unit unit2) {
