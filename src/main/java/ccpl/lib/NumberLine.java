@@ -109,6 +109,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   private final int unitSize;
 
+  private boolean isOutsideBounds;
+
   /**
    * Create a number line.
    *
@@ -146,6 +148,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       char handleAlignment,
       boolean[] shLabels,
       int unitSize) {
+
+    isOutsideBounds = checkBounds(targetU, endU);
 
     this.unitSize = unitSize;
 
@@ -318,12 +322,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private Point2D.Float getTargetSpecial() {
-    boolean outsideBounds;
     double startToTarget;
     Point2D.Float p;
 
     if (startUnit.toDouble() > endUnit.toDouble()) {
-      outsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
+      isOutsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
 
       startToTarget = targetUnit.toDouble() - endUnit.toDouble();
       startToTarget *= unitSize;
@@ -331,8 +334,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       p =
           new Point2D.Float(
               (float) extendPoint2D.getX() - (float) startToTarget, (float) extendPoint2D.getY());
-    } else {
-      outsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
+    } else if (startUnit.toDouble() < endUnit.toDouble()) {
+      isOutsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
 
       startToTarget = targetUnit.toDouble() - startUnit.toDouble();
       startToTarget *= unitSize;
@@ -340,9 +343,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       p =
           new Point2D.Float(
               (float) startPoint.getX() + (float) startToTarget, (float) startPoint.getY());
+    } else {
+      isOutsideBounds = false;
+      p = new Float((float) extendPoint2D.getX(), (float) extendPoint2D.getY());
+      dragLine = new Line2D.Float(extendPoint2D, extendPoint2D);
     }
 
-    if (outsideBounds) {
+    if (isOutsideBounds) {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
 
@@ -602,6 +609,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       activeDragHandle.getGuide().setLine(guideHandleLow, guideHandleHigh);
       activeDragHandle.setLine(
           handleHigh.x, handleHigh.y + lineThickness * 3, handleLow.x, handleLow.y);
+
+      isOutsideBounds = activeDragHandle.x1 > rightGuide.getX1();
 
       this.repaint();
     }
