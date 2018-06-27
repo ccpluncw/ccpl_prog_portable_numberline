@@ -173,7 +173,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     rightBoundPoint = getRightBound();
     slope = getNumLineSlope();
 
-    setRandBaseWidth(); // Set base width as the older version of numberline did
     extendPoint2D =
         new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
 
@@ -425,14 +424,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public boolean isHandleDragged() {
     return isHandleDragged;
-  }
-
-  private void setRandBaseWidth() {
-    int newWidth = (int) (baseWidth * widthPercentage);
-
-    if (newWidth != baseWidth && newWidth >= lineThickness) {
-      baseWidth = newWidth;
-    }
   }
 
   private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
