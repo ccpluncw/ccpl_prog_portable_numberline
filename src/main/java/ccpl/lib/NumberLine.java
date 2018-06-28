@@ -111,6 +111,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   private boolean isOutsideBounds;
 
+  private int guideWidth = 1; // Guides are 1px in size;
+  private int rightShift;
+  private int handleShift;
+
+  private boolean targetInside = false;
+
   /**
    * Create a number line.
    *
@@ -150,6 +156,16 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       int unitSize) {
 
     isOutsideBounds = checkBounds(targetU, endU);
+    targetInside = !isOutsideBounds;
+    boolean onBounds = !isOutsideBounds && !checkBounds(endU, targetU);
+
+    if (onBounds || isOutsideBounds) {
+      rightShift = guideWidth;
+      handleShift = guideWidth;
+    } else {
+      rightShift += 2 * guideWidth;
+      handleShift = guideWidth;
+    }
 
     this.unitSize = unitSize;
 
@@ -174,7 +190,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     slope = getNumLineSlope();
 
     extendPoint2D =
-        new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
+        new Point2D.Float((float) startPoint.getX() + baseWidth + rightShift, (float) (startPoint.getY()));
 
     leftBoundHigh = getHighPoint(baseHeight, startPoint);
     rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
@@ -396,7 +412,19 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   public double getUserResponse() {
-    return (currentDragPoint.x - leftGuide.getX1()) / unitSize + startUnit.toInteger();
+    int totalShift = isOutsideBounds ? handleShift + rightShift : handleShift;
+
+    if (targetInside && isOutsideBounds) {
+      totalShift += guideWidth;
+    }
+
+    // There is one edge case where the drag handle is on the left bound.
+    // The shift will make the answer negative.
+    if (currentDragPoint.x == leftGuide.getX1()) {
+      totalShift = 0;
+    }
+
+    return (currentDragPoint.x - leftGuide.getX1() - totalShift) / unitSize + startUnit.toInteger();
   }
 
   public Line2D getFixationLine() {
