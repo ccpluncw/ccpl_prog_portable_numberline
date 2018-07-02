@@ -16,6 +16,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Point2D.Float;
 import java.awt.geom.Rectangle2D;
 import java.util.Random;
 import javax.swing.JLabel;
@@ -108,6 +109,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   private final int unitSize;
 
+  private boolean isOutsideBounds;
+
+  private int guideWidth = 1; // Guides are 1px in size;
+  private int rightShift;
+  private int handleShift;
+
+  private boolean targetInside = false;
+
   /**
    * Create a number line.
    *
@@ -146,6 +155,18 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       boolean[] shLabels,
       int unitSize) {
 
+    isOutsideBounds = checkBounds(targetU, endU);
+    targetInside = !isOutsideBounds;
+    boolean onBounds = !isOutsideBounds && !checkBounds(endU, targetU);
+
+    if (onBounds || isOutsideBounds) {
+      rightShift = guideWidth;
+      handleShift = guideWidth;
+    } else {
+      rightShift += 2 * guideWidth;
+      handleShift = guideWidth;
+    }
+
     this.unitSize = unitSize;
 
     // ----- added by Oliver
@@ -168,8 +189,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     rightBoundPoint = getRightBound();
     slope = getNumLineSlope();
 
-    setRandBaseWidth(); // Set base width as the older version of numberline did
-    setExtendPoint();
+    extendPoint2D =
+        new Point2D.Float((float) startPoint.getX() + baseWidth + rightShift, (float) (startPoint.getY()));
 
     leftBoundHigh = getHighPoint(baseHeight, startPoint);
     rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
@@ -307,11 +328,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     }
   }
 
-  private void setExtendPoint() {
-    extendPoint2D =
-        new Point2D.Float((float) startPoint.getX() + baseWidth, (float) (startPoint.getY()));
-  }
-
   private boolean checkBounds(Unit unit1, Unit unit2) {
     return unit1.toDouble() > unit2.toDouble();
   }
@@ -321,12 +337,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private Point2D.Float getTargetSpecial() {
-    boolean outsideBounds;
     double startToTarget;
     Point2D.Float p;
 
     if (startUnit.toDouble() > endUnit.toDouble()) {
-      outsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
+      isOutsideBounds = checkBounds(endUnit, targetUnit) || checkBounds(targetUnit, startUnit);
 
       startToTarget = targetUnit.toDouble() - endUnit.toDouble();
       startToTarget *= unitSize;
@@ -334,8 +349,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       p =
           new Point2D.Float(
               (float) extendPoint2D.getX() - (float) startToTarget, (float) extendPoint2D.getY());
-    } else {
-      outsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
+    } else if (startUnit.toDouble() < endUnit.toDouble()) {
+      isOutsideBounds = checkBounds(targetUnit, endUnit) || checkBounds(startUnit, targetUnit);
 
       startToTarget = targetUnit.toDouble() - startUnit.toDouble();
       startToTarget *= unitSize;
@@ -343,9 +358,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       p =
           new Point2D.Float(
               (float) startPoint.getX() + (float) startToTarget, (float) startPoint.getY());
+    } else {
+      isOutsideBounds = false;
+      p = new Float((float) extendPoint2D.getX(), (float) extendPoint2D.getY());
+      dragLine = new Line2D.Float(extendPoint2D, extendPoint2D);
     }
 
-    if (outsideBounds) {
+    if (isOutsideBounds) {
       dragLine = new Line2D.Float(extendPoint2D, p);
     }
 
@@ -393,7 +412,19 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   public double getUserResponse() {
-    return (currentDragPoint.x - leftGuide.getX1()) / unitSize + startUnit.toInteger();
+    int totalShift = isOutsideBounds ? handleShift + rightShift : handleShift;
+
+    if (targetInside && isOutsideBounds) {
+      totalShift += guideWidth;
+    }
+
+    // There is one edge case where the drag handle is on the left bound.
+    // The shift will make the answer negative.
+    if (currentDragPoint.x == leftGuide.getX1()) {
+      totalShift = 0;
+    }
+
+    return (currentDragPoint.x - leftGuide.getX1() - totalShift) / unitSize + startUnit.toInteger();
   }
 
   public Line2D getFixationLine() {
@@ -421,14 +452,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public boolean isHandleDragged() {
     return isHandleDragged;
-  }
-
-  private void setRandBaseWidth() {
-    int newWidth = (int) (baseWidth * widthPercentage);
-
-    if (newWidth != baseWidth && newWidth >= lineThickness) {
-      baseWidth = newWidth;
-    }
   }
 
   private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
@@ -605,6 +628,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       activeDragHandle.getGuide().setLine(guideHandleLow, guideHandleHigh);
       activeDragHandle.setLine(
           handleHigh.x, handleHigh.y + lineThickness * 3, handleLow.x, handleLow.y);
+
+      isOutsideBounds = activeDragHandle.x1 > rightGuide.getX1();
 
       this.repaint();
     }
