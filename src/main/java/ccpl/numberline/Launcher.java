@@ -1,7 +1,7 @@
 package ccpl.numberline;
 
 import ccpl.lib.Bundle;
-import ccpl.numberline.config.ConfigFrame;
+import ccpl.numberline.config.ConfigDialog;
 import ccpl.numberline.config.PopupCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -25,7 +25,7 @@ public class Launcher {
     }
 
     PopupCallback listener = new PopupCallback();
-    final ConfigFrame popup = new ConfigFrame(listener, "Configure");
+    final ConfigDialog popup = new ConfigDialog(listener, "Configure");
 
     Bundle bundle = listener.getBundle();
 

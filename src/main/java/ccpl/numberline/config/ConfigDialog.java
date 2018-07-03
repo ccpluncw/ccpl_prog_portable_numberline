@@ -45,9 +45,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-public class ConfigFrame extends JDialog {
+public class ConfigDialog extends JDialog {
 
-  private Logger log = Logger.getLogger(ConfigFrame.class.getName());
+  private Logger log = Logger.getLogger(ConfigDialog.class.getName());
 
   private List<String> textKeys = Arrays.asList("subject", "session");
 
@@ -74,7 +74,7 @@ public class ConfigFrame extends JDialog {
    * @param cb Callback
    * @param title Title of frame
    */
-  public ConfigFrame(PopupCallback cb, String title) {
+  public ConfigDialog(PopupCallback cb, String title) {
     super(new JFrame(), title, ModalityType.DOCUMENT_MODAL);
 
     this.cb = cb;
