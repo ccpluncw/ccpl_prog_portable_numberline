@@ -25,15 +25,7 @@ public class Launcher {
     }
 
     PopupCallback listener = new PopupCallback();
-    ConfigFrame popup = new ConfigFrame(listener, "Configure");
-
-    while (popup.isVisible()) {
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-    }
+    final ConfigFrame popup = new ConfigFrame(listener, "Configure");
 
     Bundle bundle = listener.getBundle();
 
