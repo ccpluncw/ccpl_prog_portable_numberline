@@ -33,6 +33,7 @@ import java.util.logging.Logger;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFormattedTextField;
 import javax.swing.JFrame;
@@ -44,9 +45,9 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 
-public class ConfigFrame extends JFrame {
+public class ConfigDialog extends JDialog {
 
-  private Logger log = Logger.getLogger(ConfigFrame.class.getName());
+  private Logger log = Logger.getLogger(ConfigDialog.class.getName());
 
   private List<String> textKeys = Arrays.asList("subject", "session");
 
@@ -73,12 +74,13 @@ public class ConfigFrame extends JFrame {
    * @param cb Callback
    * @param title Title of frame
    */
-  public ConfigFrame(PopupCallback cb, String title) {
-    super(title);
+  public ConfigDialog(PopupCallback cb, String title) {
+    super(new JFrame(), title, ModalityType.DOCUMENT_MODAL);
+
     this.cb = cb;
     this.defaultConfigLoc = String.format("%s/.port_num/defaults_config_popup", homeDir);
     ClassLoader cl = ClassLoader.getSystemClassLoader();
-    baseBundle = readDbFile(cl.getResource("exp/infiles/base_exp.txt"));
+    baseBundle = readDbFile(Objects.requireNonNull(cl.getResource("exp/infiles/base_exp.txt")));
     configDialog.setBaseBundle(baseBundle);
 
     final boolean defaultConfigExist = new File(defaultConfigLoc).exists();
