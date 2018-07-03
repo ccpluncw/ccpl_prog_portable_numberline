@@ -78,7 +78,7 @@ public class ConfigFrame extends JFrame {
     this.cb = cb;
     this.defaultConfigLoc = String.format("%s/.port_num/defaults_config_popup", homeDir);
     ClassLoader cl = ClassLoader.getSystemClassLoader();
-    baseBundle = readDbFile(cl.getResource("exp/infiles/base_exp.txt"));
+    baseBundle = readDbFile(Objects.requireNonNull(cl.getResource("exp/infiles/base_exp.txt")));
     configDialog.setBaseBundle(baseBundle);
 
     final boolean defaultConfigExist = new File(defaultConfigLoc).exists();
