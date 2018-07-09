@@ -50,7 +50,7 @@ public class Experiment implements ExpInterface {
 
     this.response.setFrame(frame);
 
-    this.dataFileName = "/p" + subject + "s" + session + ".dat";
+    this.dataFileName = "/p" + subject + "s" + session + ".tsv";
     this.relativeDataDirectory = saveDirectory;
     this.infilesPath = "exp/infiles/";
   }
