@@ -44,6 +44,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ConfigDialog extends JDialog {
 
@@ -217,6 +218,12 @@ public class ConfigDialog extends JDialog {
     loadConfigButton.addActionListener(
         actionEvent -> {
           JFileChooser loadFileChooser = new JFileChooser();
+
+          FileNameExtensionFilter filter =
+              new FileNameExtensionFilter("Number line config", "nlconfig");
+
+          loadFileChooser.setFileFilter(filter);
+
           int ret = loadFileChooser.showOpenDialog(this);
 
           if (ret == JFileChooser.CANCEL_OPTION) {

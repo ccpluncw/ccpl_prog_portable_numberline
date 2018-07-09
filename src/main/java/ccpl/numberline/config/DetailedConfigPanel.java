@@ -54,6 +54,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.NumberFormatter;
 import javax.swing.text.PlainDocument;
 
@@ -560,6 +561,9 @@ class DetailedConfigPanel extends JPanel {
     save.addActionListener(
         actionEvent -> {
           JFileChooser saveFileChooser = new JFileChooser();
+          FileNameExtensionFilter filter =
+              new FileNameExtensionFilter("Number line config", "nlconfig");
+          saveFileChooser.setFileFilter(filter);
           int ret = saveFileChooser.showSaveDialog(this);
 
           if (ret == JFileChooser.CANCEL_OPTION) {
@@ -568,6 +572,10 @@ class DetailedConfigPanel extends JPanel {
 
           try {
             File saveFile = saveFileChooser.getSelectedFile();
+
+            if (!saveFile.getPath().endsWith(".nlconfig")) {
+              saveFile = new File(saveFile.getAbsolutePath() + ".nlconfig");
+            }
 
             if (saveFile.exists()) {
               int confirmRet =
