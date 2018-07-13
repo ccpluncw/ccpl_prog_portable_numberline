@@ -581,14 +581,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
             + "trial\t"
             + "cond\t"
             + "session\t"
-            + "numberlineSize\t"
+            + "numLineSize\t"
             + "unitWidth\t"
             + "startUnit\t"
             + "endUnit\t"
             + "target\t"
-            + "Bounded\t"
+            + "numLineType\t"
             + "userRespValue\t"
-            + "estTask\t"
+            + "numLineTask\t"
             + "numLineRT\t";
 
     header += (estStimTime > 0) ? "estStimTime" : "";
