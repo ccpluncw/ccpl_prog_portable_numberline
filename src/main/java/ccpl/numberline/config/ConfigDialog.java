@@ -5,6 +5,8 @@ import static ccpl.lib.util.DatabaseFileReader.writeDbFile;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.expandGridPanel;
+import static ccpl.numberline.Constants.outputDirectory;
+import static ccpl.numberline.Constants.setOutputDirectory;
 
 import ccpl.lib.Bundle;
 import ccpl.lib.util.DatabaseFileReader;
@@ -122,7 +124,8 @@ public class ConfigDialog extends JDialog {
             }
 
             try {
-              saveTxtField.setText(fc.getSelectedFile().getCanonicalPath());
+              setOutputDirectory(fc.getSelectedFile().getCanonicalPath());
+              saveTxtField.setText(outputDirectory);
             } catch (IOException e) {
               log.log(Level.WARNING, e.getLocalizedMessage());
             }
@@ -194,6 +197,8 @@ public class ConfigDialog extends JDialog {
           (!Objects.equals(safeGrab(bundle, "save_dir"), "NULL"))
               ? safeGrab(bundle, "save_dir")
               : "");
+
+      setOutputDirectory(saveTxtField.getText());
     }
 
     JPanel ageGradeContent = new JPanel();

@@ -3,6 +3,7 @@ package ccpl.numberline.config;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.screenWidth;
+import static ccpl.numberline.Constants.outputDirectory;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.pow;
@@ -560,10 +561,13 @@ class DetailedConfigPanel extends JPanel {
     JButton save = new JButton("Save Configuration");
     save.addActionListener(
         actionEvent -> {
-          JFileChooser saveFileChooser = new JFileChooser();
           FileNameExtensionFilter filter =
               new FileNameExtensionFilter("Number line config", "nlconfig");
+
+          JFileChooser saveFileChooser = new JFileChooser();
           saveFileChooser.setFileFilter(filter);
+          saveFileChooser.setCurrentDirectory(new File(outputDirectory));
+
           int ret = saveFileChooser.showSaveDialog(this);
 
           if (ret == JFileChooser.CANCEL_OPTION) {
