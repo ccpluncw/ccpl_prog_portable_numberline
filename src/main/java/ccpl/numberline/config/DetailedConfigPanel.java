@@ -3,7 +3,8 @@ package ccpl.numberline.config;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.screenWidth;
-import static ccpl.numberline.Constants.outputDirectory;
+import static ccpl.numberline.Constants.lastConfigSaveDir;
+import static ccpl.numberline.Constants.setLastConfigSaveDirectory;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.pow;
@@ -335,10 +336,10 @@ class DetailedConfigPanel extends JPanel {
               }
             });
 
-    ButtonGroup btnGrp = btnGrps.get("estimation_task");
-    List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
     if (FeatureSwitch.USE_MASK) {
+      ButtonGroup btnGrp = btnGrps.get("estimation_task");
+      List<AbstractButton> btns = Collections.list(btnGrp.getElements());
       btns.get(0)
           .addItemListener(
               it -> {
@@ -566,7 +567,7 @@ class DetailedConfigPanel extends JPanel {
 
           JFileChooser saveFileChooser = new JFileChooser();
           saveFileChooser.setFileFilter(filter);
-          saveFileChooser.setCurrentDirectory(new File(outputDirectory));
+          saveFileChooser.setCurrentDirectory(new File(lastConfigSaveDir));
 
           int ret = saveFileChooser.showSaveDialog(this);
 
@@ -591,6 +592,8 @@ class DetailedConfigPanel extends JPanel {
                 return;
               }
             }
+
+            setLastConfigSaveDirectory(saveFile.getParent());
 
             URL path = saveFile.toURI().toURL();
             DatabaseFileReader.writeDbFile(getBundle(), path);

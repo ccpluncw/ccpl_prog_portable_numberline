@@ -5,7 +5,9 @@ import static ccpl.lib.util.DatabaseFileReader.writeDbFile;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.expandGridPanel;
+import static ccpl.numberline.Constants.lastConfigSaveDir;
 import static ccpl.numberline.Constants.outputDirectory;
+import static ccpl.numberline.Constants.setLastConfigSaveDirectory;
 import static ccpl.numberline.Constants.setOutputDirectory;
 
 import ccpl.lib.Bundle;
@@ -172,6 +174,7 @@ public class ConfigDialog extends JDialog {
             cb.bundle = cb.bundle.merge(configDialog.getBundle());
             bunAdd("target_label_on", true);
             bunAdd("save_dir", saveTxtField.getText());
+            bunAdd("config_save_dir", lastConfigSaveDir);
 
             try {
               writeDbFile(cb.bundle, new URL(String.format("file://%s", defaultConfigLoc)));
@@ -191,6 +194,7 @@ public class ConfigDialog extends JDialog {
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
+
       setTextDefaults(bundle);
       configDialog.setDefaults(bundle);
       saveTxtField.setText(
@@ -199,6 +203,14 @@ public class ConfigDialog extends JDialog {
               : "");
 
       setOutputDirectory(saveTxtField.getText());
+
+      String configDir = safeGrab(bundle, "config_save_dir");
+
+      if (!configDir.equalsIgnoreCase("NULL")) {
+        setLastConfigSaveDirectory(configDir);
+      } else {
+        setLastConfigSaveDirectory(outputDirectory);
+      }
     }
 
     JPanel ageGradeContent = new JPanel();
@@ -228,6 +240,7 @@ public class ConfigDialog extends JDialog {
           FileNameExtensionFilter filter =
               new FileNameExtensionFilter("Number line config", "nlconfig");
 
+          loadFileChooser.setCurrentDirectory(new File(lastConfigSaveDir));
           loadFileChooser.setFileFilter(filter);
 
           int ret = loadFileChooser.showOpenDialog(this);

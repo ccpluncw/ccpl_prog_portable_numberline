@@ -7,8 +7,13 @@ package ccpl.numberline;
  */
 public class Constants {
   public static String outputDirectory = ".";
+  public static String lastConfigSaveDir = outputDirectory;
 
   public static void setOutputDirectory(String newDir) {
     outputDirectory = newDir;
+  }
+
+  public static void setLastConfigSaveDirectory(String newDir) {
+    lastConfigSaveDir = newDir;
   }
 }
