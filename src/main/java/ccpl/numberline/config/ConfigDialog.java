@@ -109,8 +109,9 @@ public class ConfigDialog extends JDialog {
               JOptionPane.showMessageDialog(
                   this,
                   "Selected directory does not exist.\n"
-                      + "Falling back to "
-                      + fc.getSelectedFile().getAbsolutePath());
+                      + "Using "
+                      + fc.getSelectedFile().getAbsolutePath()
+                      + " as output directory.");
             }
 
             if (!fc.getSelectedFile().canWrite()) {
