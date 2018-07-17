@@ -88,6 +88,7 @@ class DetailedConfigPanel extends JPanel {
   private JPanel largestTargetPanel;
 
   private int distinctTargets = 0;
+  private JLabel distinctTargetsLbl = new JLabel("Number of distinct target values: 0");
 
   public DetailedConfigPanel(Window parent) {
     this.parent = parent;
@@ -539,7 +540,7 @@ class DetailedConfigPanel extends JPanel {
   private JPanel largestTarget() {
     JPanel panel = createPanelWithBorderTitle("Largest Estimation Target or Right Bound");
 
-    panel.add(largeLbl);
+    panel.add(distinctTargetsLbl);
 
     return panel;
   }
@@ -720,10 +721,10 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private void updateLargeLbl() {
+    double largestTarget = calculateMaxTarget();
     largestTargetPanel.setBorder(
         BorderFactory.createTitledBorder(
-            String.format(
-                "Largest target value or right bound allowed: %s", calculateMaxTarget())));
+            String.format("Largest target value or right bound allowed: %s", largestTarget)));
 
     Bundle bun = getBundle();
 
@@ -736,7 +737,9 @@ class DetailedConfigPanel extends JPanel {
 
     distinctTargets = calcDistinctCount(start, end, inter, leftBnd, rightBnd, true);
 
-    largeLbl.setText(String.format("Number of distinct target values: %s", distinctTargets));
+    largeLbl.setText(String.format("Number of distinct target values: %s", largestTarget));
+    distinctTargetsLbl.setText(
+        String.format("Number of distinct target values: %s", distinctTargets));
   }
 
   private int calcDistinctCount(
