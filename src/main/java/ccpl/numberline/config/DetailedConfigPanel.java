@@ -13,6 +13,7 @@ import ccpl.lib.Bundle;
 import ccpl.lib.IntFilter;
 import ccpl.lib.IntTextField;
 import ccpl.lib.util.DatabaseFileReader;
+import ccpl.lib.util.MathUtil;
 import ccpl.lib.util.UiUtil;
 import ccpl.numberline.FeatureSwitch;
 import java.awt.BorderLayout;
@@ -84,14 +85,20 @@ class DetailedConfigPanel extends JPanel {
 
   private Window parent;
 
+  private JPanel largestTargetPanel;
+
+  private int distinctTargets = 0;
+
   public DetailedConfigPanel(Window parent) {
     this.parent = parent;
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+    this.largestTargetPanel = largestTarget();
+
     this.add(textPanel());
     this.add(targetPanel());
-    this.add(largestTarget());
+    this.add(largestTargetPanel);
     this.add(estPanel());
     this.add(boundedPanel());
     this.add(sizePanel());
@@ -335,7 +342,6 @@ class DetailedConfigPanel extends JPanel {
                 }
               }
             });
-
 
     if (FeatureSwitch.USE_MASK) {
       ButtonGroup btnGrp = btnGrps.get("estimation_task");
@@ -630,6 +636,8 @@ class DetailedConfigPanel extends JPanel {
       baseBundle.add("est_stim_time", baseBundle.getAsInt("scalar_field") * (1000 / refreshRate));
     }
 
+    bundle.add("distinct_targets", distinctTargets);
+
     return bundle;
   }
 
@@ -712,8 +720,40 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private void updateLargeLbl() {
-    largeLbl.setText(
-        String.format("Largest target value or right bound allowed: %s", calculateMaxTarget()));
+    largestTargetPanel.setBorder(
+        BorderFactory.createTitledBorder(
+            String.format(
+                "Largest target value or right bound allowed: %s", calculateMaxTarget())));
+
+    Bundle bun = getBundle();
+
+    int leftBnd = bun.getAsInt("start_unit");
+    int rightBnd = bun.getAsInt("end_unit");
+
+    int start = bun.getAsInt("target_unit_low");
+    int end = bun.getAsInt("target_unit_high");
+    int inter = bun.getAsInt("target_unit_interval");
+
+    distinctTargets = calcDistinctCount(start, end, inter, leftBnd, rightBnd, true);
+
+    largeLbl.setText(String.format("Number of distinct target values: %s", distinctTargets));
+  }
+
+  private int calcDistinctCount(
+      double start,
+      double end,
+      double interval,
+      double leftBnd,
+      double rightBnd,
+      boolean excludeBnds) {
+    int numExcludePoints = 0;
+
+    if (excludeBnds) {
+      numExcludePoints += MathUtil.contains(start, end, leftBnd) ? 1 : 0;
+      numExcludePoints += MathUtil.contains(start, end, rightBnd) ? 1 : 0;
+    }
+
+    return (int) ((end - start + 1) / interval - numExcludePoints);
   }
 
   public void setBaseBundle(Bundle value) {
