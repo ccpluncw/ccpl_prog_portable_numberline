@@ -99,6 +99,7 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(textPanel());
     this.add(targetPanel());
+    this.add(boundExclusionPanel());
     this.add(largestTargetPanel);
     this.add(estPanel());
     this.add(boundedPanel());
@@ -214,6 +215,23 @@ class DetailedConfigPanel extends JPanel {
     txt.setText("1");
 
     return panel;
+  }
+
+  private JPanel boundExclusionPanel() {
+    JPanel btnPanel =
+        buttonPanel(
+            "Include bounds in target?",
+            "bound_inclusion",
+            Arrays.asList("Yes", "No"),
+            Arrays.asList("true", "false"));
+
+    ButtonGroup btnGrpSwitches = btnGrps.get("bound_inclusion");
+    List<AbstractButton> btnsSwitches = Collections.list(btnGrpSwitches.getElements());
+
+    btnsSwitches.get(0).addItemListener(itemEvent -> updateLargeLbl());
+    btnsSwitches.get(1).addItemListener(itemEvent -> updateLargeLbl());
+
+    return btnPanel;
   }
 
   private JPanel estPanel() {
@@ -735,7 +753,9 @@ class DetailedConfigPanel extends JPanel {
     int end = bun.getAsInt("target_unit_high");
     int inter = bun.getAsInt("target_unit_interval");
 
-    distinctTargets = calcDistinctCount(start, end, inter, leftBnd, rightBnd, true);
+    boolean excludeBnds = !bun.getAsBoolean("bound_inclusion");
+
+    distinctTargets = calcDistinctCount(start, end, inter, leftBnd, rightBnd, excludeBnds);
 
     largeLbl.setText(String.format("Number of distinct target values: %s", largestTarget));
     distinctTargetsLbl.setText(

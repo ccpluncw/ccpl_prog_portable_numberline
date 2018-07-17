@@ -269,6 +269,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final Unit targetUnitHigh = new Unit(dataBundle.getAsString("target_unit_high"));
         final Unit targetUnitInterval = new Unit(dataBundle.getAsString("target_unit_interval"));
 
+        final boolean excludeBnds = !dataBundle.getAsBoolean("bound_inclusion");
+
         final String startUnitFormat = dataBundle.getAsString("start_unit_format").toUpperCase();
         final String endUnitFormat = dataBundle.getAsString("end_unit_format").toUpperCase();
         final String targetUnitFormat = dataBundle.getAsString("target_unit_format").toUpperCase();
@@ -315,7 +317,17 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         int randWidth = units * unitSize;
 
-        Unit randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
+        Unit randTarget;
+        Unit leftBnd = new Unit(String.valueOf(startUnitInt));
+        Unit rightBnd = new Unit(String.valueOf(endUnitInt));
+        if (excludeBnds) {
+          randTarget = leftBnd; // Set to left bound to trigger at least one randomisation.
+          while (randTarget == leftBnd || randTarget == rightBnd) {
+            randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
+          }
+        } else {
+          randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
+        }
 
         Unit startUnit = reduceUnit(startUnitFormat, defaultStartUnit);
         Unit endUnit = reduceUnit(endUnitFormat, defaultEndUnit);
