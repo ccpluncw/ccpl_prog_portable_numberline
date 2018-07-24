@@ -5,6 +5,8 @@ import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.screenWidth;
 import static ccpl.numberline.Constants.lastConfigSaveDir;
 import static ccpl.numberline.Constants.setLastConfigSaveDirectory;
+import static ccpl.numberline.config.ConfigValidator.countErrors;
+import static ccpl.numberline.config.ConfigValidator.generateConfigErrors;
 import static java.lang.Double.parseDouble;
 import static java.lang.Integer.parseInt;
 import static java.lang.Math.pow;
@@ -18,6 +20,7 @@ import ccpl.lib.util.UiUtil;
 import ccpl.numberline.FeatureSwitch;
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
@@ -85,22 +88,31 @@ class DetailedConfigPanel extends JPanel {
 
   private Window parent;
 
-  private JPanel largestTargetPanel;
-
   private int distinctTargets = 0;
   private JLabel distinctTargetsLbl = new JLabel("Number of distinct target values: 0");
+
+  private JPanel errorPanel = new JPanel();
+  private JLabel errorsLbl = new JLabel("0");
 
   public DetailedConfigPanel(Window parent) {
     this.parent = parent;
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-    this.largestTargetPanel = largestTarget();
+    JButton showErrorsBtn = new JButton("Show errors");
+    showErrorsBtn.addActionListener(
+        actionEvent ->
+            JOptionPane.showMessageDialog(this, generateConfigErrors(getBundle()).toString()));
+
+    errorPanel.add(new JLabel("<html><font color='red'>Number of errors: </font></html>"));
+    errorPanel.add(errorsLbl);
+    errorPanel.add(showErrorsBtn);
+
+    this.add(errorPanel);
 
     this.add(textPanel());
     this.add(targetPanel());
     this.add(boundExclusionPanel());
-    this.add(largestTargetPanel);
     this.add(estPanel());
     this.add(boundedPanel());
     this.add(sizePanel());
@@ -167,6 +179,51 @@ class DetailedConfigPanel extends JPanel {
                 }
               }
             });
+
+    txtMap.forEach(
+        (key, value) ->
+            value
+                .getDocument()
+                .addDocumentListener(
+                    new DocumentListener() {
+                      @Override
+                      public void insertUpdate(DocumentEvent documentEvent) {
+                        if (!value.getText().isEmpty()) {
+                          updateError();
+                        }
+                      }
+
+                      @Override
+                      public void removeUpdate(DocumentEvent documentEvent) {
+                        if (!value.getText().isEmpty()) {
+                          updateError();
+                        }
+                      }
+
+                      @Override
+                      public void changedUpdate(DocumentEvent documentEvent) {
+                        if (!value.getText().isEmpty()) {
+                          updateError();
+                        }
+                      }
+                    }));
+
+    btnGrps.forEach(
+        (key, value) -> {
+          Collections.list(value.getElements())
+              .forEach(e -> e.addActionListener(actionEvent -> updateError()));
+        });
+  }
+
+  private void updateError() {
+    int errors = countErrors(getBundle());
+    if (errors <= 0) {
+      errorPanel.setVisible(false);
+      return;
+    }
+
+    errorPanel.setVisible(true);
+    errorsLbl.setText("<html><font color='red'>" + String.valueOf(errors) + "</font></html>");
   }
 
   /**
@@ -199,22 +256,80 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel targetPanel() {
-    JPanel panel = createPanelWithBorderTitle("Target");
-    panel.setLayout(new GridLayout(0, 6, 5, 1));
+    JPanel wrapper = createPanelWithBorderTitle("Target");
+    wrapper.setLayout(new GridLayout(5, 1));
+
+    JPanel gridPanel = new JPanel();
+    gridPanel.setLayout(new GridLayout(0, 6, 5, 1));
 
     List<String> txtKey = Arrays.asList("target_unit_low", "target_unit_high");
     List<String> txtLabel = Arrays.asList("From", "To");
 
     for (int i = 0; i < txtKey.size(); i++) {
       addTrackedTxtField(
-          new JFormattedTextField(twoSig), txtKey.get(i), txtLabel.get(i), panel, txtMap, false);
+          new JFormattedTextField(twoSig),
+          txtKey.get(i),
+          txtLabel.get(i),
+          gridPanel,
+          txtMap,
+          false);
     }
 
     JFormattedTextField txt = new JFormattedTextField(twoSig);
-    addTrackedTxtField(txt, "target_unit_interval", "By", panel, txtMap, false);
+    addTrackedTxtField(txt, "target_unit_interval", "By", gridPanel, txtMap, false);
     txt.setText("1");
 
-    return panel;
+    wrapper.add(largeLbl);
+    wrapper.add(gridPanel);
+    wrapper.add(
+        createOptionPanel(
+            "include_left_bnd",
+            "Include left bound as target?",
+            new String[] {"Yes", "No"},
+            new String[] {"true", "false"}));
+    wrapper.add(
+        createOptionPanel(
+            "include_right_bnd",
+            "Include right bound as target?",
+            new String[] {"Yes", "No"},
+            new String[] {"true", "false"}));
+    wrapper.add(distinctTargetsLbl);
+
+    return wrapper;
+  }
+
+  private JPanel createOptionPanel(String key, String label, String[] optLabel, String[] opt) {
+    JPanel wrapper = new JPanel();
+    wrapper.setLayout(new GridBagLayout());
+
+    List<JRadioButton> buts =
+        Arrays.stream(optLabel)
+            .map(JRadioButton::new)
+            .collect(Collectors.toCollection(ArrayList::new));
+
+    for (int i = 0; i < buts.size(); i++) {
+      buts.get(i).setActionCommand(opt[i]);
+    }
+
+    buts.get(0).setSelected(true);
+
+    Container btnContainer = new JPanel(new GridLayout(1, optLabel.length));
+    ButtonGroup btnGrp = new ButtonGroup();
+    buts.forEach(btnGrp::add);
+    buts.forEach(btnContainer::add);
+    btnGrps.put(key, btnGrp);
+
+    GridBagConstraints constraint = new GridBagConstraints();
+
+    constraint.weightx = 0.75;
+    constraint.fill = GridBagConstraints.HORIZONTAL;
+    wrapper.add(new JLabel(label), constraint);
+
+    constraint.weightx = 0.25;
+    constraint.fill = GridBagConstraints.HORIZONTAL;
+    wrapper.add(btnContainer, constraint);
+
+    return wrapper;
   }
 
   private JPanel boundExclusionPanel() {
@@ -555,14 +670,6 @@ class DetailedConfigPanel extends JPanel {
     return panel;
   }
 
-  private JPanel largestTarget() {
-    JPanel panel = createPanelWithBorderTitle("Largest Estimation Target or Right Bound");
-
-    panel.add(distinctTargetsLbl);
-
-    return panel;
-  }
-
   private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds) {
     List<JRadioButton> buts =
         butStrs.stream().map(JRadioButton::new).collect(Collectors.toCollection(ArrayList::new));
@@ -740,9 +847,6 @@ class DetailedConfigPanel extends JPanel {
 
   private void updateLargeLbl() {
     double largestTarget = calculateMaxTarget();
-    largestTargetPanel.setBorder(
-        BorderFactory.createTitledBorder(
-            String.format("Largest target value or right bound allowed: %s", largestTarget)));
 
     Bundle bun = getBundle();
 
@@ -753,9 +857,11 @@ class DetailedConfigPanel extends JPanel {
     int end = bun.getAsInt("target_unit_high");
     int inter = bun.getAsInt("target_unit_interval");
 
-    boolean excludeBnds = !bun.getAsBoolean("bound_inclusion");
+    boolean excludeLeft = !bun.getAsBoolean("include_left_bnd");
+    boolean excludeRight = !bun.getAsBoolean("include_right_bnd");
 
-    distinctTargets = calcDistinctCount(start, end, inter, leftBnd, rightBnd, excludeBnds);
+    distinctTargets =
+        calcDistinctCount(start, end, inter, leftBnd, rightBnd, excludeLeft, excludeRight);
 
     largeLbl.setText(String.format("Number of distinct target values: %s", largestTarget));
     distinctTargetsLbl.setText(
@@ -768,11 +874,15 @@ class DetailedConfigPanel extends JPanel {
       double interval,
       double leftBnd,
       double rightBnd,
-      boolean excludeBnds) {
+      boolean excludeLeft,
+      boolean excludeRight) {
     int numExcludePoints = 0;
 
-    if (excludeBnds) {
+    if (excludeLeft) {
       numExcludePoints += MathUtil.contains(start, end, leftBnd) ? 1 : 0;
+    }
+
+    if (excludeRight) {
       numExcludePoints += MathUtil.contains(start, end, rightBnd) ? 1 : 0;
     }
 
