@@ -91,8 +91,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     final String subjAgeVal = dataBundle.getAsString("subj_age");
     final String subjGradeVal = dataBundle.getAsString("subj_grade");
 
-    this.subjAge = subjAgeVal.equalsIgnoreCase("0") ? "N/A" : subjAgeVal;
-    this.subjGrade = subjGradeVal.equalsIgnoreCase("0") ? "N/A" : subjGradeVal;
+    this.subjAge = subjAgeVal.equalsIgnoreCase("0") ? "NA" : subjAgeVal;
+    this.subjGrade = subjGradeVal.equalsIgnoreCase("0") ? "NA" : subjGradeVal;
   }
 
   /** Runs the UniversalNumberLine experiment with the specified database file. */
