@@ -112,7 +112,6 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(textPanel());
     this.add(targetPanel());
-    this.add(boundExclusionPanel());
     this.add(estPanel());
     this.add(boundedPanel());
     this.add(sizePanel());
@@ -156,10 +155,12 @@ class DetailedConfigPanel extends JPanel {
     txt.getDocument()
         .addDocumentListener(
             new DocumentListener() {
+
+              ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+              List<AbstractButton> btns = Collections.list(btnGrp.getElements());
+
               @Override
               public void insertUpdate(DocumentEvent documentEvent) {
-                ButtonGroup btnGrp = btnGrps.get("bound_exterior");
-                List<AbstractButton> btns = Collections.list(btnGrp.getElements());
                 if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
                   updateRightBound();
                 }
@@ -167,14 +168,14 @@ class DetailedConfigPanel extends JPanel {
 
               @Override
               public void removeUpdate(DocumentEvent documentEvent) {
-                if (!txt.getText().isEmpty()) {
+                if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
                   updateRightBound();
                 }
               }
 
               @Override
               public void changedUpdate(DocumentEvent documentEvent) {
-                if (!txt.getText().isEmpty()) {
+                if (!txt.getText().isEmpty() && btns.get(1).isSelected()) {
                   updateRightBound();
                 }
               }
@@ -209,10 +210,8 @@ class DetailedConfigPanel extends JPanel {
                     }));
 
     btnGrps.forEach(
-        (key, value) -> {
-          Collections.list(value.getElements())
-              .forEach(e -> e.addActionListener(actionEvent -> updateError()));
-        });
+        (key, value) -> Collections.list(value.getElements())
+            .forEach(e -> e.addActionListener(actionEvent -> updateError())));
   }
 
   private void updateError() {
