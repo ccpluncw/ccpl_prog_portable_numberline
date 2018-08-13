@@ -307,7 +307,7 @@ public class ConfigDialog extends JDialog {
     String session = textFields.get("session").getText();
     StringBuilder sb = new StringBuilder();
 
-    String filePath = String.format("%s/p%ss%s.dat", saveTxtField.getText(), subject, session);
+    String filePath = String.format("%s/p%ss%s.tsv", saveTxtField.getText(), subject, session);
 
     if (new File(filePath).exists()) {
       pass = false;
