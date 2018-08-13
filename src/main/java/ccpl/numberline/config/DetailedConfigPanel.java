@@ -110,10 +110,10 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(errorPanel);
 
+    this.add(boundedPanel());
+    this.add(estPanel());
     this.add(textPanel());
     this.add(targetPanel());
-    this.add(estPanel());
-    this.add(boundedPanel());
     this.add(sizePanel());
     this.add(biasPanel());
     this.add(customInstruction());
