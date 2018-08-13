@@ -215,6 +215,7 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private void updateError() {
+    updateLargeLbl();
     int errors = countErrors(getBundle());
     if (errors <= 0) {
       errorPanel.setVisible(false);
