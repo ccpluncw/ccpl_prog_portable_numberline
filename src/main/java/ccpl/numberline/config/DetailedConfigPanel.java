@@ -354,7 +354,7 @@ class DetailedConfigPanel extends JPanel {
 
     JPanel panel =
         buttonPanel(
-            "Estimation or Production",
+            "Number Line Variant",
             "estimation_task",
             Arrays.asList("Estimation", "Production"),
             Arrays.asList("true", "false"));
@@ -510,7 +510,7 @@ class DetailedConfigPanel extends JPanel {
   private JPanel boundedPanel() {
     JPanel panel =
         buttonPanel(
-            "Bounded or Unbounded",
+            "Number Line Type",
             "bound_exterior",
             Arrays.asList("Bounded", "Unbounded", "Universal"),
             Arrays.asList("true", "false", "FALSE"));

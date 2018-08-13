@@ -102,7 +102,7 @@ public class ConfigDialog extends JDialog {
     fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     final JLabel saveLabel = new JLabel("Save: ");
 
-    JButton saveButton = new JButton("Save Directory");
+    JButton saveButton = new JButton("Data Directory");
     saveButton.addActionListener(
         actionEvent -> {
           int returnVal = fc.showSaveDialog(this);
