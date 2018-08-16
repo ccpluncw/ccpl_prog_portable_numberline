@@ -39,5 +39,8 @@ public class Launcher {
           new UniversalNumberLine(expFile, subject, condition, session, bundle);
       exp.run();
     }
+
+    popup.dispose();
+    System.exit(0);
   }
 }
