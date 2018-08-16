@@ -810,6 +810,7 @@ class DetailedConfigPanel extends JPanel {
 
     // Update the label since calculateMaxTarget() was called before setting the defaults.
     updateLargeLbl();
+    updateError();
   }
 
   public long calculateMaxTarget() {
