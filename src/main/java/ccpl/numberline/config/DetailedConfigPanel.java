@@ -795,8 +795,8 @@ class DetailedConfigPanel extends JPanel {
     // Handle the case where the other bias was selected.
     double bias = parseDouble(defs.getAsString("bias"));
     if (bias != 1.2 && bias != 1.4) {
-      JButton btn =
-          (JButton)
+      JRadioButton btn =
+          (JRadioButton)
               Collections.list(btnMatches.get("bias").getElements())
                   .stream()
                   .filter(it -> it.getActionCommand().equals("0.0"))
