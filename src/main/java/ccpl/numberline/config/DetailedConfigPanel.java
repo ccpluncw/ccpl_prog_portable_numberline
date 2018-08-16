@@ -210,8 +210,9 @@ class DetailedConfigPanel extends JPanel {
                     }));
 
     btnGrps.forEach(
-        (key, value) -> Collections.list(value.getElements())
-            .forEach(e -> e.addActionListener(actionEvent -> updateError())));
+        (key, value) ->
+            Collections.list(value.getElements())
+                .forEach(e -> e.addActionListener(actionEvent -> updateError())));
   }
 
   private void updateError() {
@@ -864,7 +865,8 @@ class DetailedConfigPanel extends JPanel {
     distinctTargets =
         calcDistinctCount(start, end, inter, leftBnd, rightBnd, excludeLeft, excludeRight);
 
-    largeLbl.setText(String.format("Largest target value or right bound allowed: %s", largestTarget));
+    largeLbl.setText(
+        String.format("Largest target value or right bound allowed: %s", largestTarget));
     distinctTargetsLbl.setText(
         String.format("Number of distinct target values: %s", distinctTargets));
   }
