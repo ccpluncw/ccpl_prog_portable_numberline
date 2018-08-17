@@ -1,5 +1,6 @@
 package ccpl.numberline.config;
 
+import static ccpl.lib.util.MathUtil.calcDistinctCount;
 import static ccpl.lib.util.UiUtil.addTrackedTxtField;
 import static ccpl.lib.util.UiUtil.createPanelWithBorderTitle;
 import static ccpl.lib.util.UiUtil.screenWidth;
@@ -15,7 +16,6 @@ import ccpl.lib.Bundle;
 import ccpl.lib.IntFilter;
 import ccpl.lib.IntTextField;
 import ccpl.lib.util.DatabaseFileReader;
-import ccpl.lib.util.MathUtil;
 import ccpl.lib.util.UiUtil;
 import ccpl.numberline.FeatureSwitch;
 import java.awt.BorderLayout;
@@ -853,26 +853,6 @@ class DetailedConfigPanel extends JPanel {
         String.format("Number of distinct target values: %s", distinctTargets));
   }
 
-  private int calcDistinctCount(
-      double start,
-      double end,
-      double interval,
-      double leftBnd,
-      double rightBnd,
-      boolean excludeLeft,
-      boolean excludeRight) {
-    int numExcludePoints = 0;
-
-    if (excludeLeft) {
-      numExcludePoints += MathUtil.contains(start, end, leftBnd) ? 1 : 0;
-    }
-
-    if (excludeRight) {
-      numExcludePoints += MathUtil.contains(start, end, rightBnd) ? 1 : 0;
-    }
-
-    return (int) ((end - start + 1) / interval - numExcludePoints);
-  }
 
   public void setBaseBundle(Bundle value) {
     baseBundle = value;
