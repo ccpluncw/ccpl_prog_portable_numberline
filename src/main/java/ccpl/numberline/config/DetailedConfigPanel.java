@@ -332,23 +332,6 @@ class DetailedConfigPanel extends JPanel {
     return wrapper;
   }
 
-  private JPanel boundExclusionPanel() {
-    JPanel btnPanel =
-        buttonPanel(
-            "Include bounds in target?",
-            "bound_inclusion",
-            Arrays.asList("Yes", "No"),
-            Arrays.asList("true", "false"));
-
-    ButtonGroup btnGrpSwitches = btnGrps.get("bound_inclusion");
-    List<AbstractButton> btnsSwitches = Collections.list(btnGrpSwitches.getElements());
-
-    btnsSwitches.get(0).addItemListener(itemEvent -> updateLargeLbl());
-    btnsSwitches.get(1).addItemListener(itemEvent -> updateLargeLbl());
-
-    return btnPanel;
-  }
-
   private JPanel estPanel() {
     JPanel wrapper = new JPanel();
     wrapper.setLayout(new BorderLayout());
