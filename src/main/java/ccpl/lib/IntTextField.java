@@ -6,5 +6,6 @@ import javax.swing.text.PlainDocument;
 public class IntTextField extends JTextField {
   public IntTextField() {
     ((PlainDocument) this.getDocument()).setDocumentFilter(new IntFilter());
+    this.setText("0");
   }
 }
