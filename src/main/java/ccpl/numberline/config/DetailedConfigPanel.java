@@ -70,12 +70,6 @@ class DetailedConfigPanel extends JPanel {
 
   private Map<String, ButtonGroup> btnGrps = new HashMap<>();
 
-  private List<String> textKeys =
-      Arrays.asList("num_trials", "num_prac_trials", "start_unit", "end_unit");
-
-  private List<String> textLabels =
-      Arrays.asList("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound");
-
   private Map<String, JTextField> txtMap = new HashMap<>();
 
   private JLabel largeLbl = new JLabel("Largest target value or right bound allowed: 0.0");
@@ -110,9 +104,14 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(errorPanel);
 
+    List<String> textKeys =
+        Arrays.asList("num_trials", "num_prac_trials", "start_unit", "end_unit");
+    List<String> textLabels =
+        Arrays.asList("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound");
+    this.add(textPanel(textKeys.subList(0, 2), textLabels.subList(0, 2)));
     this.add(boundedPanel());
     this.add(estPanel());
-    this.add(textPanel());
+    this.add(textPanel(textKeys.subList(2, 4), textLabels.subList(2, 4)));
     this.add(targetPanel());
     this.add(sizePanel());
     this.add(biasPanel());
@@ -239,7 +238,7 @@ class DetailedConfigPanel extends JPanel {
     return super.add(Box.createRigidArea(new Dimension(0, 10)));
   }
 
-  private JPanel textPanel() {
+  private JPanel textPanel(List<String> textKeys, List<String> textLabels) {
     JPanel panel = new JPanel();
     panel.setLayout(new GridLayout(0, 2, 0, 2));
 
