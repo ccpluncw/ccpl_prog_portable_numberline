@@ -105,13 +105,13 @@ class DetailedConfigPanel extends JPanel {
     this.add(errorPanel);
 
     List<String> textKeys =
-        Arrays.asList("num_trials", "num_prac_trials", "start_unit", "end_unit");
+        Arrays.asList("num_trials", "num_prac_trials");
     List<String> textLabels =
-        Arrays.asList("Number of Trials", "Number of Practice Trials", "Left Bound", "Right Bound");
-    this.add(textPanel(textKeys.subList(0, 2), textLabels.subList(0, 2)));
+        Arrays.asList("Number of Trials", "Number of Practice Trials");
+    this.add(textPanel(textKeys, textLabels));
     this.add(boundedPanel());
     this.add(estPanel());
-    this.add(textPanel(textKeys.subList(2, 4), textLabels.subList(2, 4)));
+    this.add(boundsPanel());
     this.add(targetPanel());
     this.add(sizePanel());
     this.add(biasPanel());
@@ -212,6 +212,34 @@ class DetailedConfigPanel extends JPanel {
         (key, value) ->
             Collections.list(value.getElements())
                 .forEach(e -> e.addActionListener(actionEvent -> updateError())));
+  }
+
+  private JPanel boundsPanel() {
+    JPanel outerWrapper = createPanelWithBorderTitle("Bounds");
+    JPanel wrapper = new JPanel();
+    outerWrapper.add(wrapper);
+
+    wrapper.setLayout(new GridLayout(2, 2, 10, 2));
+    wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+
+    wrapper.add(new JLabel("Left Bound"));
+    wrapper.add(new JLabel("Right Bound"));
+
+    IntTextField leftBound = new IntTextField();
+    IntTextField rightBound = new IntTextField();
+
+    wrapper.add(leftBound);
+    wrapper.add(rightBound);
+
+    txtMap.put("start_unit", leftBound);
+    txtMap.put("end_unit", rightBound);
+
+    NumberFormatter formatter = new NumberFormatter(intOnly);
+    formatter.setMinimum(0);
+    formatter.setAllowsInvalid(false);
+    formatter.setCommitsOnValidEdit(true);
+
+    return outerWrapper;
   }
 
   private void updateError() {
@@ -343,7 +371,7 @@ class DetailedConfigPanel extends JPanel {
             Arrays.asList("Estimation", "Production"),
             Arrays.asList("true", "false"));
 
-    wrapper.add(panel, BorderLayout.NORTH);
+    wrapper.add(panel, BorderLayout.CENTER);
 
     JPanel stimPanel = createPanelWithBorderTitle("Estimation Stim Time");
     JPanel stimSwitches =
@@ -355,7 +383,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel stimInfoPanel = new JPanel();
 
     stimPanel.setLayout(new BorderLayout());
-    stimPanel.add(stimSwitches, BorderLayout.NORTH);
+    stimPanel.add(stimSwitches, BorderLayout.CENTER);
 
     ButtonGroup btnGrpSwitches = btnGrps.get("stim_time_off");
     List<AbstractButton> btnsSwitches = Collections.list(btnGrpSwitches.getElements());
@@ -486,6 +514,7 @@ class DetailedConfigPanel extends JPanel {
       wrapper.add(stimPanel, BorderLayout.SOUTH);
     } else {
       baseBundle.add("stim_time_off", true);
+      return panel;
     }
 
     return wrapper;
