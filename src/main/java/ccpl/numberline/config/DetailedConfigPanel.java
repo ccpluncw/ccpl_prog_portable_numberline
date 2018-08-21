@@ -640,7 +640,7 @@ class DetailedConfigPanel extends JPanel {
               public void removeUpdate(DocumentEvent p0) {
                 if (!txtFld.getText().isEmpty()) {
                   othRadBtn.setActionCommand(txtFld.getText());
-                  updateLargeLbl();
+                  updateError();
                 }
               }
 
@@ -648,7 +648,7 @@ class DetailedConfigPanel extends JPanel {
               public void insertUpdate(DocumentEvent p0) {
                 if (!txtFld.getText().isEmpty()) {
                   othRadBtn.setActionCommand(txtFld.getText());
-                  updateLargeLbl();
+                  updateError();
                 }
               }
 
@@ -656,7 +656,7 @@ class DetailedConfigPanel extends JPanel {
               public void changedUpdate(DocumentEvent p0) {
                 if (!txtFld.getText().isEmpty()) {
                   othRadBtn.setActionCommand(txtFld.getText());
-                  updateLargeLbl();
+                  updateError();
                 }
               }
             });
