@@ -93,6 +93,7 @@ class DetailedConfigPanel extends JPanel {
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
+
     JButton showErrorsBtn = new JButton("Show errors");
     showErrorsBtn.addActionListener(
         actionEvent ->
@@ -109,9 +110,8 @@ class DetailedConfigPanel extends JPanel {
     List<String> textLabels =
         Arrays.asList("Number of Trials", "Number of Practice Trials");
     this.add(textPanel(textKeys, textLabels));
-    this.add(boundedPanel());
-    this.add(estPanel());
-    this.add(boundsPanel());
+
+    this.add(numberLinePanel());
     this.add(targetPanel());
     this.add(sizePanel());
     this.add(biasPanel());
@@ -214,13 +214,31 @@ class DetailedConfigPanel extends JPanel {
                 .forEach(e -> e.addActionListener(actionEvent -> updateError())));
   }
 
+  private JPanel numberLinePanel() {
+    JPanel wrapper = createPanelWithBorderTitle("Number Line");
+    wrapper.setLayout(new BoxLayout(wrapper, BoxLayout.Y_AXIS));
+    JPanel bounded = boundedPanel();
+    bounded.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Type"));
+
+    JPanel estPanel = estPanel();
+    estPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Variant"));
+
+    JPanel bounds = boundsPanel();
+    bounds.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Bounds"));
+
+    wrapper.add(bounded);
+    wrapper.add(estPanel);
+    wrapper.add(bounds);
+
+    return wrapper;
+  }
+
   private JPanel boundsPanel() {
-    JPanel outerWrapper = createPanelWithBorderTitle("Bounds");
+    JPanel outerWrapper = new JPanel();
     JPanel wrapper = new JPanel();
     outerWrapper.add(wrapper);
 
-    wrapper.setLayout(new GridLayout(2, 2, 10, 2));
-    wrapper.setBorder(BorderFactory.createEmptyBorder(0, 0, 5, 0));
+    wrapper.setLayout(new GridLayout(2, 2, 10, 0));
 
     wrapper.add(new JLabel("Left Bound"));
     wrapper.add(new JLabel("Right Bound"));
@@ -233,11 +251,6 @@ class DetailedConfigPanel extends JPanel {
 
     txtMap.put("start_unit", leftBound);
     txtMap.put("end_unit", rightBound);
-
-    NumberFormatter formatter = new NumberFormatter(intOnly);
-    formatter.setMinimum(0);
-    formatter.setAllowsInvalid(false);
-    formatter.setCommitsOnValidEdit(true);
 
     return outerWrapper;
   }
@@ -446,7 +459,6 @@ class DetailedConfigPanel extends JPanel {
                 + (parseInt(scalarField.getText()) * (1000 / refreshRate))
                 + "ms.");
     stimInfoPanel.add(lbl, c);
-
     scalarField
         .getDocument()
         .addDocumentListener(
