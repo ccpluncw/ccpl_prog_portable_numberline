@@ -1,7 +1,9 @@
 est_unbound_instruct:   est_unbound_instruct.txt
 est_bound_instruct:   est_bound_instruct.txt
+est_universal_instruct:   est_universal_instruct.txt
 prod_bound_instruct:   prod_bound_instruct.txt
 prod_unbound_instruct:   prod_unbound_instruct.txt
+prod_universal_instruct:   prod_universal_instruct.txt
 
 rest_num:       86
 

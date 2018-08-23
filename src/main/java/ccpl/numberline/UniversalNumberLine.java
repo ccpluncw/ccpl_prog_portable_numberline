@@ -117,10 +117,24 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       dbBundle.add("instructions", dataBundle.getAsString("cust_instruct"));
     } else {
       boolean isEst = dataBundle.getAsBoolean("estimation_task");
-      boolean isBound = dataBundle.getAsBoolean("bound_exterior");
+      String bounded = dataBundle.getAsString("bound_exterior");
+
+      String qualifier;
+      switch (bounded) {
+        case "false":
+          qualifier = "unbound";
+          break;
+        case "FALSE":
+          qualifier = "universal";
+          break;
+        default:
+          qualifier = "bound";
+          break;
+      }
+
 
       String instruction =
-          String.format("%s_%s_instruct", isEst ? "est" : "prod", isBound ? "bound" : "unbound");
+          String.format("%s_%s_instruct", isEst ? "est" : "prod", qualifier);
       dbBundle.add("instructions", dbBundle.getAsString(instruction));
     }
 
