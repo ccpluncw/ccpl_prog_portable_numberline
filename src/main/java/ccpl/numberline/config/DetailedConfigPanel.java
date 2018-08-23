@@ -93,7 +93,6 @@ class DetailedConfigPanel extends JPanel {
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-
     JButton showErrorsBtn = new JButton("Show errors");
     showErrorsBtn.addActionListener(
         actionEvent ->
@@ -105,10 +104,8 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(errorPanel);
 
-    List<String> textKeys =
-        Arrays.asList("num_trials", "num_prac_trials");
-    List<String> textLabels =
-        Arrays.asList("Number of Trials", "Number of Practice Trials");
+    List<String> textKeys = Arrays.asList("num_trials", "num_prac_trials");
+    List<String> textLabels = Arrays.asList("Number of Trials", "Number of Practice Trials");
     this.add(textPanel(textKeys, textLabels));
 
     this.add(numberLinePanel());
@@ -221,7 +218,8 @@ class DetailedConfigPanel extends JPanel {
     bounded.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Type"));
 
     JPanel estPanel = estPanel();
-    estPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Variant"));
+    estPanel.setBorder(
+        BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Variant"));
 
     JPanel bounds = boundsPanel();
     bounds.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEmptyBorder(), "Bounds"));
@@ -893,7 +891,6 @@ class DetailedConfigPanel extends JPanel {
     distinctTargetsLbl.setText(
         String.format("Number of distinct target values: %s", distinctTargets));
   }
-
 
   public void setBaseBundle(Bundle value) {
     baseBundle = value;

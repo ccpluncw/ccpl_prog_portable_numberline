@@ -190,7 +190,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     slope = getNumLineSlope();
 
     extendPoint2D =
-        new Point2D.Float((float) startPoint.getX() + baseWidth + rightShift, (float) (startPoint.getY()));
+        new Point2D.Float(
+            (float) startPoint.getX() + baseWidth + rightShift, (float) (startPoint.getY()));
 
     leftBoundHigh = getHighPoint(baseHeight, startPoint);
     rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
@@ -411,6 +412,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return parseUnitString(userResp);
   }
 
+  /**
+   * Return the user's response, corrected for any number line size adjustments.
+   * @return    User response.
+   */
   public double getUserResponse() {
     int totalShift = isOutsideBounds ? handleShift + rightShift : handleShift;
 
