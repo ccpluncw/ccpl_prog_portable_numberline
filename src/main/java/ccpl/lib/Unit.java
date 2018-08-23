@@ -180,4 +180,13 @@ public class Unit {
   public JLabel getLabel(Font labelFont) {
     return getLabel(value, labelFont);
   }
+
+  @Override
+  public boolean equals(Object o) {
+    if (!(o instanceof Unit)) {
+      return false;
+    }
+
+    return value.equalsIgnoreCase(((Unit) o).value);
+  }
 }

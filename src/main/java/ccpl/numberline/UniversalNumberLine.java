@@ -132,9 +132,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           break;
       }
 
-
-      String instruction =
-          String.format("%s_%s_instruct", isEst ? "est" : "prod", qualifier);
+      String instruction = String.format("%s_%s_instruct", isEst ? "est" : "prod", qualifier);
       dbBundle.add("instructions", dbBundle.getAsString(instruction));
     }
 
@@ -339,8 +337,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         if (excludeLeft || excludeRight) {
           do {
             randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
-          } while ((excludeLeft && randTarget == leftBnd)
-              || (excludeRight && randTarget == rightBnd));
+          } while ((excludeLeft && randTarget.equals(leftBnd)
+              || (excludeRight && randTarget.equals(rightBnd))));
         } else {
           randTarget = Unit.getRandomUnit(targetUnitLow, targetUnitHigh, targetUnitInterval);
         }
