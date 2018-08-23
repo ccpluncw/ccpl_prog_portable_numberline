@@ -1,1 +1,0 @@
-//Question	HandleLabel	QuestionKey	AffectValueYou will lose your wallet in _ months	lose wallet	negative	-1.0531You will euthanize your childhood pet in _ months	euthanize pet	negative	-1.0489You will make new friends in _ months	new friends	positive	0.9471You will get a luxury boat in _ months	luxury boat	positive	0.9466

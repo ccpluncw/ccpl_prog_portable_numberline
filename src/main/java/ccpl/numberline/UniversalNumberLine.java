@@ -98,7 +98,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   /** Runs the UniversalNumberLine experiment with the specified database file. */
   public void run() {
     ClassLoader cl = this.getClass().getClassLoader();
-    URL newLayoutPath = cl.getResource(experiment + "/infiles/dbfile_new_layout.txt");
+    URL newLayoutPath = cl.getResource(experiment + "/infiles/base_db.txt");
     URL baseExpPath = cl.getResource(experiment + "/infiles/base_exp.txt");
 
     // Read DB
