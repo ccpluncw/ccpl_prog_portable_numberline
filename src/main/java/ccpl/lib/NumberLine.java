@@ -117,6 +117,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   private boolean targetInside = false;
 
+  private Color leftBndColor;
+  private Color rightBndColor;
+
   /**
    * Create a number line.
    *
@@ -290,6 +293,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     this.baseColor = baseColor;
     this.dragColor = dragColor;
 
+    this.leftBndColor = baseColor;
+    this.rightBndColor = baseColor;
+
     handleActiveColor = handleColor;
     fontName = font;
     displayFont = new Font(fontName, Font.BOLD, 12);
@@ -324,7 +330,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
-      activeDragHandle = new Handle(endLine, rightGuide, baseColor);
+      activeDragHandle = new Handle(endLine, rightGuide, handleActiveColor);
       linePanel.updateDragLine();
     }
   }
@@ -566,12 +572,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private void checkDragStatus(Handle handle, int x, int y) {
     if (cursorInBoundingBox(handle, x, y)) {
       atDragRegion = true;
-      handle.setColor(handleActiveColor);
+      handle.useActiveColor();
 
       return;
     }
 
-    handle.setColor(baseColor);
+    handle.useBaseColor();
   }
 
   private Point2D.Float getHighPoint(int d, Point2D.Float p) {
@@ -626,7 +632,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         return;
       }
 
-      activeDragHandle.setColor(dragColor);
+      activeDragHandle.useActiveColor();
 
       dragLine = new Line2D.Float(extendPoint2D, currentDragPoint);
 
@@ -645,7 +651,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       g.setStroke(stroke);
 
       g.draw(extendLine);
+
+      g.setColor(leftBndColor);
       g.draw(startLine);
+
+      g.setColor(rightBndColor);
       g.draw(endLine);
 
       if (activeDragHandle == null) {
@@ -769,18 +779,45 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         currentLine = null;
       }
 
-      graphics.setStroke(new BasicStroke(1));
-      graphics.setColor(Color.RED);
-      graphics.draw(leftGuide);
-      graphics.draw(rightGuide);
-
-      drawBaseCircle(graphics);
       if (dragLine != null) {
         graphics.setColor(dragColor);
         graphics.draw(dragLine);
       }
 
+      graphics.setStroke(new BasicStroke(1));
+      graphics.setColor(leftBndColor);
+      graphics.draw(leftGuide);
+
+      graphics.setColor(rightBndColor);
+      graphics.draw(rightGuide);
+
+      drawBaseCircle(graphics);
+
       displayLabels(graphics);
     }
+  }
+
+  public void setLeftBoundColor(Color newColor) {
+    this.leftBndColor = newColor;
+  }
+
+  public void setRightBoundColor(Color newColor) {
+    this.rightBndColor = newColor;
+  }
+
+  public void setLeftDragHandleColor(Color newColor) {
+    leftDragHandle.setBaseColor(newColor);
+  }
+
+  public void setLeftDragActiveColor(Color newColor) {
+    leftDragHandle.setActiveColor(newColor);
+  }
+
+  public void setRightDragHandleColor(Color newColor) {
+    rightDragHandle.setBaseColor(newColor);
+  }
+
+  public void setRightDragActiveColor(Color newColor) {
+    rightDragHandle.setActiveColor(newColor);
   }
 }
