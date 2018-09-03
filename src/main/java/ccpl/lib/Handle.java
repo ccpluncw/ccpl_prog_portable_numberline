@@ -17,6 +17,9 @@ public class Handle extends Line2D.Double {
   private Color color;
   private Line2D guide;
 
+  private Color baseColor;
+  private Color activeColor;
+
   /**
    * Create a new Handle with a given Handle line, guide, and color.
    *
@@ -28,6 +31,8 @@ public class Handle extends Line2D.Double {
     super(line.getP1(), line.getP2());
     this.guide = new Line2D.Double(guide.getP1(), guide.getP2());
     this.color = color;
+    this.baseColor = color;
+    this.activeColor = color;
   }
 
   public void setColor(Color color) {
@@ -53,6 +58,22 @@ public class Handle extends Line2D.Double {
     g2.draw(guide);
 
     g2.setStroke(stroke);
+  }
+
+  public void setBaseColor(Color newColor) {
+    this.baseColor = newColor;
+  }
+
+  public void setActiveColor(Color newColor) {
+    this.activeColor = newColor;
+  }
+
+  public void useBaseColor() {
+    color = baseColor;
+  }
+
+  public void useActiveColor() {
+    color = activeColor;
   }
 
   public Line2D getGuide() {
