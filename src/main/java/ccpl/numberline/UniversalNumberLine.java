@@ -29,6 +29,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Date;
+import java.util.Optional;
 import java.util.Random;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -149,14 +150,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     final int dragG = dbBundle.getAsInt("drag_green");
     final int dragB = dbBundle.getAsInt("drag_blue");
 
-    final int handleR = dbBundle.getAsInt("handle_red");
-    final int handleG = dbBundle.getAsInt("handle_green");
-    final int handleB = dbBundle.getAsInt("handle_blue");
     /* END PARSING OF DATABASE FILE */
 
     Color baseColor = new Color(baseR, baseG, baseB);
     Color dragColor = new Color(dragR, dragG, dragB);
-    Color handleActiveColor = new Color(handleR, handleG, handleB);
+    Color handleActiveColor = loadColor("handle_active", dbBundle).orElse(Color.RED);
 
     frame = getFrame();
     setFullScreen();
@@ -371,6 +369,20 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
                 showFullBaseScale,
                 unitSize);
 
+
+        loadColor("left_bnd", dbBundle).ifPresent(numLine::setLeftBoundColor);
+        loadColor("right_bnd", dbBundle).ifPresent(numLine::setRightBoundColor);
+
+        loadColor("handle_inactive", dbBundle).ifPresent(color -> {
+          numLine.setLeftDragHandleColor(color);
+          numLine.setRightDragHandleColor(color);
+        });
+
+        loadColor("handle_active", dbBundle).ifPresent(color -> {
+          numLine.setLeftDragActiveColor(color);
+          numLine.setRightDragActiveColor(color);
+        });
+
         // Displays Fixation if necessary
         Fixation fixation =
             new Fixation(Color.BLACK, baseColor, thickness, numLine.getFixationLine());
@@ -499,6 +511,22 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
     thankYou();
     frame.dispose();
+  }
+
+  private Optional<Color> loadColor(String key, Bundle bun) {
+    final int red;
+    final int green;
+    final int blue;
+
+    try {
+      red = bun.getAsInt(String.format("%s_red", key));
+      green = bun.getAsInt(String.format("%s_green", key));
+      blue = bun.getAsInt(String.format("%s_blue", key));
+    } catch (Exception e) {
+      return Optional.empty();
+    }
+
+    return Optional.of(new Color(red, green, blue));
   }
 
   private int getModifier(String prefix, String key) {

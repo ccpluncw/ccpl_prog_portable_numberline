@@ -11,18 +11,30 @@ fonts:          fontNames.txt
 
 # RGB value of the number line normally
 base_red:       255
-base_green:     0
-base_blue:      0
+base_green:     255
+base_blue:      255
 
 # RGB value of the number line when dragged
 drag_red:       255
-drag_blue:      0
-drag_green:     0
+drag_blue:      255
+drag_green:     255
 
 # RGB values of the number line handle
-handle_red:     255
-handle_blue:    200
-handle_green:   200
+handle_inactive_red:     255
+handle_inactive_blue:    255
+handle_inactive_green:   255
+
+handle_active_red:     255
+handle_active_blue:    0
+handle_active_green:   0
+
+left_bnd_red:     255
+left_bnd_blue:    255
+left_bnd_green:   255
+
+right_bnd_red:     255
+right_bnd_blue:    255
+right_bnd_green:   255
 
 # Use the mouse?
 use_mouse:      false
