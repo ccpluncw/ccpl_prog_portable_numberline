@@ -630,7 +630,7 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private JPanel biasPanel() {
-    JPanel panel = createPanelWithBorderTitle("Estimated Largest Bias");
+    JPanel panel = createPanelWithBorderTitle("Largest Detectable Bias");
     panel.setLayout(new GridLayout(2, 3));
 
     JRadioButton childRadBtn = new JRadioButton("Child");
