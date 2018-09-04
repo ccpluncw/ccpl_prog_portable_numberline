@@ -372,6 +372,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         loadColor("left_bnd", dbBundle).ifPresent(numLine::setLeftBoundColor);
         loadColor("right_bnd", dbBundle).ifPresent(numLine::setRightBoundColor);
+        loadColor("drag_active", dbBundle).ifPresent(numLine::setDragActiveColor);
 
         loadColor("handle_inactive", dbBundle).ifPresent(color -> {
           numLine.setLeftDragHandleColor(color);

@@ -37,8 +37,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   // ---Color members-----
   private final Color baseColor;
-  private final Color dragColor;
-  private final Color handleActiveColor;
+  private Color dragColor;
+  private Color dragInactiveColor;
+  private Color dragActiveColor;
 
   private final Unit startUnit;
   private final Unit endUnit;
@@ -292,11 +293,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     this.baseColor = baseColor;
     this.dragColor = dragColor;
+    this.dragInactiveColor = dragColor;
+    this.dragActiveColor = dragColor;
 
     this.leftBndColor = baseColor;
     this.rightBndColor = baseColor;
 
-    handleActiveColor = handleColor;
+    Color handleActiveColor = handleColor;
     fontName = font;
     displayFont = new Font(fontName, Font.BOLD, 12);
 
@@ -573,11 +576,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (cursorInBoundingBox(handle, x, y)) {
       atDragRegion = true;
       handle.useActiveColor();
+      dragColor = dragActiveColor;
 
       return;
     }
 
     handle.useBaseColor();
+    dragColor = dragInactiveColor;
   }
 
   private Point2D.Float getHighPoint(int d, Point2D.Float p) {
@@ -819,5 +824,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public void setRightDragActiveColor(Color newColor) {
     rightDragHandle.setActiveColor(newColor);
+  }
+
+  public void setDragActiveColor(Color newColor) {
+    dragActiveColor = newColor;
   }
 }
