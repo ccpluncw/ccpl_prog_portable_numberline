@@ -570,6 +570,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       checkDragStatus(activeDragHandle, e.getX(), e.getY());
     }
 
+    dragColor = atDragRegion ? dragActiveColor : dragInactiveColor;
+
     linePanel.repaint();
   }
 
@@ -577,13 +579,11 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (cursorInBoundingBox(handle, x, y)) {
       atDragRegion = true;
       handle.useActiveColor();
-      dragColor = dragActiveColor;
 
       return;
     }
 
     handle.useBaseColor();
-    dragColor = dragInactiveColor;
   }
 
   private Point2D.Float getHighPoint(int d, Point2D.Float p) {
