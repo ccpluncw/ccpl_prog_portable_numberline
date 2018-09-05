@@ -329,10 +329,16 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (isEstimateTask) {
       handleHigh = getHighPoint(baseHeight, currentDragPoint);
       handleLow = currentDragPoint;
+
+      currentDragPoint.x += targetUnit.toDouble() > endUnit.toDouble() ? 2 * guideWidth : guideWidth;
+      handleHigh.x += targetUnit.toDouble() > endUnit.toDouble() ? 2 * guideWidth : guideWidth;
+
       guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
+
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
+
       activeDragHandle = new Handle(endLine, rightGuide, handleActiveColor);
       this.dragColor = handleActiveColor;
       linePanel.updateDragLine();
