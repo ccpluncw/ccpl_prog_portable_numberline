@@ -330,8 +330,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       handleHigh = getHighPoint(baseHeight, currentDragPoint);
       handleLow = currentDragPoint;
 
-      currentDragPoint.x += targetUnit.toDouble() > endUnit.toDouble() ? 2 * guideWidth : guideWidth;
-      handleHigh.x += targetUnit.toDouble() > endUnit.toDouble() ? 2 * guideWidth : guideWidth;
+      if (targetUnit.toDouble() > endUnit.toDouble()) {
+        currentDragPoint.x += 2 * guideWidth;
+        handleHigh.x += 2 * guideWidth;
+      } else if (targetUnit.toDouble() == endUnit.toDouble()) {
+        currentDragPoint.x += guideWidth;
+        handleHigh.x += guideWidth;
+      }
 
       guideHandleLow = getLowPoint(baseHeight / 2, currentDragPoint);
       guideHandleHigh = getHighPoint(baseHeight + lineThickness, currentDragPoint);
