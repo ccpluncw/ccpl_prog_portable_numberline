@@ -470,6 +470,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private boolean cursorInBoundingBox(Line2D handle, int cursorX, int cursorY) {
+    if (handle == null) {
+      return false;
+    }
+
     Rectangle2D box = handle.getBounds2D();
 
     box.setRect(
@@ -576,6 +580,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   private void checkDragStatus(Handle handle, int x, int y) {
+    if (handle == null) {
+      return;
+    }
+
     if (cursorInBoundingBox(handle, x, y)) {
       atDragRegion = true;
       handle.useActiveColor();
@@ -665,7 +673,10 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       g.draw(endLine);
 
       if (activeDragHandle == null) {
-        leftDragHandle.draw(g);
+        if (leftDragHandle != null) {
+          leftDragHandle.draw(g);
+        }
+
         rightDragHandle.draw(g);
         return;
       }
@@ -829,5 +840,9 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public void setDragActiveColor(Color newColor) {
     dragActiveColor = newColor;
+  }
+
+  public void disableLeftHandle() {
+    leftDragHandle = null;
   }
 }

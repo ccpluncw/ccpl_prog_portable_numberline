@@ -369,7 +369,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
                 showFullBaseScale,
                 unitSize);
 
-
+        // Load colors for the various parts of the number line.
         loadColor("left_bnd", dbBundle).ifPresent(numLine::setLeftBoundColor);
         loadColor("right_bnd", dbBundle).ifPresent(numLine::setRightBoundColor);
         loadColor("drag_active", dbBundle).ifPresent(numLine::setDragActiveColor);
@@ -383,6 +383,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           numLine.setLeftDragActiveColor(color);
           numLine.setRightDragActiveColor(color);
         });
+
+        // Disable the left handle in the unbounded condition.
+        if (dataBundle.getAsString("bound_exterior").equals("false")) {
+          numLine.disableLeftHandle();
+        }
 
         // Displays Fixation if necessary
         Fixation fixation =
