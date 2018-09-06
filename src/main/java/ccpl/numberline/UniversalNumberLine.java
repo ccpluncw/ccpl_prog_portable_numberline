@@ -24,7 +24,6 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
@@ -45,7 +44,7 @@ import javax.swing.event.AncestorListener;
  *
  * @author dalecohen
  */
-public class UniversalNumberLine extends Experiment implements ActionListener {
+class UniversalNumberLine extends Experiment implements ActionListener {
 
   private final boolean isEstimationTask;
 
@@ -55,16 +54,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private final int numOfPracTrials;
 
   private static NumberLine numLine = null;
-  private static RandomIntGenerator randGen = new RandomIntGenerator();
+  private static final RandomIntGenerator randGen = new RandomIntGenerator();
   private BlankPanel imPanel;
   private DrawExpFrame frame;
 
   private long estStimTime;
 
-  private Mask lineMask;
-
-  private String subjAge;
-  private String subjGrade;
+  private final String subjAge;
+  private final String subjGrade;
 
   /**
    * Parameterized constructor allow the specification of an experiment file, the subject ID,
@@ -286,8 +283,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         final String endUnitFormat = dataBundle.getAsString("end_unit_format").toUpperCase();
         final String targetUnitFormat = dataBundle.getAsString("target_unit_format").toUpperCase();
 
-        String estTargetFormat = dataBundle.getAsString("est_target_format");
-
         final String start = dataBundle.getAsString("start_label_on");
         final String end = dataBundle.getAsString("end_label_on");
         final String target = dataBundle.getAsString("target_label_on");
@@ -374,15 +369,19 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         loadColor("right_bnd", dbBundle).ifPresent(numLine::setRightBoundColor);
         loadColor("drag_active", dbBundle).ifPresent(numLine::setDragActiveColor);
 
-        loadColor("handle_inactive", dbBundle).ifPresent(color -> {
-          numLine.setLeftDragHandleColor(color);
-          numLine.setRightDragHandleColor(color);
-        });
+        loadColor("handle_inactive", dbBundle)
+            .ifPresent(
+                color -> {
+                  numLine.setLeftDragHandleColor(color);
+                  numLine.setRightDragHandleColor(color);
+                });
 
-        loadColor("handle_active", dbBundle).ifPresent(color -> {
-          numLine.setLeftDragActiveColor(color);
-          numLine.setRightDragActiveColor(color);
-        });
+        loadColor("handle_active", dbBundle)
+            .ifPresent(
+                color -> {
+                  numLine.setLeftDragActiveColor(color);
+                  numLine.setRightDragActiveColor(color);
+                });
 
         // Disable the left handle in the unbounded condition.
         if (dataBundle.getAsString("bound_exterior").equals("false")) {
@@ -439,7 +438,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
             // The mask is an unstable feature within the portable number line.
             // The delay is not always a second.
             if (FeatureSwitch.USE_MASK) {
-              lineMask = new Mask(thickness, Color.BLACK, new Color[] {baseColor});
+              @SuppressWarnings("UnusedAssignment")
+              Mask lineMask = new Mask(thickness, Color.BLACK, new Color[] {baseColor});
 
               frame.setContentPane(lineMask);
               frame.validate();
@@ -455,14 +455,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           frame.showCursor();
           frame.setContentPane(startPanel);
           frame.validate();
-          // response.getTimedNumPadResponse(frame, "What is the target of this number line?",
-          //    estTargetFormat);
-          try {
-            response.getTimedTextResponseJustified(
-                frame, "", "What is the target of this number line?", 30, "center", false);
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
+          response.getTimedTextResponseJustified(
+              frame, "What is the target of this number line?", 30, "center");
           userResp = response.getTextValue();
           userRespVal = df.format(numLine.getUnitLength(userResp));
         }
@@ -632,7 +626,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    *
    * @return String of column headers
    */
-  public String createOutputHeader() {
+  private String createOutputHeader() {
     String header =
         "sn\t"
             + "snAge\t"

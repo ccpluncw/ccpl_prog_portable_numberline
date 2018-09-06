@@ -31,14 +31,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   // ---Pixel members-------
   private final int baseHeight; // Default overall baseHeight
   private final int lineThickness;
-  private int baseWidth;
+  private final int baseWidth;
   private final int handlePadding; // Padding size of region around the handle
   private int basePaddingLeft; // Amount of padding applied to experiment within the panel
 
   // ---Color members-----
   private final Color baseColor;
   private Color dragColor;
-  private Color dragInactiveColor;
+  private final Color dragInactiveColor;
   private Color dragActiveColor;
 
   private final Unit startUnit;
@@ -55,15 +55,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   // -----New Data Added By Oliver
   // flag which determines if the handle can be dragged outside the bounds of the numberline
-  private boolean[] keepWithinBounds;
-  private boolean[] showHideLabels;
+  private final boolean[] keepWithinBounds;
+  private final boolean[] showHideLabels;
   private final Point2D.Float startPoint;
-  private Point2D.Float extendPoint2D;
+  private final Point2D.Float extendPoint2D;
   private final Point2D.Float centerScreen;
   private Point2D.Float currentDragPoint;
-
-  private final Point2D.Float leftBoundHigh;
-  private final Point2D.Float rightBoundHigh;
 
   private Point2D.Float handleHigh;
   private Point2D.Float handleStartPoint;
@@ -92,7 +89,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private final Line2D endLine;
   private final Line2D startLine;
   private final int startX; // startX is x coord where numberline is visually drawn
-  private int currentDragX; // Holds x coord of the drag handle
   private final Point extendPoint; // (x, y) coord of point on base where the drag line appears
   private final Stroke stroke; // the stroke to show line thickness
   private final String fontName; // the name of the Font to use
@@ -101,22 +97,21 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   private Handle activeDragHandle = null; // Set to null since it's unknown at this point.
 
   private Handle leftDragHandle;
-  private Handle rightDragHandle;
+  private final Handle rightDragHandle;
 
   private final boolean isEstimateTask;
-  private final float widthPercentage; // holds percentage of base width to display
 
-  private Line2D fixationLine;
+  private final Line2D fixationLine;
 
   private final int unitSize;
 
   private boolean isOutsideBounds;
 
-  private int guideWidth = 1; // Guides are 1px in size;
+  private final int guideWidth = 1; // Guides are 1px in size;
   private int rightShift;
-  private int handleShift;
+  private final int handleShift;
 
-  private boolean targetInside = false;
+  private final boolean targetInside;
 
   private Color leftBndColor;
   private Color rightBndColor;
@@ -177,14 +172,14 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     keepWithinBounds = kwb;
     showHideLabels = shLabels;
     baseWidth = width;
-    widthPercentage = 1;
+    // holds percentage of base width to display
     baseHeight = height;
     lineThickness = thickness;
     isEstimateTask = estimateTask;
 
     Toolkit tk = Toolkit.getDefaultToolkit();
     screen = tk.getScreenSize();
-    centerScreen = new Point2D.Float(screen.width / 2, screen.height / 2);
+    centerScreen = new Point2D.Float(screen.width / 2f, screen.height / 2f);
 
     screen.height -= (m * 2); // take margins out of either side
     screen.width -= (m * 2); // take margins out of either side
@@ -197,8 +192,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
         new Point2D.Float(
             (float) startPoint.getX() + baseWidth + rightShift, (float) (startPoint.getY()));
 
-    leftBoundHigh = getHighPoint(baseHeight, startPoint);
-    rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
 
     Point2D.Float guideLeftLow = getLowPoint(baseHeight / 2, startPoint);
     Point2D.Float guideLeftHigh = getHighPoint(baseHeight + lineThickness, startPoint);
@@ -218,10 +211,12 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
     extendLine = new Line2D.Float(startPoint, extendPoint2D);
 
+    Float leftBoundHigh = getHighPoint(baseHeight, startPoint);
     startLine =
         new Line2D.Float(
             leftBoundHigh.x, leftBoundHigh.y + lineThickness * 3, startPoint.x, startPoint.y);
 
+    Float rightBoundHigh = getHighPoint(baseHeight, extendPoint2D);
     endLine =
         new Line2D.Float(
             rightBoundHigh.x,
@@ -299,7 +294,6 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     this.leftBndColor = baseColor;
     this.rightBndColor = baseColor;
 
-    Color handleActiveColor = handleColor;
     fontName = font;
     displayFont = new Font(fontName, Font.BOLD, 12);
 
@@ -344,8 +338,8 @@ public class NumberLine implements MouseMotionListener, MouseListener {
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
 
-      activeDragHandle = new Handle(endLine, rightGuide, handleActiveColor);
-      this.dragColor = handleActiveColor;
+      activeDragHandle = new Handle(endLine, rightGuide, handleColor);
+      this.dragColor = handleColor;
       linePanel.updateDragLine();
     }
   }
@@ -398,7 +392,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     if (isEstimateTask) {
       int w = startX + startUnitLabelW + endUnitLabelW + lineThickness * 2 + 10;
       int h = extendPoint.y + Math.max(startUnitLabelH, startUnitLabelW) + endUnitLabelH + 20;
-      w += Math.max(baseWidth, currentDragX);
+      w += baseWidth;
       linePanel.setSize(w, h);
     }
 

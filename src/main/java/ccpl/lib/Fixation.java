@@ -11,13 +11,13 @@ public class Fixation extends JPanel {
 
   private static final Color DEFAULT_COLOR = Color.GRAY;
 
-  private int radius;
-  private int diameter;
+  private final int radius;
+  private final int diameter;
 
-  private int coordX;
-  private int coordY;
+  private final int coordX;
+  private final int coordY;
 
-  private java.awt.geom.Line2D fixationLine;
+  private final java.awt.geom.Line2D fixationLine;
   private final Color lineColor;
   private final int strokeSize;
 

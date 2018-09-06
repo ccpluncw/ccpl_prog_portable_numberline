@@ -66,27 +66,27 @@ import javax.swing.text.PlainDocument;
 
 class DetailedConfigPanel extends JPanel {
 
-  private Logger log = Logger.getLogger(DetailedConfigPanel.class.getName());
+  private final Logger log = Logger.getLogger(DetailedConfigPanel.class.getName());
 
-  private Map<String, ButtonGroup> btnGrps = new HashMap<>();
+  private final Map<String, ButtonGroup> btnGrps = new HashMap<>();
 
-  private Map<String, JTextField> txtMap = new HashMap<>();
+  private final Map<String, JTextField> txtMap = new HashMap<>();
 
-  private JLabel largeLbl = new JLabel("Largest target value or right bound allowed: 0.0");
-  private DecimalFormat intOnly = new DecimalFormat("###");
-  private DecimalFormat twoSig = new DecimalFormat("###.##");
+  private final JLabel largeLbl = new JLabel("Largest target value or right bound allowed: 0.0");
+  private final DecimalFormat intOnly = new DecimalFormat("###");
+  private final DecimalFormat twoSig = new DecimalFormat("###.##");
 
-  private JFormattedTextField txtFld = new JFormattedTextField(twoSig);
+  private final JFormattedTextField txtFld = new JFormattedTextField(twoSig);
 
   private Bundle baseBundle = new Bundle();
 
-  private Window parent;
+  private final Window parent;
 
   private int distinctTargets = 0;
-  private JLabel distinctTargetsLbl = new JLabel("Number of distinct target values: 0");
+  private final JLabel distinctTargetsLbl = new JLabel("Number of distinct target values: 0");
 
-  private JPanel errorPanel = new JPanel();
-  private JLabel errorsLbl = new JLabel("0");
+  private final JPanel errorPanel = new JPanel();
+  private final JLabel errorsLbl = new JLabel("0");
 
   public DetailedConfigPanel(Window parent) {
     this.parent = parent;
@@ -152,8 +152,8 @@ class DetailedConfigPanel extends JPanel {
         .addDocumentListener(
             new DocumentListener() {
 
-              ButtonGroup btnGrp = btnGrps.get("bound_exterior");
-              List<AbstractButton> btns = Collections.list(btnGrp.getElements());
+              final ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+              final List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
               @Override
               public void insertUpdate(DocumentEvent documentEvent) {
@@ -499,7 +499,9 @@ class DetailedConfigPanel extends JPanel {
             });
 
     if (FeatureSwitch.USE_MASK) {
+      //noinspection UnusedAssignment
       ButtonGroup btnGrp = btnGrps.get("estimation_task");
+      //noinspection UnusedAssignment
       List<AbstractButton> btns = Collections.list(btnGrp.getElements());
       btns.get(0)
           .addItemListener(
@@ -817,17 +819,16 @@ class DetailedConfigPanel extends JPanel {
     // Handle the case where the other bias was selected.
     double bias = parseDouble(defs.getAsString("bias"));
     if (bias != 1.2 && bias != 1.4) {
-      JRadioButton btn =
-          (JRadioButton)
-              Collections.list(btnMatches.get("bias").getElements())
-                  .stream()
-                  .filter(it -> it.getActionCommand().equals("0.0"))
-                  .findFirst()
-                  .get();
-
-      btn.setSelected(true);
-      btn.setActionCommand(Double.toString(bias));
-      txtFld.setText(Double.toString(bias));
+      Collections.list(btnMatches.get("bias").getElements())
+          .stream()
+          .filter(it -> it.getActionCommand().equals("0.0"))
+          .findFirst()
+          .ifPresent(
+              btn -> {
+                btn.setSelected(true);
+                btn.setActionCommand(Double.toString(bias));
+                txtFld.setText(Double.toString(bias));
+              });
     }
 
     // Update the label since calculateMaxTarget() was called before setting the defaults.
@@ -835,7 +836,7 @@ class DetailedConfigPanel extends JPanel {
     updateError();
   }
 
-  public long calculateMaxTarget() {
+  private long calculateMaxTarget() {
     if (baseBundle.getSize() == 0) {
       return 0;
     }

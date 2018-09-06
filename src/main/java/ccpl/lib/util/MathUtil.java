@@ -13,7 +13,7 @@ public class MathUtil {
    * @param point Point potentially inside
    * @return True if inside, false otherwise
    */
-  public static boolean contains(double start, double end, double point) {
+  private static boolean contains(double start, double end, double point) {
     return start <= point && point <= end;
   }
 

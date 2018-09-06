@@ -39,7 +39,7 @@ public class RandomIntGenerator {
    * @param high Maximum value
    * @param interval Interval
    */
-  public RandomIntGenerator(int low, int high, int interval) {
+  private RandomIntGenerator(int low, int high, int interval) {
     this.low = low;
     this.high = high;
     this.interval = interval;

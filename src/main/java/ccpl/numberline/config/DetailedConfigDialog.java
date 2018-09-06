@@ -19,9 +19,9 @@ import javax.swing.WindowConstants;
  *
  * @see DetailedConfigDialog
  */
-public class DetailedConfigDialog extends JDialog {
+class DetailedConfigDialog extends JDialog {
 
-  private DetailedConfigPanel panel = new DetailedConfigPanel(this);
+  private final DetailedConfigPanel panel = new DetailedConfigPanel(this);
 
   /** Dialog which holds the detailed configuration options. */
   public DetailedConfigDialog() {

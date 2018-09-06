@@ -6,7 +6,6 @@ import static ccpl.lib.util.StringUtil.notPartOfNumber;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -23,7 +22,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.Date;
@@ -37,7 +35,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.AbstractDocument;
@@ -55,16 +52,12 @@ import javax.swing.text.DocumentFilter;
 public class Response implements KeyListener, ActionListener {
 
   private String textValue;
-  private long textRt;
   private volatile char userChoice = '~';
   private JDialog respFrame;
   private JButton textOkButton;
   private JTextField textInput;
-  private long startTime;
   private volatile boolean inputDone;
   private long loopsPerMs = 0;
-  private NumPadResponse numPadResponse;
-  private boolean closedProperly;
 
   public AbstractAction returnMouseAction() {
     return new MouseAction();
@@ -81,10 +74,6 @@ public class Response implements KeyListener, ActionListener {
         }
       }
     }
-  }
-
-  public Response() {
-    numPadResponse = null;
   }
 
   public void setFrame(JFrame f) {
@@ -246,26 +235,6 @@ public class Response implements KeyListener, ActionListener {
     return (timeB - timeA) + (overRun / loopsPerMs);
   }
 
-  private long pollForResponse() {
-    long overRun = 0;
-
-    long timeA = new Date().getTime();
-    long timeB = new Date().getTime();
-    long tmpTime = timeA;
-
-    while (isInputRunning()) {
-      timeB = new Date().getTime();
-      if (tmpTime != timeB) {
-        overRun = 0;
-        tmpTime = timeB;
-      } else {
-        overRun++;
-      }
-    }
-
-    return (timeB - timeA) + (overRun / loopsPerMs);
-  }
-
   /**
    * Displays a notification frame with a desired message.
    *
@@ -276,28 +245,6 @@ public class Response implements KeyListener, ActionListener {
     inputDone = false;
     textOkButton = new JButton("OK");
     createNotificationFrame(parent, info, textOkButton, 500, 250);
-  }
-
-  /**
-   * Initializes a TimedNumPadResponse.
-   *
-   * @param parent Parent JFrame.
-   * @param info Message to be displayed.
-   * @param targetFieldFormat Format to apply to the target.
-   */
-  public void getTimedNumPadResponse(JFrame parent, String info, String targetFieldFormat) {
-    if (loopsPerMs == 0) {
-      JOptionPane.showMessageDialog(
-          null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
-      System.exit(1);
-    }
-
-    createNumPadResponseFrame(parent, info, targetFieldFormat);
-
-    inputDone = false;
-    textRt = pollForResponse();
-
-    textValue = numPadResponse.getResponse();
   }
 
   /**
@@ -347,18 +294,13 @@ public class Response implements KeyListener, ActionListener {
    * Get a timed text response.
    *
    * @param parent Parent JFrame
-   * @param info First string
    * @param info2 Second string
    * @param columns Column width of the response
    * @param just Justification
-   * @param mouseVisible Should the mouse be displayed
-   * @throws IOException IOException
    */
   public synchronized void getTimedTextResponseJustified(
-      JFrame parent, String info, String info2, int columns, String just, boolean mouseVisible)
-      throws IOException {
+      JFrame parent, String info2, int columns, String just) {
     inputDone = false;
-    final boolean fullScreen = false;
 
     textInput = new JTextField(columns);
     textInput.setText(null);
@@ -369,9 +311,9 @@ public class Response implements KeyListener, ActionListener {
     AbstractDocument doc = (AbstractDocument) textInput.getDocument();
     doc.setDocumentFilter(
         new DocumentFilter() {
-          public String formatString(String s) {
-            String format = "";
-            Boolean dec = false;
+          String formatString(String s) {
+            StringBuilder format = new StringBuilder();
+            boolean dec = false;
             int decimalLocation = 0;
             for (int i = 0; i < s.length(); i++) {
               if (Character.toString(s.charAt(i)).equals(".")) {
@@ -380,18 +322,18 @@ public class Response implements KeyListener, ActionListener {
               }
             }
             if (dec) {
-              format = format + ".";
+              format.append(".");
               for (int i = decimalLocation + 1; i < s.length(); i++) {
                 if (Character.toString(s.charAt(i)).equals("0")) {
-                  format = format + "0";
+                  format.append("0");
 
                 } else if (Character.toString(s.charAt(i)).matches("[1-9]")) {
-                  format = format + "0";
+                  format.append("0");
                 }
               }
             }
 
-            return format;
+            return format.toString();
           }
 
           @Override
@@ -404,7 +346,7 @@ public class Response implements KeyListener, ActionListener {
               return;
             }
 
-            text = text.substring(0, off) + str + text.substring(off, text.length());
+            text = text.substring(0, off) + str + text.substring(off);
             // text = text.substring(0,off)+str+text.substring(off,fb.getDocument().getLength());
             text = text.replaceAll(",", "");
 
@@ -447,14 +389,12 @@ public class Response implements KeyListener, ActionListener {
               return;
             }
 
-            text = text.substring(0, offs) + str + text.substring(offs, text.length());
+            text = text.substring(0, offs) + str + text.substring(offs);
             // text = text.substring(0,offs)+str+text.substring(fb.getDocument().getLength());
             text = text.replaceAll(",", "");
             String f = "#,##0";
-            String signHolder = "";
             if (text.contains("-")) {
               System.out.println(text);
-              signHolder = "-";
             }
             String formatter = formatString(text);
             f = f + formatter;
@@ -510,8 +450,7 @@ public class Response implements KeyListener, ActionListener {
 
     textOkButton = new JButton("OK");
 
-    createResponseFrameMouseSwitch(
-        parent, textInput, textOkButton, info, info2, false, mouseVisible, fullScreen);
+    createResponseFrameMouseSwitch(parent, textInput, textOkButton, info2, false);
   }
 
   /**
@@ -520,23 +459,15 @@ public class Response implements KeyListener, ActionListener {
    * @param parent Parent JFrame
    * @param inputComponent InputComponent
    * @param okButton Ok button
-   * @param stdlabel Standard label
    * @param probelabel Label for the probe
    * @param isFrameModal Use modality
-   * @param mouseVisible Show mouse?
-   * @param fullScreen Fullscreen?
-   * @throws IOException IOException
    */
-  public synchronized void createResponseFrameMouseSwitch(
+  private synchronized void createResponseFrameMouseSwitch(
       JFrame parent,
       JComponent inputComponent,
       JButton okButton,
-      String stdlabel,
       String probelabel,
-      boolean isFrameModal,
-      boolean mouseVisible,
-      boolean fullScreen)
-      throws IOException {
+      boolean isFrameModal) {
     respFrame = new JDialog(parent, isFrameModal);
     respFrame.setTitle("Response");
     respFrame.addKeyListener(this);
@@ -546,7 +477,6 @@ public class Response implements KeyListener, ActionListener {
     // dont let people close out
     respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
 
-    closedProperly = true;
     respFrame.addWindowListener(
         new WindowAdapter() {
 
@@ -626,17 +556,8 @@ public class Response implements KeyListener, ActionListener {
 
     respFrame.setVisible(true);
 
-    startTime = new Date().getTime();
     while (!inputDone) {
       Thread.yield();
-    }
-    if (!closedProperly) {
-      okButton.doClick();
-      JOptionPane.showMessageDialog(
-          null,
-          "You must choose an option.  Do NOT use the Close Box",
-          "alert",
-          JOptionPane.ERROR_MESSAGE);
     }
   }
 
@@ -653,21 +574,10 @@ public class Response implements KeyListener, ActionListener {
     JButton button = (JButton) evt.getSource();
 
     if (button.equals(textOkButton)) {
-      long endTime = new Date().getTime();
-      textRt = endTime - startTime;
       if (textInput != null && !"".equals(textInput.getText())) {
         textValue = (textInput.getText()).trim();
         respFrame.dispose();
         inputDone = true;
-      } else if (numPadResponse != null) {
-        textValue = numPadResponse.getResponse();
-        if (numPadResponse.validateResponse(textValue)) {
-          respFrame.setVisible(false);
-          respFrame.dispose();
-          respFrame = null;
-
-          inputDone = true;
-        }
       } else if (textInput == null) {
         respFrame.setVisible(false);
         respFrame.dispose();
@@ -773,59 +683,14 @@ public class Response implements KeyListener, ActionListener {
     respFrame.getContentPane().add(inputPanel, "Center");
     respFrame.getContentPane().add(buttonPanel, "South");
 
-    startTime = new Date().getTime();
     // because this is a modal dialog, the show () command will not return until the frame has been
     // removed from sight
-
     respFrame.getRootPane().setDefaultButton(okButton);
     respFrame.setVisible(true);
 
     while (isInputRunning()) {
       Thread.yield();
     }
-  }
-
-  /**
-   * Create a NumpadResponseFrame.
-   *
-   * @param parent Parent frame
-   * @param label Label for the frame
-   * @param targetFieldFormat How the field should be formatted
-   */
-  private void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
-    respFrame = new JDialog(parent);
-    respFrame.setTitle("Response");
-
-    respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-    numPadResponse = new NumPadResponse(targetFieldFormat.trim(), respFrame);
-
-    textOkButton = new JButton("OK");
-    JPanel inputPanel = new JPanel(new BorderLayout(3, 5));
-    JPanel labelPanel = new JPanel(new FlowLayout());
-    JPanel buttonPanel = new JPanel(new FlowLayout());
-
-    labelPanel.add(new JLabel(label));
-    buttonPanel.add(textOkButton);
-
-    inputPanel.add(labelPanel, BorderLayout.NORTH);
-    inputPanel.add(numPadResponse.getPanel(), BorderLayout.CENTER);
-    inputPanel.add(buttonPanel, BorderLayout.SOUTH);
-    respFrame.getContentPane().add(inputPanel);
-
-    Dimension respFrameDim = respFrame.getPreferredSize();
-
-    final int respFrameWidth = respFrameDim.width + 150;
-    final int respFrameHeight = respFrameDim.height + 75;
-    respFrame.setSize(respFrameWidth, respFrameHeight);
-    respFrame.setLocation(
-        (parent.getWidth() - respFrameWidth) / 2, (parent.getHeight() - respFrameHeight) / 2);
-    respFrame.setResizable(false);
-
-    textOkButton.addActionListener(this);
-    respFrame.getRootPane().setDefaultButton(textOkButton);
-    respFrame.addKeyListener(this);
-    respFrame.setVisible(true);
   }
 
   private char getUserChoice() {

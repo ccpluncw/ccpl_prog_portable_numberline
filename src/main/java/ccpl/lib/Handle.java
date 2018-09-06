@@ -12,10 +12,10 @@ import java.awt.geom.Line2D;
  *
  * <p>This manages the physical handle as well as the guide line.
  */
-public class Handle extends Line2D.Double {
+class Handle extends Line2D.Double {
 
   private Color color;
-  private Line2D guide;
+  private final Line2D guide;
 
   private Color baseColor;
   private Color activeColor;
@@ -33,10 +33,6 @@ public class Handle extends Line2D.Double {
     this.color = color;
     this.baseColor = color;
     this.activeColor = color;
-  }
-
-  public void setColor(Color color) {
-    this.color = color;
   }
 
   /**

@@ -52,26 +52,17 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class ConfigDialog extends JDialog {
 
-  private Logger log = Logger.getLogger(ConfigDialog.class.getName());
+  private final Logger log = Logger.getLogger(ConfigDialog.class.getName());
 
-  private List<String> textKeys = Arrays.asList("subject", "session");
+  private final Map<String, JTextField> textFields = new HashMap<>();
 
-  private List<String> textLabels = Arrays.asList("Subject", "Session");
+  private final String defaultConfigLoc;
+  private final JTextField saveTxtField = new JTextField(20);
+  private final JLabel errorTextField = new JLabel("", SwingConstants.CENTER);
 
-  private Map<String, JTextField> textFields = new HashMap<>();
+  private final DetailedConfigDialog configDialog = new DetailedConfigDialog();
 
-  private JPanel centerPanel = new JPanel();
-
-  private String homeDir = System.getProperty("user.home");
-  private String defaultConfigLoc;
-  private JTextField saveTxtField = new JTextField(20);
-  private JLabel errorTextField = new JLabel("", SwingConstants.CENTER);
-
-  private Bundle baseBundle;
-
-  private DetailedConfigDialog configDialog = new DetailedConfigDialog();
-
-  private PopupCallback cb;
+  private final PopupCallback cb;
 
   /**
    * Frame that holds configuration for subject, session, and condition.
@@ -83,9 +74,11 @@ public class ConfigDialog extends JDialog {
     super(new JFrame(), title, ModalityType.DOCUMENT_MODAL);
 
     this.cb = cb;
+    String homeDir = System.getProperty("user.home");
     this.defaultConfigLoc = String.format("%s/.port_num/defaults_config_popup", homeDir);
     ClassLoader cl = ClassLoader.getSystemClassLoader();
-    baseBundle = readDbFile(Objects.requireNonNull(cl.getResource("exp/infiles/base_exp.txt")));
+    Bundle baseBundle =
+        readDbFile(Objects.requireNonNull(cl.getResource("exp/infiles/base_exp.txt")));
     configDialog.setBaseBundle(baseBundle);
 
     final boolean defaultConfigExist = new File(defaultConfigLoc).exists();
@@ -96,6 +89,7 @@ public class ConfigDialog extends JDialog {
     contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
     contentPanel.setLayout(new GridBagLayout());
 
+    JPanel centerPanel = new JPanel();
     centerPanel.setLayout(new GridLayout(0, 2, 0, 2));
 
     JFileChooser fc = new JFileChooser();
@@ -155,7 +149,9 @@ public class ConfigDialog extends JDialog {
 
     textFields.put("condition", textField);
 
+    List<String> textKeys = Arrays.asList("subject", "session");
     for (int i = 0; i < textKeys.size(); i++) {
+      List<String> textLabels = Arrays.asList("Subject", "Session");
       if (textKeys.get(i).equals("session")) {
         JFormattedTextField format = new JFormattedTextField(new DecimalFormat("###"));
         addTrackedTxtField(

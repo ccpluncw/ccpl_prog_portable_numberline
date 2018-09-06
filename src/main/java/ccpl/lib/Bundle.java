@@ -10,7 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class Bundle {
-  private Map<String, Object> values = new HashMap<>();
+  private final Map<String, Object> values = new HashMap<>();
 
   public void add(String key, Object value) {
     values.put(key, value);

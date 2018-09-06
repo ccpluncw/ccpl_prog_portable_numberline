@@ -3,7 +3,6 @@ package ccpl.lib.util;
 import ccpl.lib.Bundle;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -64,12 +63,16 @@ public class DatabaseFileReader {
   public static void writeDbFile(Bundle bundle, URL path) {
     try {
       File file = new File(path.toURI());
-      file.getParentFile().mkdirs();
+      boolean success = file.getParentFile().mkdirs();
+
+      if (!success) {
+        throw new IOException("Unable to create path.");
+      }
 
       PrintWriter pw = new PrintWriter(new FileOutputStream(file));
       pw.println(bundle.toString());
       pw.close();
-    } catch (URISyntaxException | FileNotFoundException e) {
+    } catch (IOException | URISyntaxException e) {
       logger.log(Level.SEVERE, e.getLocalizedMessage());
     }
   }

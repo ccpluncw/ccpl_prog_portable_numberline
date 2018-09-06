@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFrame;
 
-public class Experiment implements ExpInterface {
+public class Experiment {
 
   protected final String experiment;
   protected final String subject;
@@ -126,22 +126,6 @@ public class Experiment implements ExpInterface {
   protected void prepareToStartPractice(JFrame parent) {
     delay(200);
     response.displayNotificationFrame(parent, "Please Click OK to start the practice trials");
-  }
-
-  public String createOutputHeader() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  public void setupExp() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  public void runTrial() {
-    throw new UnsupportedOperationException("Not supported yet.");
-  }
-
-  public void readTrial() {
-    throw new UnsupportedOperationException("Not supported yet.");
   }
 
   protected void presentBlankScreen(int blankDelay) {

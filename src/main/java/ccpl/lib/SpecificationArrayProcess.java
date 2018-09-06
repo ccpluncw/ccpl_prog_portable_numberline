@@ -56,7 +56,7 @@ public class SpecificationArrayProcess {
     // Convert ArrayList of Specification Objects into Specification Array to return
     Object[] stimsArray = stims.toArray();
     Specification[] stimsCpy = new Specification[stimsArray.length];
-    System.arraycopy(stimsArray, 0, stimsCpy, 0, stimsArray.length);
+    stims.toArray(stimsCpy);
 
     return stimsCpy;
   }

@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class UiUtil {
-  private static Toolkit tk = Toolkit.getDefaultToolkit();
+  private static final Toolkit tk = Toolkit.getDefaultToolkit();
 
   public static int screenWidth() {
     return tk.getScreenSize().width;

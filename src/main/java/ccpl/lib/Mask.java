@@ -12,7 +12,7 @@ import javax.swing.JPanel;
 
 public class Mask extends JPanel {
 
-  private int numLines;
+  private final int numLines;
   private final int lineThickness;
   private Image intermediateImage;
 
