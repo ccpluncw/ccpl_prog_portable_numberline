@@ -45,7 +45,7 @@ public class UiUtil {
       AbstractButton hideBtn) {
     wrapper.setLayout(new BorderLayout());
 
-    JPanel buttonPanel = new JPanel();
+    final JPanel buttonPanel = new JPanel();
 
     showBtn.addItemListener(
         event -> {

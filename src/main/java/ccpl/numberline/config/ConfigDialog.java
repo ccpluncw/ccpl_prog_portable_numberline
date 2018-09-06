@@ -221,7 +221,7 @@ public class ConfigDialog extends JDialog {
     AbstractButton noButton = new JRadioButton("No");
     noButton.setSelected(true);
 
-    Component ageGradePanel =
+    final Component ageGradePanel =
         UiUtil.createToggleablePanel(
             this,
             createPanelWithBorderTitle("Include age and grade?"),

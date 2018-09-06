@@ -2,7 +2,7 @@ package ccpl.lib.util;
 
 public class MathUtil {
 
-  /** Prevent instantiation */
+  /** Prevent instantiation. */
   private MathUtil() {}
 
   /**
