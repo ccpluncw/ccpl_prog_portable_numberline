@@ -3,6 +3,7 @@ package ccpl.lib;
 import static ccpl.lib.util.MouseUtil.resetMouseToCenter;
 import static ccpl.lib.util.StringUtil.notPartOfNumber;
 
+import ccpl.lib.numberline.abs.AbstractNumberLine;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -190,7 +191,7 @@ public class Response implements KeyListener, ActionListener {
     return (timeB - timeA) + (overRun / loopsPerMs);
   }
 
-  private long pollForMouseResponse(NumberLine numLine) {
+  private long pollForMouseResponse(AbstractNumberLine numLine) {
     long overRun = 0;
     long timeA = new Date().getTime();
     long timeB = new Date().getTime();
@@ -223,7 +224,7 @@ public class Response implements KeyListener, ActionListener {
           public void mouseExited(MouseEvent e) {}
         };
 
-    numLine.linePanel.addMouseListener(tempListener);
+    numLine.getPanel().addMouseListener(tempListener);
 
     // TODO: Change this to listen to a mouse click
     while (flag[0]) {
@@ -241,7 +242,7 @@ public class Response implements KeyListener, ActionListener {
       }
     }
 
-    numLine.linePanel.removeMouseListener(tempListener);
+    numLine.getPanel().removeMouseListener(tempListener);
 
     return (timeB - timeA) + (overRun / loopsPerMs);
   }
@@ -307,7 +308,7 @@ public class Response implements KeyListener, ActionListener {
    * @param useMouse If response if based on mouse click
    * @return The amount of time it look for the user to click.
    */
-  public long getTimedNumberLineResponse(NumberLine numberLine, boolean useMouse) {
+  public long getTimedNumberLineResponse(AbstractNumberLine numberLine, boolean useMouse) {
     // Only the spacebar will trigger a timer stop, anything else is ignored
     char submitKey = ' ';
 

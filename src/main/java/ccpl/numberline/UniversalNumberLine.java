@@ -9,11 +9,12 @@ import ccpl.lib.Experiment;
 import ccpl.lib.Fixation;
 import ccpl.lib.Fraction;
 import ccpl.lib.Mask;
-import ccpl.lib.NumberLine;
 import ccpl.lib.RandomIntGenerator;
 import ccpl.lib.Specification;
 import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
+import ccpl.lib.numberline.abs.AbstractHandleNumberLine;
+import ccpl.lib.numberline.NumberLine;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -54,7 +55,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private final int numberOfTrials;
   private final int numOfPracTrials;
 
-  private static NumberLine numLine = null;
+  private static AbstractHandleNumberLine numLine = null;
   private static RandomIntGenerator randGen = new RandomIntGenerator();
   private BlankPanel imPanel;
   private DrawExpFrame frame;
@@ -484,9 +485,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(session).append("\t");
         outString.append(numberLineSize).append("\t");
         outString.append(df.format(numLine.getUnitLength())).append("\t");
-        outString.append(df.format(numLine.getStartUnit())).append("\t");
-        outString.append(df.format(numLine.getEndUnit())).append("\t");
-        outString.append(df.format(numLine.getTargetUnit())).append("\t");
+        outString.append(df.format(startUnit.toDouble())).append("\t");
+        outString.append(df.format(endUnit.toDouble())).append("\t");
+        outString.append(df.format(randTarget.toDouble())).append("\t");
         outString.append(keepWithinBounds[1] ? "Bounded" : "Unbounded").append("\t");
         outString.append(userRespVal).append("\t");
         outString.append(isEstimationTask ? "Estimation" : "Production").append("\t");

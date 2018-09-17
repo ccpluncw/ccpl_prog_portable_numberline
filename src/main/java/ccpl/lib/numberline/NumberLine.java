@@ -1,5 +1,8 @@
-package ccpl.lib;
+package ccpl.lib.numberline;
 
+import ccpl.lib.Handle;
+import ccpl.lib.Unit;
+import ccpl.lib.numberline.abs.AbstractHandleNumberLine;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,7 +28,7 @@ import javax.swing.JPanel;
 /**
  * ***************** Written by Kyle Holt lkh3273@uncw.edu October-November 2009 *****************
  */
-public class NumberLine implements MouseMotionListener, MouseListener {
+public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener, MouseListener {
 
   final NumberLinePanel linePanel;
   // ---Pixel members-------
@@ -401,6 +404,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
   }
 
   /** Return the number line panel. */
+  @Override
   public JPanel getPanel() {
     if (isEstimateTask) {
       int w = startX + startUnitLabelW + endUnitLabelW + lineThickness * 2 + 10;
@@ -419,23 +423,13 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     basePaddingLeft = label.getWidth() + (lineThickness * 2) + pad;
   }
 
-  public double getTargetUnit() {
-    return targetUnit.toDouble();
-  }
-
-  public double getEndUnit() {
-    return endUnit.toDouble();
-  }
-
-  public double getStartUnit() {
-    return startUnit.toDouble();
-  }
-
   /** Return the unit length of the number line. */
+  @Override
   public double getUnitLength() {
     return unitSize;
   }
 
+  @Override
   public double getUnitLength(String userResp) {
     return parseUnitString(userResp);
   }
@@ -460,6 +454,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return (currentDragPoint.x - leftGuide.getX1() - totalShift) / unitSize + startUnit.toInteger();
   }
 
+  @Override
   public Line2D getFixationLine() {
     return fixationLine;
   }
@@ -483,6 +478,7 @@ public class NumberLine implements MouseMotionListener, MouseListener {
     return unitLen;
   }
 
+  @Override
   public boolean isHandleDragged() {
     return isHandleDragged;
   }
@@ -862,5 +858,28 @@ public class NumberLine implements MouseMotionListener, MouseListener {
 
   public void disableLeftHandle() {
     leftDragHandle = null;
+  }
+
+  @Override
+  public double getUnitError(boolean inPercent) {
+    if (inPercent) {
+      return 1.0 * unitSize / targetUnit.toDouble();
+    } else {
+      return 1.0 * unitSize / targetUnit.toDouble();
+    }
+  }
+
+  @Override
+  public double getUnitError(boolean inPercent, String userRespLength) {
+    if (inPercent) {
+      return parseUnitString(userRespLength) / targetUnit.toDouble();
+    } else {
+      return parseUnitString(userRespLength) / targetUnit.toDouble();
+    }
+  }
+
+  @Override
+  public int getBaseWidth() {
+    return baseWidth;
   }
 }
