@@ -66,6 +66,9 @@ import javax.swing.text.PlainDocument;
 
 class DetailedConfigPanel extends JPanel {
 
+  private static final double CHILD_BIAS = 1.4;
+  private static final double ADULT_BIAS = 1.2;
+
   private Logger log = Logger.getLogger(DetailedConfigPanel.class.getName());
 
   private Map<String, ButtonGroup> btnGrps = new HashMap<>();
@@ -634,11 +637,11 @@ class DetailedConfigPanel extends JPanel {
     panel.setLayout(new GridLayout(2, 3));
 
     JRadioButton childRadBtn = new JRadioButton("Child");
-    childRadBtn.setActionCommand("1.4");
+    childRadBtn.setActionCommand(String.valueOf(CHILD_BIAS));
     childRadBtn.setSelected(true);
 
     JRadioButton adultRadBtn = new JRadioButton("Adult");
-    adultRadBtn.setActionCommand("1.2");
+    adultRadBtn.setActionCommand(String.valueOf(ADULT_BIAS));
 
     JRadioButton othRadBtn = new JRadioButton("Other");
     txtFld.setText("0.0");
@@ -685,8 +688,8 @@ class DetailedConfigPanel extends JPanel {
     panel.add(adultRadBtn);
     panel.add(othRadBtn);
 
-    panel.add(new JLabel("1.4"));
-    panel.add(new JLabel("1.2"));
+    panel.add(new JLabel(String.valueOf(CHILD_BIAS)));
+    panel.add(new JLabel(String.valueOf(ADULT_BIAS)));
     panel.add(txtFld);
 
     return panel;
@@ -816,7 +819,7 @@ class DetailedConfigPanel extends JPanel {
 
     // Handle the case where the other bias was selected.
     double bias = parseDouble(defs.getAsString("bias"));
-    if (bias != 1.2 && bias != 1.4) {
+    if (bias != ADULT_BIAS && bias != CHILD_BIAS) {
       JRadioButton btn =
           (JRadioButton)
               Collections.list(btnMatches.get("bias").getElements())
