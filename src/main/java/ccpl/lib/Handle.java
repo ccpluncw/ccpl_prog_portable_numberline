@@ -20,6 +20,8 @@ public class Handle extends Line2D.Double {
   private Color baseColor;
   private Color activeColor;
 
+  private int thickness;
+
   /**
    * Create a new Handle with a given Handle line, guide, and color.
    *
@@ -27,12 +29,13 @@ public class Handle extends Line2D.Double {
    * @param guide Guide line to the specific value.
    * @param color Color of the handle and guide line.
    */
-  public Handle(Line2D line, Line2D guide, Color color) {
+  public Handle(Line2D line, Line2D guide, Color color, int thickness) {
     super(line.getP1(), line.getP2());
     this.guide = new Line2D.Double(guide.getP1(), guide.getP2());
     this.color = color;
     this.baseColor = color;
     this.activeColor = color;
+    this.thickness = thickness;
   }
 
   public void setColor(Color color) {
@@ -52,9 +55,8 @@ public class Handle extends Line2D.Double {
     Stroke stroke = g2.getStroke();
 
     g2.setColor(color);
-    g2.draw(this);
 
-    g2.setStroke(new BasicStroke(1));
+    g2.setStroke(new BasicStroke(thickness));
     g2.draw(guide);
 
     g2.setStroke(stroke);

@@ -10,35 +10,35 @@ rest_num:       86
 fonts:          fontNames.txt
 
 # RGB value of the number line normally
-base_red:       255
-base_green:     255
-base_blue:      255
+base_red:       192
+base_green:     192
+base_blue:      192
 
 # RGB value of the number line when dragged
-drag_red:       255
-drag_blue:      255
-drag_green:     255
+drag_red:       192
+drag_blue:      192
+drag_green:     192
 
 drag_active_red:       255
 drag_active_blue:      0
 drag_active_green:     0
 
 # RGB values of the number line handle
-handle_inactive_red:     255
-handle_inactive_blue:    255
-handle_inactive_green:   255
+handle_inactive_red:     192
+handle_inactive_blue:    192
+handle_inactive_green:   192
 
 handle_active_red:     255
 handle_active_blue:    0
 handle_active_green:   0
 
-left_bnd_red:     255
-left_bnd_blue:    255
-left_bnd_green:   255
+left_bnd_red:     192
+left_bnd_blue:    192
+left_bnd_green:   192
 
-right_bnd_red:     255
-right_bnd_blue:    255
-right_bnd_green:   255
+right_bnd_red:     192
+right_bnd_blue:    192
+right_bnd_green:   192
 
 # Use the mouse?
 use_mouse:      false

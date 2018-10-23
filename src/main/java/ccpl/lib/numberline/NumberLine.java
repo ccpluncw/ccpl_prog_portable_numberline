@@ -162,9 +162,11 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       boolean[] shLabels,
       int unitSize) {
 
+    guideWidth = thickness;
+
     isOutsideBounds = checkBounds(targetU, endU);
     targetInside = !isOutsideBounds;
-    boolean onBounds = !isOutsideBounds && !checkBounds(endU, targetU);
+    boolean onBounds = startU.equals(targetU) || endU.equals(targetU);
 
     if (onBounds || isOutsideBounds) {
       rightShift = guideWidth;
@@ -232,8 +234,8 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
             extendPoint2D.x,
             extendPoint2D.y);
 
-    leftDragHandle = new Handle(startLine, leftGuide, baseColor);
-    rightDragHandle = new Handle(endLine, rightGuide, baseColor);
+    leftDragHandle = new Handle(startLine, leftGuide, baseColor, lineThickness);
+    rightDragHandle = new Handle(endLine, rightGuide, baseColor, lineThickness);
 
     fixationLine = startLine;
 
@@ -354,7 +356,7 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       handleLoc.x = (float) guideHandleLow.getX();
       handleLoc.y = (float) guideHandleLow.getY();
 
-      activeDragHandle = new Handle(endLine, rightGuide, handleActiveColor);
+      activeDragHandle = new Handle(endLine, rightGuide, handleActiveColor, lineThickness);
       this.dragColor = handleActiveColor;
       linePanel.updateDragLine();
     }
@@ -681,10 +683,10 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       g.draw(extendLine);
 
       g.setColor(leftBndColor);
-      g.draw(startLine);
+      //g.draw(startLine);
 
       g.setColor(rightBndColor);
-      g.draw(endLine);
+      //g.draw(endLine);
 
       if (activeDragHandle == null) {
         if (leftDragHandle != null) {
@@ -800,7 +802,7 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       super.paintComponent(g);
       Graphics2D graphics = (Graphics2D) g;
       graphics.setStroke(stroke);
-      graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+      //graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
       graphics.setRenderingHint(
           RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
@@ -815,7 +817,7 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
         graphics.draw(dragLine);
       }
 
-      graphics.setStroke(new BasicStroke(1));
+      graphics.setStroke(new BasicStroke(lineThickness));
       graphics.setColor(leftBndColor);
       graphics.draw(leftGuide);
 
