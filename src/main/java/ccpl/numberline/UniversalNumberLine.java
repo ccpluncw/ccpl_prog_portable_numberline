@@ -67,6 +67,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   private String subjAge;
   private String subjGrade;
 
+  private String numberLineType;
+
   /**
    * Parameterized constructor allow the specification of an experiment file, the subject ID,
    * condition, and session number.
@@ -121,20 +123,19 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       boolean isEst = dataBundle.getAsBoolean("estimation_task");
       String bounded = dataBundle.getAsString("bound_exterior");
 
-      String qualifier;
       switch (bounded) {
         case "false":
-          qualifier = "unbound";
+          numberLineType = "unbound";
           break;
         case "FALSE":
-          qualifier = "universal";
+          numberLineType = "universal";
           break;
         default:
-          qualifier = "bound";
+          numberLineType = "bound";
           break;
       }
 
-      String instruction = String.format("%s_%s_instruct", isEst ? "est" : "prod", qualifier);
+      String instruction = String.format("%s_%s_instruct", isEst ? "est" : "prod", numberLineType);
       dbBundle.add("instructions", dbBundle.getAsString(instruction));
     }
 
@@ -476,6 +477,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         delay(1000);
 
         // Format as decimal output.
+        numberLineType = numberLineType.substring(0, 1).toUpperCase() + numberLineType.substring(1);
         outString.append(subject).append("\t");
         outString.append(subjAge).append("\t");
         outString.append(subjGrade).append("\t");
@@ -488,7 +490,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         outString.append(df.format(startUnit.toDouble())).append("\t");
         outString.append(df.format(endUnit.toDouble())).append("\t");
         outString.append(df.format(randTarget.toDouble())).append("\t");
-        outString.append(keepWithinBounds[1] ? "Bounded" : "Unbounded").append("\t");
+        outString.append(numberLineType).append("\t");
         outString.append(userRespVal).append("\t");
         outString.append(isEstimationTask ? "Estimation" : "Production").append("\t");
         outString.append(reactTime).append("\t");
