@@ -15,6 +15,7 @@ import ccpl.lib.SpecificationArrayProcess;
 import ccpl.lib.Unit;
 import ccpl.lib.numberline.NumberLine;
 import ccpl.lib.numberline.abs.AbstractHandleNumberLine;
+import ccpl.numberline.config.Keys;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -80,20 +81,20 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    */
   public UniversalNumberLine(
       String expFile, String sub, String cond, String sess, Bundle dataBundle) {
-    super(expFile, sub, cond, sess, dataBundle.getAsString("save_dir"));
+    super(expFile, sub, cond, sess, dataBundle.getAsString(Keys.SAVE_DIR));
 
     this.dataBundle = dataBundle;
 
     trialType = 0;
     trialNum = 0;
 
-    this.numberOfTrials = dataBundle.getAsInt("num_trials");
-    this.numOfPracTrials = dataBundle.getAsInt("num_prac_trials");
+    this.numberOfTrials = dataBundle.getAsInt(Keys.NUM_TRIALS);
+    this.numOfPracTrials = dataBundle.getAsInt(Keys.NUM_PRAC_TRIALS);
 
-    this.isEstimationTask = dataBundle.getAsBoolean("estimation_task");
+    this.isEstimationTask = dataBundle.getAsBoolean(Keys.EST_TASK);
 
-    final String subjAgeVal = dataBundle.getAsString("subj_age");
-    final String subjGradeVal = dataBundle.getAsString("subj_grade");
+    final String subjAgeVal = dataBundle.getAsString(Keys.SUBJ_AGE);
+    final String subjGradeVal = dataBundle.getAsString(Keys.SUBJ_GRADE);
 
     this.subjAge = subjAgeVal.equalsIgnoreCase("0") ? "NA" : subjAgeVal;
     this.subjGrade = subjGradeVal.equalsIgnoreCase("0") ? "NA" : subjGradeVal;
@@ -117,11 +118,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     // BEGIN PARSING OF DATABASE FILE
     trialType = numOfPracTrials != 0 ? 0 : 1;
 
-    if (dataBundle.getAsBoolean("use_cust_instruct")) {
-      dbBundle.add("instructions", dataBundle.getAsString("cust_instruct"));
+    if (dataBundle.getAsBoolean(Keys.USE_CUST_INSTRUCTIONS)) {
+      dbBundle.add(Keys.INSTRUCTIONS, dataBundle.getAsString(Keys.CUST_INSTRUCTIONS));
     } else {
-      boolean isEst = dataBundle.getAsBoolean("estimation_task");
-      String bounded = dataBundle.getAsString("bound_exterior");
+      boolean isEst = dataBundle.getAsBoolean(Keys.EST_TASK);
+      String bounded = dataBundle.getAsString(Keys.BOUND_EXTERIOR);
 
       switch (bounded) {
         case "false":
@@ -136,27 +137,27 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       }
 
       String instruction = String.format("%s_%s_instruct", isEst ? "est" : "prod", numberLineType);
-      dbBundle.add("instructions", dbBundle.getAsString(instruction));
+      dbBundle.add(Keys.INSTRUCTIONS, dbBundle.getAsString(instruction));
     }
 
-    instructFile = dbBundle.getAsString("instructions");
-    fontFile = dbBundle.getAsString("fonts");
+    instructFile = dbBundle.getAsString(Keys.INSTRUCTIONS);
+    fontFile = dbBundle.getAsString(Keys.FONTS);
 
-    restNumber = dbBundle.getAsInt("rest_num");
+    restNumber = dbBundle.getAsInt(Keys.REST_NUM);
 
-    final int baseR = dbBundle.getAsInt("base_red");
-    final int baseG = dbBundle.getAsInt("base_green");
-    final int baseB = dbBundle.getAsInt("base_blue");
+    final int baseR = dbBundle.getAsInt(Keys.BASE_RED);
+    final int baseG = dbBundle.getAsInt(Keys.BASE_GREEN);
+    final int baseB = dbBundle.getAsInt(Keys.BASE_BLUE);
 
-    final int dragR = dbBundle.getAsInt("drag_red");
-    final int dragG = dbBundle.getAsInt("drag_green");
-    final int dragB = dbBundle.getAsInt("drag_blue");
+    final int dragR = dbBundle.getAsInt(Keys.DRAG_RED);
+    final int dragG = dbBundle.getAsInt(Keys.DRAG_GREEN);
+    final int dragB = dbBundle.getAsInt(Keys.DRAG_BLUE);
 
     /* END PARSING OF DATABASE FILE */
 
     Color baseColor = new Color(baseR, baseG, baseB);
     Color dragColor = new Color(dragR, dragG, dragB);
-    Color handleActiveColor = loadColor("handle_active", dbBundle).orElse(Color.RED);
+    Color handleActiveColor = loadColor(Keys.HANDLE_ACTIVE, dbBundle).orElse(Color.RED);
 
     frame = getFrame();
     setFullScreen();
@@ -171,14 +172,14 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     boolean useMouse;
 
     try {
-      useMouse = dbBundle.getAsBoolean("use_mouse");
+      useMouse = dbBundle.getAsBoolean(Keys.USE_MOUSE);
     } catch (IndexOutOfBoundsException e) {
       System.out.println("useMouse click flag missing, defaulting to spacebar");
       useMouse = false;
     }
 
     if (isEstimationTask) {
-      estStimTime = dataBundle.getAsInt("est_stim_time");
+      estStimTime = dataBundle.getAsInt(Keys.EST_STIM_TIME);
     }
 
     dataAp.writeToUrl(getDataFile(), createOutputHeader());
@@ -219,10 +220,10 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     frame.showCursor();
     JPanel instructionPanel = new JPanel();
 
-    if (dataBundle.getAsBoolean("use_cust_instruct")) {
+    if (dataBundle.getAsBoolean(Keys.USE_CUST_INSTRUCTIONS)) {
       try {
         instructionPanel =
-            getInstructionPanel(new URL("file://" + dbBundle.getAsString("instructions")));
+            getInstructionPanel(new URL("file://" + dbBundle.getAsString(Keys.INSTRUCTIONS)));
       } catch (MalformedURLException e) {
         e.printStackTrace();
       }
@@ -244,7 +245,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     frame.remove(instructionPanel);
     frame.validate();
 
-    String numberLineSize = dataBundle.getAsString("line_size_temp");
+    String numberLineSize = dataBundle.getAsString(Keys.LINE_SIZE_TEMP);
 
     int widthMod = getModifier("width", numberLineSize);
 
@@ -267,32 +268,32 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         frame.hideCursor();
         long reactTime;
 
-        final int leftMarginLow = dataBundle.getAsInt("left_margin_low");
-        final int leftMarginHigh = dataBundle.getAsInt("left_margin_high");
-        final int leftMarginInterval = dataBundle.getAsInt("left_margin_interval");
+        final int leftMarginLow = dataBundle.getAsInt(Keys.LEFT_MARGIN_LOW);
+        final int leftMarginHigh = dataBundle.getAsInt(Keys.LEFT_MARGIN_HIGH);
+        final int leftMarginInterval = dataBundle.getAsInt(Keys.LEFT_MARGIN_INTERVAL);
 
         final int height = getModifier("height", numberLineSize);
         final int thickness = getModifier("thickness", numberLineSize);
 
-        final Unit defaultStartUnit = new Unit(dataBundle.getAsString("start_unit"));
-        final Unit defaultEndUnit = new Unit(dataBundle.getAsString("end_unit"));
+        final Unit defaultStartUnit = new Unit(dataBundle.getAsString(Keys.START_UNIT));
+        final Unit defaultEndUnit = new Unit(dataBundle.getAsString(Keys.END_UNIT));
 
-        final Unit targetUnitLow = new Unit(dataBundle.getAsString("target_unit_low"));
-        final Unit targetUnitHigh = new Unit(dataBundle.getAsString("target_unit_high"));
-        final Unit targetUnitInterval = new Unit(dataBundle.getAsString("target_unit_interval"));
+        final Unit targetUnitLow = new Unit(dataBundle.getAsString(Keys.TARGET_UNIT_LOW));
+        final Unit targetUnitHigh = new Unit(dataBundle.getAsString(Keys.TARGET_UNIT_HIGH));
+        final Unit targetUnitInterval = new Unit(dataBundle.getAsString(Keys.TARGET_UNIT_INTERVAL));
 
-        final boolean excludeLeft = !dataBundle.getAsBoolean("include_left_bnd");
-        final boolean excludeRight = !dataBundle.getAsBoolean("include_right_bnd");
+        final boolean excludeLeft = !dataBundle.getAsBoolean(Keys.INCLUDE_LEFT_BND);
+        final boolean excludeRight = !dataBundle.getAsBoolean(Keys.INCLUDE_RIGHT_BND);
 
-        final String startUnitFormat = dataBundle.getAsString("start_unit_format").toUpperCase();
-        final String endUnitFormat = dataBundle.getAsString("end_unit_format").toUpperCase();
-        final String targetUnitFormat = dataBundle.getAsString("target_unit_format").toUpperCase();
+        final String startUnitFormat = dataBundle.getAsString(Keys.START_UNIT_FORMAT).toUpperCase();
+        final String endUnitFormat = dataBundle.getAsString(Keys.END_UNIT_FORMAT).toUpperCase();
+        final String targetUnitFormat = dataBundle.getAsString(Keys.TARGET_UNIT_FORMAT).toUpperCase();
 
-        String estTargetFormat = dataBundle.getAsString("est_target_format");
+        String estTargetFormat = dataBundle.getAsString(Keys.EST_TARGET_FORMAT);
 
-        final String start = dataBundle.getAsString("start_label_on");
-        final String end = dataBundle.getAsString("end_label_on");
-        final String target = dataBundle.getAsString("target_label_on");
+        final String start = dataBundle.getAsString(Keys.START_LABEL_ON);
+        final String end = dataBundle.getAsString(Keys.END_LABEL_ON);
+        final String target = dataBundle.getAsString(Keys.TARGET_LABEL_ON);
         final String handle = "false";
 
         boolean[] showFullBaseScale = new boolean[4];
@@ -304,8 +305,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         // location 0 in the array determines if the handle can move past the left bound
         // location 1 determines the right bound
         boolean[] keepWithinBounds = new boolean[2];
-        keepWithinBounds[0] = dataBundle.getAsBoolean("bound_interior");
-        keepWithinBounds[1] = dataBundle.getAsBoolean("bound_exterior");
+        keepWithinBounds[0] = dataBundle.getAsBoolean(Keys.BOUND_INTERIOR);
+        keepWithinBounds[1] = dataBundle.getAsBoolean(Keys.BOUND_EXTERIOR);
 
         // Update the leftMarginPanel in each trial
         int leftMargin = getRandomLeftMargin(leftMarginLow, leftMarginHigh, leftMarginInterval);
@@ -318,11 +319,11 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         // unitSize = widthMod * random(width_low, width_high);
         // number of units = high - low
-        final int startUnitInt = dataBundle.getAsInt("start_unit");
-        final int endUnitInt = dataBundle.getAsInt("end_unit");
+        final int startUnitInt = dataBundle.getAsInt(Keys.START_UNIT);
+        final int endUnitInt = dataBundle.getAsInt(Keys.END_UNIT);
 
-        final int low = dataBundle.getAsInt("width_low");
-        final int high = dataBundle.getAsInt("width_high");
+        final int low = dataBundle.getAsInt(Keys.WIDTH_LOW);
+        final int high = dataBundle.getAsInt(Keys.WIDTH_HIGH);
 
         final int units = endUnitInt - startUnitInt;
 
@@ -350,7 +351,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         String myFontName = getRandomFontName(fontNames);
 
-        char leftOrRight = dataBundle.getAsString("handle_start_point").charAt(0);
+        char leftOrRight = dataBundle.getAsString(Keys.HANDLE_START_POINT).charAt(0);
 
         numLine =
             new NumberLine(
@@ -376,18 +377,18 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         loadColor("right_bnd", dbBundle).ifPresent(numLine::setRightBoundColor);
         loadColor("drag_active", dbBundle).ifPresent(numLine::setDragActiveColor);
 
-        loadColor("handle_inactive", dbBundle).ifPresent(color -> {
+        loadColor(Keys.HANDLE_INACTIVE, dbBundle).ifPresent(color -> {
           numLine.setLeftDragHandleColor(color);
           numLine.setRightDragHandleColor(color);
         });
 
-        loadColor("handle_active", dbBundle).ifPresent(color -> {
+        loadColor(Keys.HANDLE_ACTIVE, dbBundle).ifPresent(color -> {
           numLine.setLeftDragActiveColor(color);
           numLine.setRightDragActiveColor(color);
         });
 
         // Disable the left handle in the unbounded condition.
-        if (dataBundle.getAsString("bound_exterior").equals("false")) {
+        if (dataBundle.getAsString(Keys.BOUND_EXTERIOR).equals("false")) {
           numLine.disableLeftHandle();
         }
 

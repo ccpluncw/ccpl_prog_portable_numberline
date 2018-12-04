@@ -107,7 +107,7 @@ class DetailedConfigPanel extends JPanel {
 
     this.add(errorPanel);
 
-    List<String> textKeys = Arrays.asList("num_trials", "num_prac_trials");
+    List<String> textKeys = Arrays.asList(Keys.NUM_TRIALS, Keys.NUM_PRAC_TRIALS);
     List<String> textLabels = Arrays.asList("Number of Trials", "Number of Practice Trials");
     this.add(textPanel(textKeys, textLabels));
 
@@ -150,12 +150,12 @@ class DetailedConfigPanel extends JPanel {
             Collections.list(btnGrp.getElements())
                 .forEach(it -> it.addActionListener(actionEvent -> updateLargeLbl())));
 
-    JTextField txt = txtMap.get("start_unit");
+    JTextField txt = txtMap.get(Keys.START_UNIT);
     txt.getDocument()
         .addDocumentListener(
             new DocumentListener() {
 
-              ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+              ButtonGroup btnGrp = btnGrps.get(Keys.BOUND_EXTERIOR);
               List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
               @Override
@@ -250,8 +250,8 @@ class DetailedConfigPanel extends JPanel {
     wrapper.add(leftBound);
     wrapper.add(rightBound);
 
-    txtMap.put("start_unit", leftBound);
-    txtMap.put("end_unit", rightBound);
+    txtMap.put(Keys.START_UNIT, leftBound);
+    txtMap.put(Keys.END_UNIT, rightBound);
 
     return outerWrapper;
   }
@@ -304,7 +304,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel gridPanel = new JPanel();
     gridPanel.setLayout(new GridLayout(0, 6, 5, 1));
 
-    List<String> txtKey = Arrays.asList("target_unit_low", "target_unit_high");
+    List<String> txtKey = Arrays.asList(Keys.TARGET_UNIT_LOW, Keys.TARGET_UNIT_HIGH);
     List<String> txtLabel = Arrays.asList("From", "To");
 
     for (int i = 0; i < txtKey.size(); i++) {
@@ -318,20 +318,20 @@ class DetailedConfigPanel extends JPanel {
     }
 
     JFormattedTextField txt = new JFormattedTextField(twoSig);
-    addTrackedTxtField(txt, "target_unit_interval", "By", gridPanel, txtMap, false);
+    addTrackedTxtField(txt, Keys.TARGET_UNIT_INTERVAL, "By", gridPanel, txtMap, false);
     txt.setText("1");
 
     wrapper.add(largeLbl);
     wrapper.add(gridPanel);
     wrapper.add(
         createOptionPanel(
-            "include_left_bnd",
+            Keys.INCLUDE_LEFT_BND,
             "Include left bound as target?",
             new String[] {"Yes", "No"},
             new String[] {"true", "false"}));
     wrapper.add(
         createOptionPanel(
-            "include_right_bnd",
+            Keys.INCLUDE_RIGHT_BND,
             "Include right bound as target?",
             new String[] {"Yes", "No"},
             new String[] {"true", "false"}));
@@ -381,7 +381,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel panel =
         buttonPanel(
             "Number Line Variant",
-            "estimation_task",
+            Keys.EST_TASK,
             Arrays.asList("Estimation", "Production"),
             Arrays.asList("true", "false"));
 
@@ -391,7 +391,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel stimSwitches =
         buttonPanel(
             "",
-            "stim_time_off",
+            Keys.EST_STIM_TIME_OFF,
             Arrays.asList("Unlimited", "Limited"),
             Arrays.asList("true", "false"));
     JPanel stimInfoPanel = new JPanel();
@@ -399,7 +399,7 @@ class DetailedConfigPanel extends JPanel {
     stimPanel.setLayout(new BorderLayout());
     stimPanel.add(stimSwitches, BorderLayout.CENTER);
 
-    ButtonGroup btnGrpSwitches = btnGrps.get("stim_time_off");
+    ButtonGroup btnGrpSwitches = btnGrps.get(Keys.EST_STIM_TIME_OFF);
     List<AbstractButton> btnsSwitches = Collections.list(btnGrpSwitches.getElements());
 
     btnsSwitches
@@ -429,7 +429,7 @@ class DetailedConfigPanel extends JPanel {
 
     int rr = gs[0].getDisplayMode().getRefreshRate();
     int refreshRate = rr == DisplayMode.REFRESH_RATE_UNKNOWN ? 60 : rr;
-    baseBundle.add("refresh_rate", refreshRate);
+    baseBundle.add(Keys.REFRESH_RATE, refreshRate);
 
     stimInfoPanel.setLayout(new GridBagLayout());
     GridBagConstraints c = new GridBagConstraints();
@@ -447,7 +447,7 @@ class DetailedConfigPanel extends JPanel {
     JTextField scalarField = new JTextField(4);
     ((PlainDocument) scalarField.getDocument()).setDocumentFilter(new IntFilter());
 
-    addTrackedTxtField(scalarField, "scalar_field", "", stimPanel, txtMap, false);
+    addTrackedTxtField(scalarField, Keys.SCALAR_FIELD, "", stimPanel, txtMap, false);
     c.gridx = 1;
     stimInfoPanel.add(scalarField, c);
 
@@ -502,7 +502,7 @@ class DetailedConfigPanel extends JPanel {
             });
 
     if (FeatureSwitch.USE_MASK) {
-      ButtonGroup btnGrp = btnGrps.get("estimation_task");
+      ButtonGroup btnGrp = btnGrps.get(Keys.EST_TASK);
       List<AbstractButton> btns = Collections.list(btnGrp.getElements());
       btns.get(0)
           .addItemListener(
@@ -526,7 +526,7 @@ class DetailedConfigPanel extends JPanel {
 
       wrapper.add(stimPanel, BorderLayout.SOUTH);
     } else {
-      baseBundle.add("stim_time_off", true);
+      baseBundle.add(Keys.EST_STIM_TIME_OFF, true);
       return panel;
     }
 
@@ -537,11 +537,11 @@ class DetailedConfigPanel extends JPanel {
     JPanel panel =
         buttonPanel(
             "Number Line Type",
-            "bound_exterior",
+            Keys.BOUND_EXTERIOR,
             Arrays.asList("Bounded", "Unbounded", "Universal"),
             Arrays.asList("true", "false", "FALSE"));
 
-    ButtonGroup btnGrp = btnGrps.get("bound_exterior");
+    ButtonGroup btnGrp = btnGrps.get(Keys.BOUND_EXTERIOR);
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
 
     btns.get(1)
@@ -550,7 +550,7 @@ class DetailedConfigPanel extends JPanel {
               if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
                 updateRightBound();
               } else if (itemEvent.getStateChange() == ItemEvent.DESELECTED) {
-                txtMap.get("end_unit").setEnabled(true);
+                txtMap.get(Keys.END_UNIT).setEnabled(true);
               }
             });
 
@@ -558,7 +558,7 @@ class DetailedConfigPanel extends JPanel {
         .addItemListener(
             itemEvent -> {
               if (itemEvent.getStateChange() == ItemEvent.SELECTED) {
-                txtMap.get("end_unit").setEnabled(true);
+                txtMap.get(Keys.END_UNIT).setEnabled(true);
               }
             });
 
@@ -566,8 +566,8 @@ class DetailedConfigPanel extends JPanel {
   }
 
   private void updateRightBound() {
-    JTextField txt = txtMap.get("end_unit");
-    JTextField leftBnd = txtMap.get("start_unit");
+    JTextField txt = txtMap.get(Keys.END_UNIT);
+    JTextField leftBnd = txtMap.get(Keys.START_UNIT);
     txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
     txt.setText(String.valueOf(Integer.valueOf(leftBnd.getText()) + 1));
     txt.setEnabled(false);
@@ -576,7 +576,7 @@ class DetailedConfigPanel extends JPanel {
   private JPanel sizePanel() {
     return buttonPanel(
         "Number Line Size",
-        "line_size_temp",
+        Keys.LINE_SIZE_TEMP,
         Arrays.asList("Small", "Medium", "Large"),
         Arrays.asList("small", "medium", "large"));
   }
@@ -585,7 +585,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel panel =
         buttonPanel(
             "Custom Instructions",
-            "use_cust_instruct",
+            Keys.USE_CUST_INSTRUCTIONS,
             Arrays.asList("Yes", "No"),
             Arrays.asList("true", "false"));
 
@@ -594,7 +594,7 @@ class DetailedConfigPanel extends JPanel {
     JPanel savePanel = new JPanel();
     JTextField saveTxtField = new JTextField(20);
     addTrackedTxtField(
-        saveTxtField, "cust_instruct", "Custom Instructions", savePanel, txtMap, false);
+        saveTxtField, Keys.CUST_INSTRUCTIONS, "Custom Instructions", savePanel, txtMap, false);
     saveTxtField.setText("");
 
     JFileChooser fc = new JFileChooser();
@@ -624,7 +624,7 @@ class DetailedConfigPanel extends JPanel {
 
     finalPanel.setBorder(BorderFactory.createTitledBorder("Custom instructions"));
 
-    ButtonGroup btnGrp = btnGrps.get("use_cust_instruct");
+    ButtonGroup btnGrp = btnGrps.get(Keys.USE_CUST_INSTRUCTIONS);
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
     btns.get(1).setSelected(true);
 
@@ -682,7 +682,7 @@ class DetailedConfigPanel extends JPanel {
     btnGrp.add(adultRadBtn);
     btnGrp.add(othRadBtn);
 
-    btnGrps.put("bias", btnGrp);
+    btnGrps.put(Keys.BIAS, btnGrp);
 
     panel.add(childRadBtn);
     panel.add(adultRadBtn);
@@ -771,23 +771,23 @@ class DetailedConfigPanel extends JPanel {
 
     txtMap.forEach((k, txt) -> bundle.add(k, txt.getText()));
     btnGrps.forEach((s, btnGrp) -> bundle.add(s, btnGrp.getSelection().getActionCommand()));
-    bundle.add("largest_target", largeLbl.getText().split(":")[1]);
+    bundle.add(Keys.LARGEST_TARGET, largeLbl.getText().split(":")[1]);
     bundle.add(
-        "line_size",
-        baseBundle.getAsString("width_" + bundle.getAsString("line_size_temp") + "_mod"));
+        Keys.LINE_SIZE,
+        baseBundle.getAsString("width_" + bundle.getAsString(Keys.LINE_SIZE_TEMP) + "_mod"));
 
     GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
     GraphicsDevice[] gs = ge.getScreenDevices();
     int rr = gs[0].getDisplayMode().getRefreshRate();
     int refreshRate = rr == DisplayMode.REFRESH_RATE_UNKNOWN ? 60 : rr;
 
-    if (baseBundle.getAsBoolean("stim_time_off")) {
-      baseBundle.add("est_stim_time", 0);
+    if (baseBundle.getAsBoolean(Keys.EST_STIM_TIME_OFF)) {
+      baseBundle.add(Keys.EST_STIM_TIME, 0);
     } else {
-      baseBundle.add("est_stim_time", baseBundle.getAsInt("scalar_field") * (1000 / refreshRate));
+      baseBundle.add(Keys.EST_STIM_TIME, baseBundle.getAsInt(Keys.SCALAR_FIELD) * (1000 / refreshRate));
     }
 
-    bundle.add("distinct_targets", distinctTargets);
+    bundle.add(Keys.DISTINCT_TARGETS, distinctTargets);
 
     return bundle;
   }
@@ -818,11 +818,11 @@ class DetailedConfigPanel extends JPanel {
                 .ifPresent(it -> it.setSelected(true)));
 
     // Handle the case where the other bias was selected.
-    double bias = parseDouble(defs.getAsString("bias"));
+    double bias = parseDouble(defs.getAsString(Keys.BIAS));
     if (bias != ADULT_BIAS && bias != CHILD_BIAS) {
       JRadioButton btn =
           (JRadioButton)
-              Collections.list(btnMatches.get("bias").getElements())
+              Collections.list(btnMatches.get(Keys.BIAS).getElements())
                   .stream()
                   .filter(it -> it.getActionCommand().equals("0.0"))
                   .findFirst()
@@ -845,19 +845,19 @@ class DetailedConfigPanel extends JPanel {
 
     Bundle bun = getBundle();
 
-    boolean bounded = bun.getAsBoolean("bound_exterior");
-    boolean estimate = bun.getAsBoolean("estimation_task");
+    boolean bounded = bun.getAsBoolean(Keys.BOUND_EXTERIOR);
+    boolean estimate = bun.getAsBoolean(Keys.EST_TASK);
 
-    double bias = parseDouble(bun.getAsString("bias"));
-    int margin = baseBundle.getAsInt("left_margin_high");
-    int widthHigh = baseBundle.getAsInt("width_high");
-    int scale = bun.getAsInt("line_size");
-    long leftBound = bun.getAsInt("start_unit");
+    double bias = parseDouble(bun.getAsString(Keys.BIAS));
+    int margin = baseBundle.getAsInt(Keys.LEFT_MARGIN_HIGH);
+    int widthHigh = baseBundle.getAsInt(Keys.WIDTH_HIGH);
+    int scale = bun.getAsInt(Keys.LINE_SIZE);
+    long leftBound = bun.getAsInt(Keys.START_UNIT);
 
     double maxPix = 1.0 * screenWidth() - (2.0 * margin);
     double unitPix = 1.0 * widthHigh * scale;
 
-    baseBundle.add("width_interval", (int) unitPix);
+    baseBundle.add(Keys.WIDTH_INTERVAL, (int) unitPix);
 
     Double max =
         bounded || estimate
@@ -876,15 +876,15 @@ class DetailedConfigPanel extends JPanel {
 
     Bundle bun = getBundle();
 
-    int leftBnd = bun.getAsInt("start_unit");
-    int rightBnd = bun.getAsInt("end_unit");
+    int leftBnd = bun.getAsInt(Keys.START_UNIT);
+    int rightBnd = bun.getAsInt(Keys.END_UNIT);
 
-    int start = bun.getAsInt("target_unit_low");
-    int end = bun.getAsInt("target_unit_high");
-    int inter = bun.getAsInt("target_unit_interval");
+    int start = bun.getAsInt(Keys.TARGET_UNIT_LOW);
+    int end = bun.getAsInt(Keys.TARGET_UNIT_HIGH);
+    int inter = bun.getAsInt(Keys.TARGET_UNIT_INTERVAL);
 
-    boolean excludeLeft = !bun.getAsBoolean("include_left_bnd");
-    boolean excludeRight = !bun.getAsBoolean("include_right_bnd");
+    boolean excludeLeft = !bun.getAsBoolean(Keys.INCLUDE_LEFT_BND);
+    boolean excludeRight = !bun.getAsBoolean(Keys.INCLUDE_RIGHT_BND);
 
     distinctTargets =
         calcDistinctCount(start, end, inter, leftBnd, rightBnd, excludeLeft, excludeRight);

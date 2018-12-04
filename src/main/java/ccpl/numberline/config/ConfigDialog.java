@@ -150,13 +150,13 @@ public class ConfigDialog extends JDialog {
     contentPanel.add(topPanel, contentConstraints);
 
     JTextField textField = new JTextField();
-    textFields.put("condition", textField);
+    textFields.put(Keys.CONDITION, textField);
     expandGridPanel(centerPanel, "Condition", textField);
 
-    textFields.put("condition", textField);
+    textFields.put(Keys.CONDITION, textField);
 
     for (int i = 0; i < textKeys.size(); i++) {
-      if (textKeys.get(i).equals("session")) {
+      if (textKeys.get(i).equals(Keys.SESSION)) {
         JFormattedTextField format = new JFormattedTextField(new DecimalFormat("###"));
         addTrackedTxtField(
             format, textKeys.get(i), textLabels.get(i), centerPanel, textFields, true);
@@ -172,9 +172,9 @@ public class ConfigDialog extends JDialog {
             textFields.forEach((key, value) -> bunAdd(key, value.getText()));
 
             cb.bundle = cb.bundle.merge(configDialog.getBundle());
-            bunAdd("target_label_on", true);
-            bunAdd("save_dir", saveTxtField.getText());
-            bunAdd("config_save_dir", lastConfigSaveDir);
+            bunAdd(Keys.TARGET_LABEL_ON, true);
+            bunAdd(Keys.SAVE_DIR, saveTxtField.getText());
+            bunAdd(Keys.CONFIG_SAVE_DIR, lastConfigSaveDir);
 
             try {
               writeDbFile(cb.bundle, new URL(String.format("file://%s", defaultConfigLoc)));
@@ -198,13 +198,13 @@ public class ConfigDialog extends JDialog {
       setTextDefaults(bundle);
       configDialog.setDefaults(bundle);
       saveTxtField.setText(
-          (!Objects.equals(safeGrab(bundle, "save_dir"), "NULL"))
-              ? safeGrab(bundle, "save_dir")
+          (!Objects.equals(safeGrab(bundle, Keys.SAVE_DIR), "NULL"))
+              ? safeGrab(bundle, Keys.SAVE_DIR)
               : "");
 
       setOutputDirectory(saveTxtField.getText());
 
-      String configDir = safeGrab(bundle, "config_save_dir");
+      String configDir = safeGrab(bundle, Keys.CONFIG_SAVE_DIR);
 
       if (!configDir.equalsIgnoreCase("NULL")) {
         setLastConfigSaveDirectory(configDir);
@@ -215,8 +215,8 @@ public class ConfigDialog extends JDialog {
 
     JPanel ageGradeContent = new JPanel();
     ageGradeContent.setLayout(new GridLayout(1, 1));
-    addTrackedTxtField("subj_age", "Subject Age", ageGradeContent, textFields, true);
-    addTrackedTxtField("subj_grade", "Subject Grade", ageGradeContent, textFields, true);
+    addTrackedTxtField(Keys.SUBJ_AGE, "Subject Age", ageGradeContent, textFields, true);
+    addTrackedTxtField(Keys.SUBJ_GRADE, "Subject Grade", ageGradeContent, textFields, true);
 
     AbstractButton noButton = new JRadioButton("No");
     noButton.setSelected(true);
@@ -303,8 +303,8 @@ public class ConfigDialog extends JDialog {
     errorTextField.setText("");
 
     boolean pass = true;
-    String subject = textFields.get("subject").getText();
-    String session = textFields.get("session").getText();
+    String subject = textFields.get(Keys.SUBJ).getText();
+    String session = textFields.get(Keys.SESSION).getText();
     StringBuilder sb = new StringBuilder();
 
     String filePath = String.format("%s/p%ss%s.tsv", saveTxtField.getText(), subject, session);

@@ -2,6 +2,7 @@ package ccpl.numberline;
 
 import ccpl.lib.Bundle;
 import ccpl.numberline.config.ConfigDialog;
+import ccpl.numberline.config.Keys;
 import ccpl.numberline.config.PopupCallback;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -31,9 +32,9 @@ public class Launcher {
 
     if (bundle.getSize() != 0) {
       String expFile = "exp";
-      String subject = bundle.getAsString("subject");
-      String condition = bundle.getAsString("condition");
-      String session = bundle.getAsString("session");
+      String subject = bundle.getAsString(Keys.SUBJ);
+      String condition = bundle.getAsString(Keys.CONDITION);
+      String session = bundle.getAsString(Keys.SESSION);
 
       UniversalNumberLine exp =
           new UniversalNumberLine(expFile, subject, condition, session, bundle);
