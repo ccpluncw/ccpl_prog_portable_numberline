@@ -27,6 +27,15 @@ public class UiUtil {
     return tk.getScreenSize().height;
   }
 
+  public static Container createToggleablePanel(
+      Window parent,
+      Container wrapper,
+      Component content,
+      AbstractButton showBtn,
+      AbstractButton hideBtn) {
+    return createToggleablePanel(parent, wrapper, content, showBtn, hideBtn, true);
+  }
+
   /**
    * Create a Panel, which has buttons to toggle the display a content container.
    *
@@ -42,7 +51,8 @@ public class UiUtil {
       Container wrapper,
       Component content,
       AbstractButton showBtn,
-      AbstractButton hideBtn) {
+      AbstractButton hideBtn,
+      boolean createNewBtnGrp) {
     wrapper.setLayout(new BorderLayout());
 
     JPanel buttonPanel = new JPanel();
@@ -65,9 +75,12 @@ public class UiUtil {
           }
         });
 
-    ButtonGroup radioBtns = new ButtonGroup();
-    radioBtns.add(showBtn);
-    radioBtns.add(hideBtn);
+
+    if (createNewBtnGrp) {
+      ButtonGroup radioBtns = new ButtonGroup();
+      radioBtns.add(showBtn);
+      radioBtns.add(hideBtn);
+    }
 
     buttonPanel.add(showBtn);
     buttonPanel.add(hideBtn);

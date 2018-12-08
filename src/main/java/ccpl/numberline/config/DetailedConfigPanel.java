@@ -45,6 +45,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javax.swing.AbstractButton;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -587,7 +588,8 @@ class DetailedConfigPanel extends JPanel {
             "Custom Instructions",
             Keys.USE_CUST_INSTRUCTIONS,
             Arrays.asList("Yes", "No"),
-            Arrays.asList("true", "false"));
+            Arrays.asList("true", "false"),
+            1);
 
     panel.setBorder(BorderFactory.createEmptyBorder());
 
@@ -620,16 +622,15 @@ class DetailedConfigPanel extends JPanel {
     JPanel finalPanel = new JPanel();
     finalPanel.setLayout(new BorderLayout());
     finalPanel.add(panel, BorderLayout.NORTH);
-    // finalPanel.add(savePanel, BorderLayout.SOUTH)
 
     finalPanel.setBorder(BorderFactory.createTitledBorder("Custom instructions"));
 
     ButtonGroup btnGrp = btnGrps.get(Keys.USE_CUST_INSTRUCTIONS);
     List<AbstractButton> btns = Collections.list(btnGrp.getElements());
-    btns.get(1).setSelected(true);
 
     return (JPanel)
-        UiUtil.createToggleablePanel(parent, finalPanel, savePanel, btns.get(0), btns.get(1));
+        UiUtil.createToggleablePanel(parent, finalPanel, savePanel, btns.get(0), btns.get(1),
+            false);
   }
 
   private JPanel biasPanel() {
@@ -695,15 +696,13 @@ class DetailedConfigPanel extends JPanel {
     return panel;
   }
 
-  private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds) {
+  private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds, int def) {
     List<JRadioButton> buts =
         butStrs.stream().map(JRadioButton::new).collect(Collectors.toCollection(ArrayList::new));
 
-    for (int i = 0; i < buts.size(); i++) {
-      buts.get(i).setActionCommand(cmds.get(i));
-    }
+    IntStream.range(0, buts.size()).forEach(i -> buts.get(i).setActionCommand(cmds.get(i)));
 
-    buts.get(0).setSelected(true);
+    buts.get(def).setSelected(true);
 
     ButtonGroup btnGrp = new ButtonGroup();
     buts.forEach(btnGrp::add);
@@ -713,6 +712,10 @@ class DetailedConfigPanel extends JPanel {
     buts.forEach(panel::add);
 
     return panel;
+  }
+
+  private JPanel buttonPanel(String title, String key, List<String> butStrs, List<String> cmds) {
+    return buttonPanel(title, key, butStrs, cmds, 0);
   }
 
   private JPanel saveConfig() {
