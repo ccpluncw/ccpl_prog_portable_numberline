@@ -18,6 +18,7 @@ import ccpl.lib.numberline.abs.AbstractHandleNumberLine;
 import ccpl.numberline.config.Keys;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -26,15 +27,27 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
+import javax.swing.BoxLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
@@ -75,9 +88,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * condition, and session number.
    *
    * @param expFile Experiment file
-   * @param sub Subject ID
-   * @param cond Condition
-   * @param sess Session number
+   * @param sub     Subject ID
+   * @param cond    Condition
+   * @param sess    Session number
    */
   public UniversalNumberLine(
       String expFile, String sub, String cond, String sess, Bundle dataBundle) {
@@ -100,7 +113,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     this.subjGrade = subjGradeVal.equalsIgnoreCase("0") ? "NA" : subjGradeVal;
   }
 
-  /** Runs the UniversalNumberLine experiment with the specified database file. */
+  /**
+   * Runs the UniversalNumberLine experiment with the specified database file.
+   */
   public void run() {
     ClassLoader cl = this.getClass().getClassLoader();
     URL newLayoutPath = cl.getResource(experiment + "/infiles/base_db.txt");
@@ -564,36 +579,71 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     j.setSize(d.width, d.height);
     j.setLocation(0, 0);
 
-    SpecificationArrayProcess sap = new SpecificationArrayProcess();
-    Specification[] instructions = sap.readFromUrl(u);
-
-    String html1;
-    String html2;
-    html1 = "<html><body style='width:";
-    html2 = "px'><left>";
-
-    StringBuilder inst = new StringBuilder(html1 + 1000 + html2);
-    for (Specification instruction : instructions) {
-      inst.append(instruction.getAllSpecs());
-    }
-
-    JLabel l = new JLabel();
-    l.setForeground(Color.BLACK);
-    l.setText(inst.toString());
-    l.setVisible(true);
-
     GridBagLayout gb = new GridBagLayout();
     j.setLayout(gb);
 
     GridBagConstraints c = new GridBagConstraints();
 
-    c.gridx = 0;
-    c.gridy = 0;
-    c.gridwidth = 1;
-    c.gridheight = 1;
+    SpecificationArrayProcess sap = new SpecificationArrayProcess();
+    Specification[] instructions = sap.readFromUrl(u);
 
-    gb.setConstraints(l, c);
-    j.add(l);
+    String htmlHeader = "<html><body style='width:1000px'><left>";
+
+    StringBuilder instructBuilder = new StringBuilder();
+    for (Specification instruction : instructions) {
+      instructBuilder.append(instruction.getAllSpecs());
+    }
+
+    String[] split = instructBuilder.toString().split("((?<=(<img[^>]{1,1000}>)|(?=(<img[^>]{1,1000}>))))");
+    List<String> elems = new ArrayList<>(Arrays.asList(split));
+
+    Pattern srcPattern = Pattern.compile("src=\".*\"");
+
+    JPanel contentPanel = new JPanel();
+    contentPanel.setLayout(new BoxLayout(contentPanel, BoxLayout.Y_AXIS));
+    contentPanel.setBackground(Color.WHITE);
+    for (String entry : elems) {
+      JComponent comp;
+
+      if (entry.contains("<img")) {
+        Matcher srcMatcher = srcPattern.matcher(entry);
+
+        if (!srcMatcher.find()) {
+          continue;
+        }
+
+        String dirtySrc = srcMatcher.group();
+        String cleanStr = dirtySrc.replaceAll("src=", "").replaceAll("\"", "");
+
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        URL srcUrl = cl.getResource(cleanStr);
+
+        if (srcUrl == null)
+          srcUrl = getURL(cleanStr);
+
+        if (srcUrl == null) {
+          continue;
+        }
+
+        try {
+          BufferedImage image = ImageIO.read(srcUrl);
+          comp = new JLabel(new ImageIcon(image));
+          comp.setAlignmentX(Component.CENTER_ALIGNMENT);
+        } catch (IOException e) {
+          e.printStackTrace();
+          comp = new JLabel();
+        }
+      } else {
+        comp = new JLabel(htmlHeader + entry);
+        comp.setForeground(Color.BLACK);
+        comp.setVisible(true);
+        comp.setAlignmentX(Component.CENTER_ALIGNMENT);
+      }
+      contentPanel.add(comp);
+    }
+
+    gb.setConstraints(contentPanel, c);
+    j.add(contentPanel);
 
     JButton okButton = new JButton("OK");
     AbstractAction action =
@@ -607,8 +657,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     okButton.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "DoClick");
     okButton.getActionMap().put("DoClick", action);
 
+
     c.gridx = 0;
-    c.gridy = 1;
+    c.gridy = 100;
     c.gridwidth = 1;
     c.gridheight = 1;
 
@@ -622,10 +673,12 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
           }
 
           @Override
-          public void ancestorRemoved(AncestorEvent ancestorEvent) {}
+          public void ancestorRemoved(AncestorEvent ancestorEvent) {
+          }
 
           @Override
-          public void ancestorMoved(AncestorEvent ancestorEvent) {}
+          public void ancestorMoved(AncestorEvent ancestorEvent) {
+          }
         });
 
     return j;
@@ -663,8 +716,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
   /**
    * Randomly generates a value for the left margin based on parameters.
    *
-   * @param low Low value for the range
-   * @param high High value for the range
+   * @param low      Low value for the range
+   * @param high     High value for the range
    * @param interval Interval
    * @return Random value
    */
@@ -673,7 +726,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     return randGen.drawWithInterval();
   }
 
-  /** Present the experiment trial. */
+  /**
+   * Present the experiment trial.
+   */
   private void presentTrial() {
     // gridPanel.removeAll(); //Clears out all JComponents in panel before adding any new ones
     // gridPanel.validate();
@@ -690,7 +745,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
    * Converts a Unit object into its reduced form.
    *
    * @param unitFormat Format for the unit
-   * @param unit Unit value
+   * @param unit       Unit value
    * @return New unit object in the reduced form
    */
   private Unit reduceUnit(String unitFormat, Unit unit) {
@@ -729,5 +784,15 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     synchronized (this) {
       notify();
     }
+  }
+
+  private static URL getURL(String localFile) {
+    URL fileURL = null;
+    try {
+      fileURL = new URL("file://" + localFile);
+    } catch (MalformedURLException ex) {
+      Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
+    }
+    return fileURL;
   }
 }
