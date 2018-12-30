@@ -133,23 +133,24 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     // BEGIN PARSING OF DATABASE FILE
     trialType = numOfPracTrials != 0 ? 0 : 1;
 
+    boolean isEst = dataBundle.getAsBoolean(Keys.EST_TASK);
+    String bounded = dataBundle.getAsString(Keys.BOUND_EXTERIOR);
+
+    switch (bounded) {
+      case "false":
+        numberLineType = "unbound";
+        break;
+      case "FALSE":
+        numberLineType = "universal";
+        break;
+      default:
+        numberLineType = "bound";
+        break;
+    }
+
     if (dataBundle.getAsBoolean(Keys.USE_CUST_INSTRUCTIONS)) {
       dbBundle.add(Keys.INSTRUCTIONS, dataBundle.getAsString(Keys.CUST_INSTRUCTIONS));
     } else {
-      boolean isEst = dataBundle.getAsBoolean(Keys.EST_TASK);
-      String bounded = dataBundle.getAsString(Keys.BOUND_EXTERIOR);
-
-      switch (bounded) {
-        case "false":
-          numberLineType = "unbound";
-          break;
-        case "FALSE":
-          numberLineType = "universal";
-          break;
-        default:
-          numberLineType = "bound";
-          break;
-      }
 
       String instruction = String.format("%s_%s_instruct", isEst ? "est" : "prod", numberLineType);
       dbBundle.add(Keys.INSTRUCTIONS, dbBundle.getAsString(instruction));
