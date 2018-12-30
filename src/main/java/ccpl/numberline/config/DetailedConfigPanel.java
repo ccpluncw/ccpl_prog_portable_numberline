@@ -611,7 +611,11 @@ class DetailedConfigPanel extends JPanel {
           if (!saveTxtField.getText().isEmpty() && !currDirSet.get()) {
             File prevLoc = new File(saveTxtField.getText());
             fc.setCurrentDirectory(prevLoc.getParentFile());
+          } else if (!currDirSet.get()) {
+            File userDir = new File(System.getProperty("user.dir"));
+            fc.setCurrentDirectory(userDir.getParentFile());
           }
+
           currDirSet.set(true);
 
           int returnVal = fc.showSaveDialog(this);
