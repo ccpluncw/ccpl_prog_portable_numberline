@@ -42,6 +42,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -602,9 +603,17 @@ class DetailedConfigPanel extends JPanel {
     JFileChooser fc = new JFileChooser();
     fc.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
+    AtomicBoolean currDirSet = new AtomicBoolean(false);
+
     JButton saveButton = new JButton("Select File");
     saveButton.addActionListener(
         actionEvent -> {
+          if (!saveTxtField.getText().isEmpty() && !currDirSet.get()) {
+            File prevLoc = new File(saveTxtField.getText());
+            fc.setCurrentDirectory(prevLoc.getParentFile());
+          }
+          currDirSet.set(true);
+
           int returnVal = fc.showSaveDialog(this);
 
           if (returnVal == JFileChooser.APPROVE_OPTION) {
