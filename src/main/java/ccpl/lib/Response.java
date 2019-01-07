@@ -7,7 +7,6 @@ import ccpl.lib.numberline.abs.AbstractNumberLine;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.GridBagConstraints;
@@ -38,7 +37,6 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.WindowConstants;
 import javax.swing.text.AbstractDocument;
@@ -64,7 +62,6 @@ public class Response implements KeyListener, ActionListener {
   private long startTime;
   private volatile boolean inputDone;
   private long loopsPerMs = 0;
-  private NumPadResponse numPadResponse;
   private boolean closedProperly;
 
   public AbstractAction returnMouseAction() {
@@ -84,9 +81,7 @@ public class Response implements KeyListener, ActionListener {
     }
   }
 
-  public Response() {
-    numPadResponse = null;
-  }
+  public Response() { }
 
   public void setFrame(JFrame f) {
     mouseFrame = f;
@@ -277,28 +272,6 @@ public class Response implements KeyListener, ActionListener {
     inputDone = false;
     textOkButton = new JButton("OK");
     createNotificationFrame(parent, info, textOkButton, 500, 250);
-  }
-
-  /**
-   * Initializes a TimedNumPadResponse.
-   *
-   * @param parent Parent JFrame.
-   * @param info Message to be displayed.
-   * @param targetFieldFormat Format to apply to the target.
-   */
-  public void getTimedNumPadResponse(JFrame parent, String info, String targetFieldFormat) {
-    if (loopsPerMs == 0) {
-      JOptionPane.showMessageDialog(
-          null, "Must run the testTimer first.  Fatal Error", "alert", JOptionPane.ERROR_MESSAGE);
-      System.exit(1);
-    }
-
-    createNumPadResponseFrame(parent, info, targetFieldFormat);
-
-    inputDone = false;
-    textRt = pollForResponse();
-
-    textValue = numPadResponse.getResponse();
   }
 
   /**
@@ -660,15 +633,6 @@ public class Response implements KeyListener, ActionListener {
         textValue = (textInput.getText()).trim();
         respFrame.dispose();
         inputDone = true;
-      } else if (numPadResponse != null) {
-        textValue = numPadResponse.getResponse();
-        if (numPadResponse.validateResponse(textValue)) {
-          respFrame.setVisible(false);
-          respFrame.dispose();
-          respFrame = null;
-
-          inputDone = true;
-        }
       } else if (textInput == null) {
         respFrame.setVisible(false);
         respFrame.dispose();
@@ -784,49 +748,6 @@ public class Response implements KeyListener, ActionListener {
     while (isInputRunning()) {
       Thread.yield();
     }
-  }
-
-  /**
-   * Create a NumpadResponseFrame.
-   *
-   * @param parent Parent frame
-   * @param label Label for the frame
-   * @param targetFieldFormat How the field should be formatted
-   */
-  private void createNumPadResponseFrame(JFrame parent, String label, String targetFieldFormat) {
-    respFrame = new JDialog(parent);
-    respFrame.setTitle("Response");
-
-    respFrame.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-
-    numPadResponse = new NumPadResponse(targetFieldFormat.trim(), respFrame);
-
-    textOkButton = new JButton("OK");
-    JPanel inputPanel = new JPanel(new BorderLayout(3, 5));
-    JPanel labelPanel = new JPanel(new FlowLayout());
-    JPanel buttonPanel = new JPanel(new FlowLayout());
-
-    labelPanel.add(new JLabel(label));
-    buttonPanel.add(textOkButton);
-
-    inputPanel.add(labelPanel, BorderLayout.NORTH);
-    inputPanel.add(numPadResponse.getPanel(), BorderLayout.CENTER);
-    inputPanel.add(buttonPanel, BorderLayout.SOUTH);
-    respFrame.getContentPane().add(inputPanel);
-
-    Dimension respFrameDim = respFrame.getPreferredSize();
-
-    final int respFrameWidth = respFrameDim.width + 150;
-    final int respFrameHeight = respFrameDim.height + 75;
-    respFrame.setSize(respFrameWidth, respFrameHeight);
-    respFrame.setLocation(
-        (parent.getWidth() - respFrameWidth) / 2, (parent.getHeight() - respFrameHeight) / 2);
-    respFrame.setResizable(false);
-
-    textOkButton.addActionListener(this);
-    respFrame.getRootPane().setDefaultButton(textOkButton);
-    respFrame.addKeyListener(this);
-    respFrame.setVisible(true);
   }
 
   private char getUserChoice() {
