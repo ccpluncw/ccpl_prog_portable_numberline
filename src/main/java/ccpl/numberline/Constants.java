@@ -2,8 +2,9 @@ package ccpl.numberline;
 
 /**
  * Shared static constants.
- *
+ * <p>
  * These are used to keep track of globally changeable
+ * </p>
  */
 public class Constants {
   public static String outputDirectory = ".";

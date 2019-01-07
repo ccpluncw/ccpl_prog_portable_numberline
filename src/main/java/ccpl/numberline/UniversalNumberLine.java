@@ -303,7 +303,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
 
         final String startUnitFormat = dataBundle.getAsString(Keys.START_UNIT_FORMAT).toUpperCase();
         final String endUnitFormat = dataBundle.getAsString(Keys.END_UNIT_FORMAT).toUpperCase();
-        final String targetUnitFormat = dataBundle.getAsString(Keys.TARGET_UNIT_FORMAT).toUpperCase();
+        final String targUnitFormat = dataBundle.getAsString(Keys.TARGET_UNIT_FORMAT).toUpperCase();
 
         String estTargetFormat = dataBundle.getAsString(Keys.EST_TARGET_FORMAT);
 
@@ -363,7 +363,7 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         Unit startUnit = reduceUnit(startUnitFormat, defaultStartUnit);
         Unit endUnit = reduceUnit(endUnitFormat, defaultEndUnit);
 
-        randTarget = reduceUnit(targetUnitFormat, randTarget);
+        randTarget = reduceUnit(targUnitFormat, randTarget);
 
         String myFontName = getRandomFontName(fontNames);
 
@@ -583,8 +583,6 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     GridBagLayout gb = new GridBagLayout();
     j.setLayout(gb);
 
-    GridBagConstraints c = new GridBagConstraints();
-
     SpecificationArrayProcess sap = new SpecificationArrayProcess();
     Specification[] instructions = sap.readFromUrl(u);
 
@@ -595,7 +593,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       instructBuilder.append(instruction.getAllSpecs());
     }
 
-    String[] split = instructBuilder.toString().split("((?<=(<img[^>]{1,1000}>)|(?=(<img[^>]{1,1000}>))))");
+    String imageTagPattern = "((?<=(<img[^>]{1,1000}>)|(?=(<img[^>]{1,1000}>))))";
+    String[] split = instructBuilder.toString().split(imageTagPattern);
     List<String> elems = new ArrayList<>(Arrays.asList(split));
 
     Pattern srcPattern = Pattern.compile("src=\".*\"");
@@ -619,8 +618,9 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         URL srcUrl = cl.getResource(cleanStr);
 
-        if (srcUrl == null)
-          srcUrl = getURL(cleanStr);
+        if (srcUrl == null) {
+          srcUrl = getUrl(cleanStr);
+        }
 
         if (srcUrl == null) {
           continue;
@@ -643,7 +643,8 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
       contentPanel.add(comp);
     }
 
-    gb.setConstraints(contentPanel, c);
+    GridBagConstraints constraints = new GridBagConstraints();
+    gb.setConstraints(contentPanel, constraints);
     j.add(contentPanel);
 
     JButton okButton = new JButton("OK");
@@ -659,12 +660,12 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     okButton.getActionMap().put("DoClick", action);
 
 
-    c.gridx = 0;
-    c.gridy = 100;
-    c.gridwidth = 1;
-    c.gridheight = 1;
+    constraints.gridx = 0;
+    constraints.gridy = 100;
+    constraints.gridwidth = 1;
+    constraints.gridheight = 1;
 
-    gb.setConstraints(okButton, c);
+    gb.setConstraints(okButton, constraints);
     j.add(okButton);
     j.addAncestorListener(
         new AncestorListener() {
@@ -787,13 +788,13 @@ public class UniversalNumberLine extends Experiment implements ActionListener {
     }
   }
 
-  private static URL getURL(String localFile) {
-    URL fileURL = null;
+  private static URL getUrl(String localFile) {
+    URL fileUrl = null;
     try {
-      fileURL = new URL("file://" + localFile);
+      fileUrl = new URL("file://" + localFile);
     } catch (MalformedURLException ex) {
       Logger.getLogger(Experiment.class.getName()).log(Level.SEVERE, null, ex);
     }
-    return fileURL;
+    return fileUrl;
   }
 }

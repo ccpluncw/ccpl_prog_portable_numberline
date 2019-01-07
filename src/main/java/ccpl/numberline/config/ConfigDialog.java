@@ -221,14 +221,6 @@ public class ConfigDialog extends JDialog {
     AbstractButton noButton = new JRadioButton("No");
     noButton.setSelected(true);
 
-    Component ageGradePanel =
-        UiUtil.createToggleablePanel(
-            this,
-            createPanelWithBorderTitle("Include age and grade?"),
-            ageGradeContent,
-            new JRadioButton("Yes"),
-            noButton);
-
     JButton configButton = new JButton("Configure");
     configButton.addActionListener(actionEvent -> configDialog.setVisible(true));
 
@@ -277,6 +269,13 @@ public class ConfigDialog extends JDialog {
     c.fill = GridBagConstraints.BOTH;
     centerPanelWrapper.add(centerPanel, c);
 
+    Component ageGradePanel =
+        UiUtil.createToggleablePanel(
+            this,
+            createPanelWithBorderTitle("Include age and grade?"),
+            ageGradeContent,
+            new JRadioButton("Yes"),
+            noButton);
     c.gridy++;
     centerPanelWrapper.add(ageGradePanel, c);
 

@@ -802,9 +802,8 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       super.paintComponent(g);
       Graphics2D graphics = (Graphics2D) g;
       graphics.setStroke(stroke);
-      //graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-      graphics.setRenderingHint(
-          RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+      graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
       if (currentLine != null) {
         graphics.setStroke(stroke);

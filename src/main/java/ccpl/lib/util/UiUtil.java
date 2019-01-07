@@ -55,7 +55,6 @@ public class UiUtil {
       boolean createNewBtnGrp) {
     wrapper.setLayout(new BorderLayout());
 
-    JPanel buttonPanel = new JPanel();
 
     showBtn.addItemListener(
         event -> {
@@ -82,6 +81,7 @@ public class UiUtil {
       radioBtns.add(hideBtn);
     }
 
+    JPanel buttonPanel = new JPanel();
     buttonPanel.add(showBtn);
     buttonPanel.add(hideBtn);
 
