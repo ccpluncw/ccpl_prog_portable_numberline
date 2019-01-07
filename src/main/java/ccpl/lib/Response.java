@@ -1,3 +1,20 @@
+/*
+ * This file is part of the Cohen Ray Number Line.
+ *
+ * Latesco is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Latesco is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Latesco.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ccpl.lib;
 
 import static ccpl.lib.util.MouseUtil.resetMouseToCenter;
@@ -81,14 +98,16 @@ public class Response implements KeyListener, ActionListener {
     }
   }
 
-  public Response() { }
+  public Response() {
+  }
 
   public void setFrame(JFrame f) {
     mouseFrame = f;
   }
 
   @Override
-  public void keyTyped(KeyEvent keyEvent) {}
+  public void keyTyped(KeyEvent keyEvent) {
+  }
 
   /**
    * When a button is hit this is triggered saves the button that was hit and deal with it depending
@@ -105,7 +124,8 @@ public class Response implements KeyListener, ActionListener {
   }
 
   @Override
-  public void keyReleased(KeyEvent keyEvent) {}
+  public void keyReleased(KeyEvent keyEvent) {
+  }
 
   /**
    * Calibrates timing to ensure accuracy. YOU HAVE TO CALL THIS TO MAKE THE RESPONSE CLASS WORK.
@@ -207,16 +227,20 @@ public class Response implements KeyListener, ActionListener {
           }
 
           @Override
-          public void mousePressed(MouseEvent e) {}
+          public void mousePressed(MouseEvent e) {
+          }
 
           @Override
-          public void mouseReleased(MouseEvent e) {}
+          public void mouseReleased(MouseEvent e) {
+          }
 
           @Override
-          public void mouseEntered(MouseEvent e) {}
+          public void mouseEntered(MouseEvent e) {
+          }
 
           @Override
-          public void mouseExited(MouseEvent e) {}
+          public void mouseExited(MouseEvent e) {
+          }
         };
 
     numLine.getPanel().addMouseListener(tempListener);
@@ -524,7 +548,8 @@ public class Response implements KeyListener, ActionListener {
     respFrame.addWindowListener(
         new WindowAdapter() {
 
-          public synchronized void windowClosed(WindowEvent e) {}
+          public synchronized void windowClosed(WindowEvent e) {
+          }
 
           public synchronized void windowClosing(WindowEvent e) {
             // inputDone = true;
@@ -786,7 +811,8 @@ public class Response implements KeyListener, ActionListener {
   }
 
   private class DisableMouseListener implements MouseMotionListener {
-    public void mouseDragged(MouseEvent e) {}
+    public void mouseDragged(MouseEvent e) {
+    }
 
     public void mouseMoved(MouseEvent e) {
       resetMouseToCenter(mouseFrame);

@@ -1,3 +1,20 @@
+/*
+ * This file is part of the Cohen Ray Number Line.
+ *
+ * Latesco is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Latesco is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Latesco.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package ccpl.lib.numberline;
 
 import ccpl.lib.Handle;
@@ -438,7 +455,7 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
 
   /**
    * Return the user's response, corrected for any number line size adjustments.
-   * @return    User response.
+   * @return User response.
    */
   public double getUserResponse() {
     int totalShift = isOutsideBounds ? handleShift + rightShift : handleShift;
@@ -501,15 +518,20 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
     return box.contains(cursorX, cursorY);
   }
 
-  public void mouseClicked(MouseEvent e) {}
+  public void mouseClicked(MouseEvent e) {
+  }
 
-  public void mousePressed(MouseEvent e) {}
+  public void mousePressed(MouseEvent e) {
+  }
 
-  public void mouseReleased(MouseEvent e) {}
+  public void mouseReleased(MouseEvent e) {
+  }
 
-  public void mouseEntered(MouseEvent e) {}
+  public void mouseEntered(MouseEvent e) {
+  }
 
-  public void mouseExited(MouseEvent e) {}
+  public void mouseExited(MouseEvent e) {
+  }
 
   /**
    * Update the location of the drag handle when the mouse is moved if it is a production task.
@@ -803,7 +825,7 @@ public class NumberLine implements AbstractHandleNumberLine, MouseMotionListener
       Graphics2D graphics = (Graphics2D) g;
       graphics.setStroke(stroke);
       graphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+          RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
       if (currentLine != null) {
         graphics.setStroke(stroke);
